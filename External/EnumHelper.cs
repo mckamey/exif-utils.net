@@ -1,12 +1,12 @@
 using System;
 using System.Collections;
 
-namespace PseudoCode.Utility
+namespace PseudoCode.Common
 {
 	/// <summary>
 	/// Enumeration Utilities
 	/// </summary>
-	public class EnumUtility
+	public class EnumHelper
 	{
 		public static Enum[] GetEnumValues(Type enumType, object value)
 		{
