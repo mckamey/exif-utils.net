@@ -147,7 +147,7 @@ namespace PseudoCode.Common
 		/// <remarks>Splits combined flag enums.</remarks>
 		public static string[] GetDescriptions(System.Type enumType)
 		{
-			return EnumHelper.GetDescriptions(enumType, true);
+			return EnumHelper.GetDescriptions(enumType, false);
 		}
 
 		/// <summary>
