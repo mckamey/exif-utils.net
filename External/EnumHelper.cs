@@ -143,15 +143,16 @@ namespace PseudoCode.Common
 		/// Gets the list of all enum descriptions from an enum type.
 		/// </summary>
 		/// <param name="enumType"></param>
+		/// <param name="splitFlags">Whether to split combined flag enums.</param>
 		/// <returns></returns>
-		public static string[] GetDescriptions(System.Type enumType)
+		public static string[] GetDescriptions(System.Type enumType, bool splitFlags)
 		{
 			Enum[] enumList = EnumHelper.GetEnumList(enumType);
 			string[] enumDecriptions = new string[enumList.Length];
 
 			for(int i=0; i<enumList.Length; i++)
 			{
-				enumDecriptions[i] = Helper.GetDescription(enumList[i]);
+				enumDecriptions[i] = Helper.GetDescription(enumList[i], splitFlags);
 			}
 
 			return enumDecriptions;
