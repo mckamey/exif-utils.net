@@ -8,7 +8,15 @@ namespace PseudoCode.Common
 	/// </summary>
 	public class EnumHelper
 	{
-		public static Enum[] GetEnumValues(Type enumType, object value)
+		#region GetFlagList
+
+		/// <summary>
+		/// Splits a bitwise-OR'd set of enums into a list.
+		/// </summary>
+		/// <param name="enumType">the enum type</param>
+		/// <param name="value">the combined value</param>
+		/// <returns>list of flag enums</returns>
+		public static Enum[] GetFlagList(Type enumType, object value)
 		{
 			Enum[] enums = null;
 
@@ -56,5 +64,117 @@ namespace PseudoCode.Common
 			enumList.CopyTo(enums);
 			return enums; 
 		}
+
+		#endregion GetFlagList
+
+		#region GetEnumList
+
+		/// <summary>
+		/// Gets the list of all enum values from an enum type.
+		/// </summary>
+		/// <param name="enumType"></param>
+		/// <returns></returns>
+		public static Enum[] GetEnumList(System.Type enumType)
+		{
+			System.Array enumValues = Enum.GetValues(enumType);
+			Enum[] enumList = new Enum[enumValues.Length];
+
+			for(int i=0; i<enumValues.Length; i++)
+			{
+				enumList[i] = (Enum)Enum.ToObject(enumType, enumValues.GetValue(i));
+			}
+
+			return enumList;
+		}
+
+		#endregion GetEnumList
+
+		#region GetEnumNames
+
+		/// <summary>
+		/// Convenience method.  Same as Enum.GetNames(enumType);
+		/// </summary>
+		/// <param name="enumType"></param>
+		/// <returns></returns>
+		public static string[] GetEnumNames(System.Type enumType)
+		{
+			return Enum.GetNames(enumType);
+		}
+
+		#endregion GetEnumNames
+
+		#region GetEnumValues
+
+		/// <summary>
+		/// Convenience method.  Same as Enum.GetValues(enumType) except typed.
+		/// </summary>
+		/// <param name="enumType"></param>
+		/// <returns>Int32[]</returns>
+		public static Int32[] GetInt32Values(System.Type enumType)
+		{
+			return Enum.GetValues(enumType) as Int32[];
+		}
+
+		/// <summary>
+		/// Convenience method.  Same as Enum.GetValues(enumType) except typed.
+		/// </summary>
+		/// <param name="enumType"></param>
+		/// <returns>Byte[]</returns>
+		public static Byte[] GetByteValues(System.Type enumType)
+		{
+			return Enum.GetValues(enumType) as Byte[];
+		}
+
+		/// <summary>
+		/// Convenience method.  Same as Enum.GetValues(enumType) except typed.
+		/// </summary>
+		/// <param name="enumType"></param>
+		/// <returns>Int64[]</returns>
+		public static Int64[] GetInt64Values(System.Type enumType)
+		{
+			return Enum.GetValues(enumType) as Int64[];
+		}
+
+		#endregion GetEnumValues
+
+		#region GetDescriptions
+
+		/// <summary>
+		/// Gets the list of all enum descriptions from an enum type.
+		/// </summary>
+		/// <param name="enumType"></param>
+		/// <returns></returns>
+		public static string[] GetDescriptions(System.Type enumType)
+		{
+			Enum[] enumList = EnumHelper.GetEnumList(enumType);
+			string[] enumDecriptions = new string[enumList.Length];
+
+			for(int i=0; i<enumList.Length; i++)
+			{
+				enumDecriptions[i] = Helper.GetDescription(enumList[i]);
+			}
+
+			return enumDecriptions;
+		}
+
+		#endregion GetDescriptions
+
+		#region IsFlagsEnum
+		
+		/// <summary>
+		/// Checks if an enum is able to be combined as bit flags.
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public static bool IsFlagsEnum(Type type)
+		{
+			if (!type.IsEnum)
+				return false;
+
+			Attribute flags = Helper.GetAttribute(type, typeof(FlagsAttribute), true);
+			return (flags != null);
+		}
+
+		#endregion IsFlagsEnum
 	}
 }
