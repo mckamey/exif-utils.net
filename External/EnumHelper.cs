@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 
-namespace PseudoCode.Common
+using PseudoCode.Common;
+
+namespace PseudoCode
 {
 	/// <summary>
 	/// Enumeration Utilities
@@ -57,7 +59,7 @@ namespace PseudoCode.Common
 				}
 			}
  
-			if (longVal != 0L)
+			if (longVal != 0x0L)
 				enumList.Add(longVal); 
 
 			enums = new Enum[enumList.Count];
@@ -163,7 +165,7 @@ namespace PseudoCode.Common
 
 			for(int i=0; i<enumList.Length; i++)
 			{
-				enumDecriptions[i] = Helper.GetDescription(enumList[i], splitFlags);
+				enumDecriptions[i] = ReflectionHelper.GetDescription(enumList[i], splitFlags);
 			}
 
 			return enumDecriptions;
@@ -172,7 +174,7 @@ namespace PseudoCode.Common
 		#endregion GetDescriptions
 
 		#region IsFlagsEnum
-		
+
 		/// <summary>
 		/// Checks if an enum is able to be combined as bit flags.
 		/// </summary>
@@ -183,11 +185,30 @@ namespace PseudoCode.Common
 			if (!type.IsEnum)
 				return false;
 
-			Attribute flags = Helper.GetAttribute(type, typeof(FlagsAttribute), true);
+			Attribute flags = ReflectionHelper.GetAttribute(type, typeof(FlagsAttribute), true);
 			return (flags != null);
 		}
 
 		#endregion IsFlagsEnum
+
+		#region InFlags
+
+		/// <summary>
+		/// Checks if the value is set in the flags
+		/// </summary>
+		/// <param name="flags">the combined values</param>
+		/// <param name="val">the single value</param>
+		/// <returns></returns>
+		public static bool InFlags(object flags, object val)
+		{
+			try
+			{
+				return (( Convert.ToInt64(flags) & Convert.ToInt64(val) ) != 0x0L);
+			}
+			catch { return false; }
+		}
+
+		#endregion InFlags
 
 		#region Parse
 
