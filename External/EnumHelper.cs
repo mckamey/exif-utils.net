@@ -177,5 +177,30 @@ namespace PseudoCode.Common
 		}
 
 		#endregion IsFlagsEnum
+
+		#region Parse
+
+		/// <summary>
+		/// Parses a string into an enum and allows a default value.
+		/// </summary>
+		/// <param name="enumType"></param>
+		/// <param name="strValue"></param>
+		/// <param name="defaultValue"></param>
+		/// <returns></returns>
+		public static Enum Parse(Type enumType, string strValue, Enum defaultValue)
+		{
+			object objValue = defaultValue;
+			try
+			{
+				objValue = Enum.Parse(enumType, strValue, true);
+				if (!enumType.IsInstanceOfType(objValue))
+					objValue = defaultValue;
+			}
+			catch { }
+
+			return (Enum)objValue;
+		}
+
+		#endregion Parse
 	}
 }
