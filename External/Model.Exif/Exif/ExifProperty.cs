@@ -153,7 +153,68 @@ namespace PhotoLib.Model.Exif
 			set { this.value = value; }
 		}
 
+		/// <summary>
+		/// Gets the formatted text representation.
+		/// </summary>
+		[DisplayName("Display Text")]
+		[Category("Value")]
+		public string DisplayText
+		{
+			get { this.FormatValue(); }
+		}
+
 		#endregion Properties
+
+		#region Methods
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		/// <remarks>
+		/// Referencing: http://www.media.mit.edu/pia/Research/deepview/exif.html
+		/// </remarks>
+		protected string FormatValue()
+		{
+			object rawValue = this.Value;
+			switch (this.Tag)
+			{
+			/*
+			 shutter speed, fstop, iso setting,
+			 metering mode, lightsource, flash, focal length,
+			 exposure bias, brightness value, exposure program
+			 colorspace, metering mode, lightsource
+
+			 */
+				case ExifTag.Aperture:
+				{
+					try
+					{
+						Rational<uint> aperture = (Rational<uint>)rawValue;
+						double fStop = Math.Pow(2.0, ((double)aperture)/2.0);
+						return String.Format("f/{0:#.0}", fStop);
+					}
+					catch
+					{
+						goto default;
+					}
+				}
+				case ExifTag.FNumber:
+				{
+					return String.Format("f/{0:#.0}", Convert.ToDecimal(rawValue));
+				}
+				case ExifTag.ExposureTime:
+				{
+					return String.Format("{0} sec");
+				}
+				default:
+				{
+					return Convert.ToString(rawValue);
+				}
+			}
+		}
+
+		#endregion Methods
 
 		#region Object Overrides
 
@@ -168,7 +229,7 @@ namespace PhotoLib.Model.Exif
 				builder.AppendFormat("{0:g}: ", this.Tag);
 			else
 				builder.AppendFormat("Exif_0x{0:x4}: ", this.ID);
-			builder.Append(this.Value);
+			builder.Append(this.DisplayText);
 
 			return builder.ToString();
 		}
