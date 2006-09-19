@@ -18,7 +18,7 @@ namespace PhotoLib.Model.Exif
 		/// <summary>
 		/// Specifies that the value data member is a null-terminated ASCII string.
 		/// </summary>
-		/// <remarks>If you set <see cref="PropertyItem.Type">PropertyItem.Type</see> to <see cref="PropertyItem.Type"/>, you should set the length data member to the length of the string including the NULL terminator. For example, the string HELLO would have a length of 6.</remarks>
+		/// <remarks>If you set <see cref="ExifProperty.Type">ExifProperty.Type</see> to <see cref="ExifProperty.Type"/>, you should set the length data member to the length of the string including the NULL terminator. For example, the string HELLO would have a length of 6.</remarks>
 		Ascii = 2,
 
 		/// <summary>

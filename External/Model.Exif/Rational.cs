@@ -19,7 +19,7 @@ namespace PhotoLib.Model
 		#region Init
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Rational"/> class.
+		/// Initializes a new instance of the <see cref="PhotoLib.Model.Rational{T}"/> class.
 		/// </summary>
 		/// <param name="numerator">The numerator of the rational number.</param>
 		/// <param name="denominator">The denominator of the rational number.</param>
@@ -82,6 +82,12 @@ namespace PhotoLib.Model
 
 		#region Operators
 
+		/// <summary>
+		/// Addition
+		/// </summary>
+		/// <param name="r1"></param>
+		/// <param name="r2"></param>
+		/// <returns></returns>
 		public static Rational<T> operator+(Rational<T> r1, Rational<T> r2)
 		{
 			decimal r1n = Convert.ToDecimal(r1.numerator);
@@ -100,17 +106,34 @@ namespace PhotoLib.Model
 			return new Rational<T>((T)Convert.ChangeType(numerator, typeof(T)), (T)Convert.ChangeType(denominator, typeof(T)));
 		}
 
+		/// <summary>
+		/// Negation
+		/// </summary>
+		/// <param name="r"></param>
+		/// <returns></returns>
 		public static Rational<T> operator-(Rational<T> r)
 		{
 			T numerator = (T)Convert.ChangeType(-Convert.ToDecimal(r.numerator), typeof(T));
 			return new Rational<T>(numerator, r.denominator);
 		}
 
+		/// <summary>
+		/// Subtraction
+		/// </summary>
+		/// <param name="r1"></param>
+		/// <param name="r2"></param>
+		/// <returns></returns>
 		public static Rational<T> operator-(Rational<T> r1, Rational<T> r2)
 		{
 			return r1 + (-r2);
 		}
 
+		/// <summary>
+		/// Multiplication
+		/// </summary>
+		/// <param name="r1"></param>
+		/// <param name="r2"></param>
+		/// <returns></returns>
 		public static Rational<T> operator*(Rational<T> r1, Rational<T> r2)
 		{
 			decimal numerator = Convert.ToDecimal(r1.numerator) * Convert.ToDecimal(r2.numerator);
@@ -119,6 +142,12 @@ namespace PhotoLib.Model
 			return new Rational<T>((T)Convert.ChangeType(numerator, typeof(T)), (T)Convert.ChangeType(denominator, typeof(T)));
 		}
 
+		/// <summary>
+		/// Division
+		/// </summary>
+		/// <param name="r1"></param>
+		/// <param name="r2"></param>
+		/// <returns></returns>
 		public static Rational<T> operator/(Rational<T> r1, Rational<T> r2)
 		{
 			return r1 * new Rational<T>(r2.denominator, r2.numerator);
@@ -128,6 +157,10 @@ namespace PhotoLib.Model
 
 		#region Object Overrides
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		public override string ToString()
 		{
 			return Convert.ToString(this);
@@ -137,11 +170,21 @@ namespace PhotoLib.Model
 
 		#region IConvertible Members
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="provider"></param>
+		/// <returns></returns>
 		public string ToString(IFormatProvider provider)
 		{
 			return String.Format("{0}/{1}", this.Numerator.ToString(provider), this.Denominator.ToString(provider));
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="provider"></param>
+		/// <returns></returns>
 		public decimal ToDecimal(IFormatProvider provider)
 		{
 			try
@@ -155,11 +198,21 @@ namespace PhotoLib.Model
 			}
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="provider"></param>
+		/// <returns></returns>
 		public double ToDouble(IFormatProvider provider)
 		{
 			return this.Numerator.ToDouble(provider)/this.Denominator.ToDouble(provider);
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="provider"></param>
+		/// <returns></returns>
 		public float ToSingle(IFormatProvider provider)
 		{
 			return this.Numerator.ToSingle(provider)/this.Denominator.ToSingle(provider);

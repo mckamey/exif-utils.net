@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace PhotoLib.Model.Exif
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	[Serializable]
 	public class ExifPropertyCollection : System.Collections.Generic.ICollection<ExifProperty>, System.Collections.ICollection
 	{
@@ -15,6 +18,11 @@ namespace PhotoLib.Model.Exif
 
 		#region Properties
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="tagID"></param>
+		/// <returns></returns>
 		public ExifProperty this[ExifTag tagID]
 		{
 			get
@@ -54,6 +62,11 @@ namespace PhotoLib.Model.Exif
 
 		#region Methods
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="tag"></param>
+		/// <returns></returns>
 		public bool Remove(ExifTag tag)
 		{
 			if (!this.items.ContainsKey((int)tag))
@@ -63,6 +76,11 @@ namespace PhotoLib.Model.Exif
 			return true;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="tag"></param>
+		/// <returns></returns>
 		public bool Contains(ExifTag tag)
 		{
 			return this.items.ContainsKey((int)tag);
@@ -72,11 +90,19 @@ namespace PhotoLib.Model.Exif
 
 		#region ICollection Members
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="array"></param>
+		/// <param name="index"></param>
 		public void CopyTo(Array array, int index)
 		{
 			((ICollection)this.items).CopyTo(array, index);
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public int Count
 		{
 			get { return ((ICollection)this.items).Count; }
@@ -105,6 +131,10 @@ namespace PhotoLib.Model.Exif
 
 		#region ICollection<ExifProperty> Members
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="item"></param>
 		public void Add(ExifProperty item)
 		{
 			if (item == null)
@@ -120,26 +150,47 @@ namespace PhotoLib.Model.Exif
 			this.items[item.ID] = item;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public void Clear()
 		{
 			this.items.Clear();
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="item"></param>
+		/// <returns></returns>
 		public bool Contains(ExifProperty item)
 		{
 			return this.items.ContainsValue(item);
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="array"></param>
+		/// <param name="index"></param>
 		public void CopyTo(ExifProperty[] array, int index)
 		{
 			this.items.Values.CopyTo(array, index);
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public bool IsReadOnly
 		{
 			get { return ((ICollection<KeyValuePair<int,ExifProperty>>)this.items).IsReadOnly; }
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="item"></param>
+		/// <returns></returns>
 		public bool Remove(ExifProperty item)
 		{
 			if (!this.items.ContainsKey(item.ID))
@@ -153,6 +204,10 @@ namespace PhotoLib.Model.Exif
 
 		#region IEnumerable<ExifProperty> Members
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		public IEnumerator<ExifProperty> GetEnumerator()
 		{
 			return ((IEnumerable<ExifProperty>)this.items.Values).GetEnumerator();

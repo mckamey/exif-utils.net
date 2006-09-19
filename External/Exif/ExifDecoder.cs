@@ -8,7 +8,7 @@ namespace PhotoLib.Model.Exif
 	/// <summary>
 	/// Decodes the GDI+ representation of EXIF properties.
 	/// </summary>
-	public sealed class ExifDecoder
+	public static class ExifDecoder
 	{
 		#region Constants
 
@@ -29,12 +29,6 @@ namespace PhotoLib.Model.Exif
 		private static readonly int URationalSize = 2 * Marshal.SizeOf(typeof(uint));
 
 		#endregion Fields
-
-		#region Init
-
-		private ExifDecoder() { }
-
-		#endregion Init
 
 		#region Static Methods
 

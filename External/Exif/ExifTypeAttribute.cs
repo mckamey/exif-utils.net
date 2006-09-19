@@ -2,6 +2,9 @@ using System;
 
 namespace PhotoLib.Model.Exif
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Field, AllowMultiple=false)]
 	public sealed class ExifDataTypeAttribute : Attribute
 	{
@@ -14,20 +17,36 @@ namespace PhotoLib.Model.Exif
 
 		#region Init
 
+		/// <summary>
+		/// Ctor.
+		/// </summary>
 		public ExifDataTypeAttribute()
 		{
 		}
 
+		/// <summary>
+		/// Ctor.
+		/// </summary>
+		/// <param name="dataType"></param>
 		public ExifDataTypeAttribute(Type dataType)
 		{
 			this.dataType = dataType;
 		}
 
+		/// <summary>
+		/// Ctor.
+		/// </summary>
+		/// <param name="exifType"></param>
 		public ExifDataTypeAttribute(ExifType exifType)
 		{
 			this.exifType = exifType;
 		}
 
+		/// <summary>
+		/// Ctor.
+		/// </summary>
+		/// <param name="type"></param>
+		/// <param name="exifType"></param>
 		public ExifDataTypeAttribute(Type type, ExifType exifType)
 		{
 			this.dataType = type;
@@ -38,11 +57,17 @@ namespace PhotoLib.Model.Exif
 
 		#region Properties
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public Type DataType
 		{
 			get { return this.dataType; }
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public ExifType ExifType
 		{
 			get { return this.exifType; }
@@ -55,7 +80,7 @@ namespace PhotoLib.Model.Exif
 		/// <summary>
 		/// Gets the data type which corresponds to the specified Type.
 		/// </summary>
-		/// <param name="type"></param>
+		/// <param name="value"></param>
 		/// <returns></returns>
 		public static Type GetDataType(object value)
 		{
@@ -79,7 +104,7 @@ namespace PhotoLib.Model.Exif
 		/// <summary>
 		/// Gets the exif type which corresponds to the specified Type.
 		/// </summary>
-		/// <param name="type"></param>
+		/// <param name="value"></param>
 		/// <returns></returns>
 		public static ExifType GetExifType(object value)
 		{
