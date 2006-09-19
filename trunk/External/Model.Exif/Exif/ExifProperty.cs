@@ -7,7 +7,7 @@ using PhotoLib.Model.Exif.TagValues;
 namespace PhotoLib.Model.Exif
 {
 	/// <summary>
-	/// 
+	/// Represents a single EXIF property.
 	/// </summary>
 	/// <remarks>
 	/// Should try to serialize as EXIF+RDF http://www.w3.org/2003/12/exif/
@@ -25,10 +25,17 @@ namespace PhotoLib.Model.Exif
 
 		#region Init
 
+		/// <summary>
+		/// Ctor.
+		/// </summary>
 		public ExifProperty()
 		{
 		}
 
+		/// <summary>
+		/// Ctor.
+		/// </summary>
+		/// <param name="property"></param>
 		public ExifProperty(System.Drawing.Imaging.PropertyItem property)
 		{
 			this.id = property.Id;
@@ -40,6 +47,9 @@ namespace PhotoLib.Model.Exif
 
 		#region Properties
 
+		/// <summary>
+		/// Gets and sets the Property ID according to the Exif specification for DCF images.
+		/// </summary>
 		[Category("Key")]
 		[DisplayName("Exif ID")]
 		[Description("The Property ID according to the Exif specification for DCF images.")]
@@ -50,6 +60,9 @@ namespace PhotoLib.Model.Exif
 			set { this.id = value; }
 		}
 
+		/// <summary>
+		/// Gets and sets the property name according to the Exif specification for DCF images.
+		/// </summary>
 		[Category("Key")]
 		[DisplayName("Exif Tag")]
 		[Description("The property name according to the Exif specification for DCF images.")]
@@ -70,6 +83,9 @@ namespace PhotoLib.Model.Exif
 			}
 		}
 
+		/// <summary>
+		/// Gets and sets the EXIF data type.
+		/// </summary>
 		[Category("Value")]
 		[Browsable(false)]
 		[XmlAttribute("ExifType"), DefaultValue(ExifType.Raw)]
@@ -79,6 +95,9 @@ namespace PhotoLib.Model.Exif
 			set { this.type = value; }
 		}
 
+		/// <summary>
+		/// Gets and sets the EXIF value.
+		/// </summary>
 		[XmlElement(typeof(Byte))]
 		[XmlElement(typeof(Byte[]))]
 		[XmlElement(typeof(UInt16))]
@@ -138,6 +157,10 @@ namespace PhotoLib.Model.Exif
 
 		#region Object Overrides
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		public override string ToString()
 		{
 			System.Text.StringBuilder builder = new System.Text.StringBuilder();
