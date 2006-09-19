@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Xml.Serialization;
 
 using PhotoLib.Model.Exif.TagValues;
@@ -160,7 +161,7 @@ namespace PhotoLib.Model.Exif
 		[Category("Value")]
 		public string DisplayText
 		{
-			get { this.FormatValue(); }
+			get { return this.FormatValue(); }
 		}
 
 		#endregion Properties
@@ -180,6 +181,8 @@ namespace PhotoLib.Model.Exif
 			switch (this.Tag)
 			{
 			/*
+			 * Custom format these values:
+
 			 shutter speed, fstop, iso setting,
 			 metering mode, lightsource, flash, focal length,
 			 exposure bias, brightness value, exposure program
@@ -191,7 +194,7 @@ namespace PhotoLib.Model.Exif
 					try
 					{
 						Rational<uint> aperture = (Rational<uint>)rawValue;
-						double fStop = Math.Pow(2.0, ((double)aperture)/2.0);
+						double fStop = Math.Pow(2.0, (aperture.ToDouble(NumberFormatInfo.InvariantInfo)/2.0));
 						return String.Format("f/{0:#.0}", fStop);
 					}
 					catch
@@ -205,7 +208,7 @@ namespace PhotoLib.Model.Exif
 				}
 				case ExifTag.ExposureTime:
 				{
-					return String.Format("{0} sec");
+					return String.Format("{0} sec", rawValue);
 				}
 				default:
 				{
