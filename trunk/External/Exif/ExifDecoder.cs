@@ -8,7 +8,7 @@ namespace PhotoLib.Model.Exif
 	/// <summary>
 	/// Decodes the GDI+ representation of EXIF properties.
 	/// </summary>
-	public static class ExifDecoder
+	internal static class ExifDecoder
 	{
 		#region Constants
 
