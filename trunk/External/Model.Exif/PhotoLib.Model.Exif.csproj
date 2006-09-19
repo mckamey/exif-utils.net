@@ -7,7 +7,7 @@
     <ProjectGuid>{823C67A7-41FF-471D-BFC4-B134DF506A6F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PhotoLib.Model.Exif</RootNamespace>
+    <RootNamespace>PhotoLib.Model</RootNamespace>
     <AssemblyName>PhotoLib.Model.Exif</AssemblyName>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -30,14 +30,25 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\PhotoLib.Model.Exif.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Properties\" />
+    <Compile Include="Exif\ExifDecoder.cs" />
+    <Compile Include="Exif\ExifEncoder.cs" />
+    <Compile Include="Exif\ExifProperty.cs" />
+    <Compile Include="Exif\ExifPropertyCollection.cs" />
+    <Compile Include="Exif\ExifTag.cs" />
+    <Compile Include="Exif\ExifType.cs" />
+    <Compile Include="Exif\ExifTypeAttribute.cs" />
+    <Compile Include="Exif\TagValues.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rational.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
