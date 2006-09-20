@@ -175,6 +175,7 @@ namespace PhotoLib.Model.Exif
 		SpatialFreqencyResponse=0xA20C,
 		FocalPlaneXResolution=0xA20E,
 		FocalPlaneYResolution=0xA20F,
+		[ExifDataType(typeof(ExifTagResolutionUnit))]
 		FocalPlaneResolutionUnit=0xA210,
 		SubjectLocation=0xA214,
 		ExposureIndex=0xA215,
