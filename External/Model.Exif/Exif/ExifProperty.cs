@@ -180,35 +180,66 @@ namespace PhotoLib.Model.Exif
 			object rawValue = this.Value;
 			switch (this.Tag)
 			{
-			/*
-			 * Custom format these values:
+				/*
+				 * Custom format these values:
 
-			 shutter speed, fstop, iso setting,
-			 metering mode, lightsource, flash, focal length,
-			 exposure bias, brightness value, exposure program
-			 colorspace, metering mode, lightsource
+				 iso setting,
+				 lightsource,
+				 exposure bias, brightness value, exposure program
+				 colorspace
+				 subject distance, image dimensions, related sound file
 
-			 */
+				 */
 				case ExifTag.Aperture:
+				case ExifTag.MaxAperture:
 				{
-					try
-					{
-						Rational<uint> aperture = (Rational<uint>)rawValue;
-						double fStop = Math.Pow(2.0, (aperture.ToDouble(NumberFormatInfo.InvariantInfo)/2.0));
-						return String.Format("f/{0:#.0}", fStop);
-					}
-					catch
-					{
-						goto default;
-					}
+					double fStop = Math.Pow(2.0, Convert.ToDouble(rawValue)/2.0);
+					return String.Format("f/{0:#0.0}", fStop);
 				}
 				case ExifTag.FNumber:
 				{
-					return String.Format("f/{0:#.0}", Convert.ToDecimal(rawValue));
+					return String.Format("f/{0:#0.0}", Convert.ToDecimal(rawValue));
+				}
+				case ExifTag.FocalLength:
+				case ExifTag.FocalLengthIn35mmFilm:
+				{
+					return String.Format("{0:#0.0} mm", Convert.ToDecimal(rawValue));
+				}
+				case ExifTag.ShutterSpeed:
+				{
+					double speed = Math.Pow(2.0, Convert.ToDouble(rawValue));
+					return String.Format("1/{0:##0} sec", speed);
 				}
 				case ExifTag.ExposureTime:
 				{
 					return String.Format("{0} sec", rawValue);
+				}
+				case ExifTag.XResolution:
+				case ExifTag.YResolution:
+				case ExifTag.ThumbnailResolutionX:
+				case ExifTag.ThumbnailResolutionY:
+				case ExifTag.FocalPlaneXResolution:
+				case ExifTag.FocalPlaneYResolution:
+				{
+					return String.Format("{0:###0} dpi", Convert.ToDecimal(rawValue));
+				}
+				case ExifTag.ImageHeight:
+				case ExifTag.ImageWidth:
+				case ExifTag.CompressedImageHeight:
+				case ExifTag.CompressedImageWidth:
+				case ExifTag.ThumbnailHeight:
+				case ExifTag.ThumbnailWidth:
+				{
+					return String.Format("{0:###0} pixels", Convert.ToDecimal(rawValue));
+				}
+				case ExifTag.SubjectDistance:
+				{
+					return String.Format("{0:###0.0} m", Convert.ToDecimal(rawValue));
+				}
+				case ExifTag.ExposureBias:
+				case ExifTag.Brightness:
+				{
+					return String.Format("{0:###0.0} EV", Convert.ToDecimal(rawValue));
 				}
 				default:
 				{
