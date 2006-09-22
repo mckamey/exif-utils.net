@@ -85,8 +85,26 @@ namespace PseudoCode
 			if (obj == null)
 				return null;
 
-			System.ComponentModel.DescriptionAttribute attribute = ReflectionHelper.GetAttribute(obj, typeof(System.ComponentModel.DescriptionAttribute), false) as System.ComponentModel.DescriptionAttribute;
+			System.ComponentModel.DescriptionAttribute attribute = ReflectionHelper.GetAttribute(obj,
+				typeof(System.ComponentModel.DescriptionAttribute), false)
+				as System.ComponentModel.DescriptionAttribute;
 			return attribute != null ? attribute.Description : null;
+		}
+
+		/// <summary>
+		/// Gets the display name of this object from its DisplayNameAttribute.
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		public static string GetDisplayName(object obj)
+		{
+			if (obj == null)
+				return null;
+
+			System.ComponentModel.DisplayNameAttribute attribute = ReflectionHelper.GetAttribute(obj,
+				typeof(System.ComponentModel.DisplayNameAttribute), false)
+				as System.ComponentModel.DisplayNameAttribute;
+			return attribute != null ? attribute.DisplayName : null;
 		}
 
 		#endregion Reflection Helper
