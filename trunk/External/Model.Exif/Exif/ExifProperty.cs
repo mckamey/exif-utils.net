@@ -176,10 +176,17 @@ namespace PhotoLib.Model.Exif
 		{
 			get
 			{
-				string label = PseudoCode.ReflectionHelper.GetDescription(this.Tag);
-				if (String.IsNullOrEmpty(label))
-					label = this.Tag.ToString("g");
-				return label;
+				if (this.Tag != ExifTag.Unknown)
+				{
+					string label = PseudoCode.ReflectionHelper.GetDescription(this.Tag);
+					if (String.IsNullOrEmpty(label))
+						label = this.Tag.ToString("g");
+					return label;
+				}
+				else
+				{
+					return String.Format("Exif_0x{0:x4}", this.ID);
+				}
 			}
 		}
 
@@ -316,18 +323,7 @@ namespace PhotoLib.Model.Exif
 		/// <returns></returns>
 		public override string ToString()
 		{
-			System.Text.StringBuilder builder = new System.Text.StringBuilder();
-			if (this.Tag != ExifTag.Unknown)
-			{
-				builder.AppendFormat("{0}: ", this.DisplayName);
-			}
-			else
-			{
-				builder.AppendFormat("Exif_0x{0:x4}: ", this.ID);
-			}
-			builder.Append(this.DisplayValue);
-
-			return builder.ToString();
+			return String.Format("{0}: {1}", this.DisplayName, this.DisplayValue);
 		}
 
 		#endregion Object Overrides
