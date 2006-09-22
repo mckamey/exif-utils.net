@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel;
 
-namespace PhotoLib.Model.Exif.Meta
+namespace PhotoLib.Model.Exif.TypeConverters
 {
 	public class ExifConverter : System.ComponentModel.ExpandableObjectConverter
 	{

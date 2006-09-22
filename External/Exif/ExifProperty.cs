@@ -14,7 +14,7 @@ namespace PhotoLib.Model.Exif
 	/// Should try to serialize as EXIF+RDF http://www.w3.org/2003/12/exif/
 	/// </remarks>
 	[Serializable]
-	[TypeConverter(typeof(PhotoLib.Model.Exif.Meta.ExifConverter))]
+	[TypeConverter(typeof(PhotoLib.Model.Exif.TypeConverters.ExifConverter))]
 	public class ExifProperty
 	{
 		#region Fields
