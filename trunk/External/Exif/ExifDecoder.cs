@@ -18,17 +18,13 @@ namespace PhotoLib.Model.Exif
 			"    :  :   HH:mm:ss",
 		};
 
-		#endregion Constants
-
-		#region Fields
-
 		private static readonly int UInt16Size = Marshal.SizeOf(typeof(ushort));
 		private static readonly int Int32Size = Marshal.SizeOf(typeof(int));
 		private static readonly int UInt32Size = Marshal.SizeOf(typeof(uint));
 		private static readonly int RationalSize = 2 * Marshal.SizeOf(typeof(int));
 		private static readonly int URationalSize = 2 * Marshal.SizeOf(typeof(uint));
 
-		#endregion Fields
+		#endregion Constants
 
 		#region Static Methods
 
@@ -190,9 +186,10 @@ namespace PhotoLib.Model.Exif
 		/// <returns></returns>
 		private static ushort ReadUInt16(byte[] buffer, int offset)
 		{
-			return (ushort)(
-				((ushort)buffer[offset] +
-				((ushort)buffer[offset + 1] << 8)));
+			return BitConverter.ToUInt16(buffer, offset);
+			//return (ushort)(
+			//    ((ushort)buffer[offset] +
+			//    ((ushort)buffer[offset + 1] << 8)));
 		}
 
 		/// <summary>
@@ -203,11 +200,12 @@ namespace PhotoLib.Model.Exif
 		/// <returns></returns>
 		private static int ReadInt32(byte[] buffer, int offset)
 		{
-			return (int)(
-				((uint)buffer[offset] +
-				((uint)buffer[offset + 1] << 8) +
-				((uint)buffer[offset + 2] << 16) +
-				((int)buffer[offset + 3] << 24)));
+			return BitConverter.ToInt32(buffer, offset);
+			//return (int)(
+			//    ((uint)buffer[offset] +
+			//    ((uint)buffer[offset + 1] << 8) +
+			//    ((uint)buffer[offset + 2] << 16) +
+			//    ((int)buffer[offset + 3] << 24)));
 		}
 
 		/// <summary>
@@ -218,11 +216,12 @@ namespace PhotoLib.Model.Exif
 		/// <returns></returns>
 		private static uint ReadUInt32(byte[] buffer, int offset)
 		{
-			return (uint)(
-				((uint)buffer[offset] +
-				((uint)buffer[offset + 1] << 8) +
-				((uint)buffer[offset + 2] << 16) +
-				((uint)buffer[offset + 3] << 24)));
+			return BitConverter.ToUInt32(buffer, offset);
+			//return (uint)(
+			//    ((uint)buffer[offset] +
+			//    ((uint)buffer[offset + 1] << 8) +
+			//    ((uint)buffer[offset + 2] << 16) +
+			//    ((uint)buffer[offset + 3] << 24)));
 		}
 
 		#endregion Byte Decoding

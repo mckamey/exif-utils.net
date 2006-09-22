@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -8,6 +9,7 @@ namespace PhotoLib.Model.Exif
 	/// 
 	/// </summary>
 	[Serializable]
+	[TypeConverter(typeof(PhotoLib.Model.Exif.Meta.ExifCollectionConverter))]
 	public class ExifPropertyCollection : System.Collections.Generic.ICollection<ExifProperty>, System.Collections.ICollection
 	{
 		#region Fields
@@ -181,6 +183,7 @@ namespace PhotoLib.Model.Exif
 		/// <summary>
 		/// 
 		/// </summary>
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public bool IsReadOnly
 		{
 			get { return ((ICollection<KeyValuePair<int,ExifProperty>>)this.items).IsReadOnly; }
