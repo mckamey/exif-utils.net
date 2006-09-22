@@ -14,10 +14,12 @@ namespace PhotoLib.Model.Exif
 	/// Should try to serialize as EXIF+RDF http://www.w3.org/2003/12/exif/
 	/// </remarks>
 	[Serializable]
+	[TypeConverter(typeof(PhotoLib.Model.Exif.Meta.ExifConverter))]
 	public class ExifProperty
 	{
 		#region Fields
 
+		private System.Drawing.Imaging.PropertyItem propertyItem = null;
 		private int id = (int)ExifTag.Unknown;
 		private ExifType type = ExifType.Raw;
 		private object value = null;
@@ -39,6 +41,7 @@ namespace PhotoLib.Model.Exif
 		/// <param name="property"></param>
 		public ExifProperty(System.Drawing.Imaging.PropertyItem property)
 		{
+			this.propertyItem = property;
 			this.id = property.Id;
 			this.type = (ExifType)property.Type;
 			this.value = ExifDecoder.FromPropertyItem(property);
@@ -155,13 +158,29 @@ namespace PhotoLib.Model.Exif
 		}
 
 		/// <summary>
-		/// Gets the formatted text representation.
+		/// Gets the formatted text representation of the value.
 		/// </summary>
-		[DisplayName("Display Text")]
+		[DisplayName("Display Value")]
 		[Category("Value")]
-		public string DisplayText
+		public string DisplayValue
 		{
 			get { return this.FormatValue(); }
+		}
+
+		/// <summary>
+		/// Gets the formatted text representation of the label.
+		/// </summary>
+		[DisplayName("Display Name")]
+		[Category("Value")]
+		public string DisplayName
+		{
+			get
+			{
+				string label = PseudoCode.ReflectionHelper.GetDescription(this.Tag);
+				if (String.IsNullOrEmpty(label))
+					label = this.Tag.ToString("g");
+				return label;
+			}
 		}
 
 		#endregion Properties
@@ -173,23 +192,20 @@ namespace PhotoLib.Model.Exif
 		/// </summary>
 		/// <returns></returns>
 		/// <remarks>
-		/// Referencing: http://www.media.mit.edu/pia/Research/deepview/exif.html
+		/// References:
+		/// http://www.media.mit.edu/pia/Research/deepview/exif.html
+		/// http://en.wikipedia.org/wiki/APEX_system
+		/// http://en.wikipedia.org/wiki/Exposure_value
 		/// </remarks>
 		protected string FormatValue()
 		{
 			object rawValue = this.Value;
 			switch (this.Tag)
 			{
-				/*
-				 * Custom format these values:
-
-				 iso setting,
-				 lightsource,
-				 exposure bias, brightness value, exposure program
-				 colorspace
-				 subject distance, image dimensions, related sound file
-
-				 */
+				case ExifTag.ISOSpeed:
+				{
+					return String.Format("ISO-{0:###0}", Convert.ToDecimal(rawValue));
+				}
 				case ExifTag.Aperture:
 				case ExifTag.MaxAperture:
 				{
@@ -212,12 +228,12 @@ namespace PhotoLib.Model.Exif
 				}
 				case ExifTag.ExposureTime:
 				{
-					return String.Format("{0} sec", rawValue);
+					return String.Format("1/{0:###0} sec", 1m/Convert.ToDecimal(rawValue));
 				}
 				case ExifTag.XResolution:
 				case ExifTag.YResolution:
-				case ExifTag.ThumbnailResolutionX:
-				case ExifTag.ThumbnailResolutionY:
+				case ExifTag.ThumbnailXResolution:
+				case ExifTag.ThumbnailYResolution:
 				case ExifTag.FocalPlaneXResolution:
 				case ExifTag.FocalPlaneYResolution:
 				{
@@ -241,8 +257,50 @@ namespace PhotoLib.Model.Exif
 				{
 					return String.Format("{0:###0.0} EV", Convert.ToDecimal(rawValue));
 				}
+				case ExifTag.CompressedBitsPerPixel:
+				{
+					return String.Format("{0:###0.0} bits", Convert.ToDecimal(rawValue));
+				}
+				case ExifTag.DigitalZoomRatio:
+				{
+					return Convert.ToString(rawValue).Replace('/', ':');
+				}
 				default:
 				{
+					if (rawValue is Enum)
+					{
+						string description = PseudoCode.ReflectionHelper.GetDescription((Enum)rawValue);
+						if (!String.IsNullOrEmpty(description))
+							return description;
+					}
+					else if (rawValue is Array)
+					{
+						Array array = (Array)rawValue;
+						if (array.Length < 1)
+							return String.Empty;
+
+						Type type = array.GetValue(0).GetType();
+						if (!type.IsPrimitive || type == typeof(char) || type == typeof(float) || type == typeof(double))
+							return Convert.ToString(rawValue);
+
+						int charSize = 2*System.Runtime.InteropServices.Marshal.SizeOf(type);
+						string format = "{0:X"+(charSize)+"}";
+						System.Text.StringBuilder builder = new System.Text.StringBuilder((charSize*array.Length)+(2*array.Length/8));
+						for (int i=0; i<array.Length; i++)
+						{
+							builder.AppendFormat(format, array.GetValue(i));
+							if ((i+1)%8 == 0)
+							{
+								builder.AppendLine();
+							}
+							else
+							{
+								builder.Append(" ");
+							}
+						}
+						return builder.ToString();
+					}
+
 					return Convert.ToString(rawValue);
 				}
 			}
@@ -260,10 +318,14 @@ namespace PhotoLib.Model.Exif
 		{
 			System.Text.StringBuilder builder = new System.Text.StringBuilder();
 			if (this.Tag != ExifTag.Unknown)
-				builder.AppendFormat("{0:g}: ", this.Tag);
+			{
+				builder.AppendFormat("{0}: ", this.DisplayName);
+			}
 			else
+			{
 				builder.AppendFormat("Exif_0x{0:x4}: ", this.ID);
-			builder.Append(this.DisplayText);
+			}
+			builder.Append(this.DisplayValue);
 
 			return builder.ToString();
 		}
