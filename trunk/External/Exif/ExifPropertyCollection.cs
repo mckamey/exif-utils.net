@@ -9,7 +9,7 @@ namespace PhotoLib.Model.Exif
 	/// 
 	/// </summary>
 	[Serializable]
-	[TypeConverter(typeof(PhotoLib.Model.Exif.Meta.ExifCollectionConverter))]
+	[TypeConverter(typeof(PhotoLib.Model.Exif.TypeConverters.ExifCollectionConverter))]
 	public class ExifPropertyCollection : System.Collections.Generic.ICollection<ExifProperty>, System.Collections.ICollection
 	{
 		#region Fields
