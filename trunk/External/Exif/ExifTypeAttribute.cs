@@ -10,7 +10,7 @@ namespace PhotoLib.Model.Exif
 	{
 		#region Fields
 
-		private ExifType exifType = ExifType.Raw;
+		private ExifType exifType = ExifType.Unknown;
 		private Type dataType = null;
 
 		#endregion Fields
@@ -109,7 +109,7 @@ namespace PhotoLib.Model.Exif
 		public static ExifType GetExifType(object value)
 		{
 			if (value == null)
-				return ExifType.Raw;
+				return ExifType.Unknown;
 
 			Type type = value.GetType();
 			if (!type.IsEnum)
@@ -118,7 +118,7 @@ namespace PhotoLib.Model.Exif
 			System.Reflection.FieldInfo fieldInfo = type.GetField(Enum.GetName(type, value));
 
 			if (!ExifDataTypeAttribute.IsDefined(fieldInfo, typeof(ExifDataTypeAttribute)))
-				return ExifType.Raw;
+				return ExifType.Unknown;
 
 			ExifDataTypeAttribute attribute = (ExifDataTypeAttribute)ExifDataTypeAttribute.GetCustomAttribute(fieldInfo, typeof(ExifDataTypeAttribute));
 

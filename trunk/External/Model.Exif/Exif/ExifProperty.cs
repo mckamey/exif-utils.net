@@ -21,7 +21,7 @@ namespace PhotoLib.Model.Exif
 
 		private System.Drawing.Imaging.PropertyItem propertyItem = null;
 		private int id = (int)ExifTag.Unknown;
-		private ExifType type = ExifType.Raw;
+		private ExifType type = ExifType.Unknown;
 		private object value = null;
 
 		#endregion Fields
@@ -67,6 +67,10 @@ namespace PhotoLib.Model.Exif
 		/// <summary>
 		/// Gets and sets the property name according to the Exif specification for DCF images.
 		/// </summary>
+		/// <remarks>
+		/// Note: If the ExifTag value specifies the ExifType then ExifProperty.Type is automatically set.
+		/// If the ExifTag does not specify the ExifType then ExifProperty.Type is left unchanged.
+		/// </remarks>
 		[Category("Key")]
 		[DisplayName("Exif Tag")]
 		[Description("The property name according to the Exif specification for DCF images.")]
@@ -83,7 +87,14 @@ namespace PhotoLib.Model.Exif
 			set
 			{
 				if (value != ExifTag.Unknown)
+				{
 					this.id = (int)value;
+					ExifType exifType = ExifDataTypeAttribute.GetExifType(value);
+					if (exifType != ExifType.Unknown)
+					{
+						this.Type = exifType;
+					}
+				}
 			}
 		}
 
@@ -92,7 +103,7 @@ namespace PhotoLib.Model.Exif
 		/// </summary>
 		[Category("Value")]
 		[Browsable(false)]
-		[XmlAttribute("ExifType"), DefaultValue(ExifType.Raw)]
+		[XmlAttribute("ExifType"), DefaultValue(ExifType.Unknown)]
 		public ExifType Type
 		{
 			get { return this.type; }
@@ -311,6 +322,58 @@ namespace PhotoLib.Model.Exif
 					return Convert.ToString(rawValue);
 				}
 			}
+		}
+
+		public void AddExifToImage(System.Drawing.Bitmap image)
+		{
+			#region Create a PropertyItem
+
+			if (this.propertyItem == null)
+			{
+				if (image.PropertyItems != null && image.PropertyItems.Length > 0)
+				{
+					this.propertyItem = image.PropertyItems[0];
+				}
+				else
+				{
+					throw new NotImplementedException("Can only add EXIF properties to images which already have properties.");
+				}
+			}
+
+			#endregion Create a PropertyItem
+
+			this.propertyItem.Id = (int)this.Tag;
+			this.propertyItem.Type = (short)this.Type;
+
+			Type dataType = ExifDataTypeAttribute.GetDataType(this.Tag);
+
+			switch (this.Type)
+			{
+				case ExifType.Ascii:
+				{
+					this.propertyItem.Value = System.Text.Encoding.ASCII.GetBytes(Convert.ToString(this.Value)+'\0');
+					break;
+				}
+				case ExifType.Byte:
+				{
+					if (dataType == typeof(System.Text.UnicodeEncoding))
+					{
+						this.propertyItem.Value = System.Text.Encoding.Unicode.GetBytes(Convert.ToString(this.Value)+'\0');
+					}
+					else
+					{
+						goto default;
+					}
+					break;
+				}
+				default:
+				{
+					throw new NotImplementedException(String.Format("Encoding for EXIF property \"{0}\" has not yet been implemented.", this.DisplayName));
+				}
+			}
+			this.propertyItem.Len = this.propertyItem.Value.Length;
+
+			image.SetPropertyItem(this.propertyItem);
 		}
 
 		#endregion Methods

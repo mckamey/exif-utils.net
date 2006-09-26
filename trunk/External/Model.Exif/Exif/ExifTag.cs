@@ -54,28 +54,28 @@ namespace PhotoLib.Model.Exif
 		ImageHeight = 0x0101,
 		[Description("Bits Per Sample")]
 		BitsPerSample = 0x0102,
-		[ExifDataType(typeof(ExifTagCompression))]
+		[ExifDataType(typeof(ExifTagCompression), ExifType.UInt16)]
 		Compression = 0x0103,
-		[ExifDataType(typeof(ExifTagPhotometricInterpretation))]
+		[ExifDataType(typeof(ExifTagPhotometricInterpretation), ExifType.UInt16)]
 		[Description("Photometric Interpretation")]
 		PhotometricInterpretation = 0x0106,
-		[ExifDataType(typeof(ExifTagOrientation))]
+		[ExifDataType(typeof(ExifTagOrientation), ExifType.UInt16)]
 		Orientation = 0x0112,
 		[Description("Samples Per Pixel")]
 		SamplesPerPixel = 0x0115,
-		[ExifDataType(typeof(ExifTagPlanarConfiguration))]
+		[ExifDataType(typeof(ExifTagPlanarConfiguration), ExifType.UInt16)]
 		[Description("Planar Configuration")]
 		PlanarConfiguration = 0x011C,
 		[Description("YCbCr SubSampling")]
 		YCbCrSubSampling = 0x0212,
-		[ExifDataType(typeof(ExifTagYCbCrPositioning))]
+		[ExifDataType(typeof(ExifTagYCbCrPositioning), ExifType.UInt16)]
 		[Description("YCbCr Positioning")]
 		YCbCrPositioning = 0x0213,
 		[Description("Horizontal Resolution")]
 		XResolution = 0x011A,
 		[Description("Vertical Resolution")]
 		YResolution = 0x011B,
-		[ExifDataType(typeof(ExifTagResolutionUnit))]
+		[ExifDataType(typeof(ExifTagResolutionUnit), ExifType.UInt16)]
 		[Description("Resolution Unit")]
 		ResolutionUnit = 0x0128,
 
@@ -112,15 +112,18 @@ namespace PhotoLib.Model.Exif
 
 		#region Other
 
-		[ExifDataType(typeof(DateTime))]
+		[ExifDataType(typeof(DateTime), ExifType.Ascii)]
 		DateTime = 0x0132,
+		[ExifDataType(ExifType.Ascii)]
 		[Description("Image Description")]
 		ImageDescription = 0x010E,
 		Make = 0x010F,
 		Model = 0x0110,
 		Software = 0x0131,
-		Artist = 0x013B,
-		Copyright = 0x8298,
+		[ExifDataType(ExifType.Ascii)]
+		Artist=0x013B,
+		[ExifDataType(ExifType.Ascii)]
+		Copyright=0x8298,
 		[Description("Interoperability Index")]
 		InteroperabilityIndex = 0x5041,
 
@@ -141,7 +144,7 @@ namespace PhotoLib.Model.Exif
 
 		#region Image Data Characteristics
 
-		[ExifDataType(typeof(ExifTagColorSpace))]
+		[ExifDataType(typeof(ExifTagColorSpace), ExifType.UInt16)]
 		ColorSpace = 0xA001,
 
 		#endregion Image Data Characteristics
@@ -177,10 +180,10 @@ namespace PhotoLib.Model.Exif
 
 		#region Date and Time
 
-		[ExifDataType(typeof(DateTime))]
+		[ExifDataType(typeof(DateTime), ExifType.Ascii)]
 		[Description("DateTime Original")]
 		DateTimeOriginal = 0x9003,
-		[ExifDataType(typeof(DateTime))]
+		[ExifDataType(typeof(DateTime), ExifType.Ascii)]
 		[Description("DateTime Digitized")]
 		DateTimeDigitized = 0x9004,
 		[Description("SubSec Time")]
@@ -198,7 +201,7 @@ namespace PhotoLib.Model.Exif
 		ExposureTime = 0x829A,
 		[Description("F-Stop")]
 		FNumber = 0x829D,
-		[ExifDataType(typeof(ExifTagExposureProgram))]
+		[ExifDataType(typeof(ExifTagExposureProgram), ExifType.UInt16)]
 		[Description("Exposure Program")]
 		ExposureProgram = 0x8822,
 		[Description("Spectral Sensitivity")]
@@ -216,13 +219,13 @@ namespace PhotoLib.Model.Exif
 		MaxAperture = 0x9205,
 		[Description("Subject Distance")]
 		SubjectDistance = 0x9206,
-		[ExifDataType(typeof(ExifTagMeteringMode))]
+		[ExifDataType(typeof(ExifTagMeteringMode), ExifType.UInt16)]
 		[Description("Metering Mode")]
 		MeteringMode = 0x9207,
-		[ExifDataType(typeof(ExifTagLightSource))]
+		[ExifDataType(typeof(ExifTagLightSource), ExifType.UInt16)]
 		[Description("Light Source")]
 		LightSource = 0x9208,
-		[ExifDataType(typeof(ExifTagFlash))]
+		[ExifDataType(typeof(ExifTagFlash), ExifType.UInt16)]
 		Flash = 0x9209,
 		[Description("Focal Length")]
 		FocalLength = 0x920A,
@@ -236,52 +239,52 @@ namespace PhotoLib.Model.Exif
 		FocalPlaneXResolution = 0xA20E,
 		[Description("Focal Plane Vertical Resolution")]
 		FocalPlaneYResolution = 0xA20F,
-		[ExifDataType(typeof(ExifTagResolutionUnit))]
+		[ExifDataType(typeof(ExifTagResolutionUnit), ExifType.UInt16)]
 		[Description("Focal Plane Resolution Unit")]
 		FocalPlaneResolutionUnit = 0xA210,
 		[Description("Subject Location")]
 		SubjectLocation = 0xA214,
 		[Description("Exposure Index")]
 		ExposureIndex = 0xA215,
-		[ExifDataType(typeof(ExifTagSensingMethod))]
+		[ExifDataType(typeof(ExifTagSensingMethod), ExifType.UInt16)]
 		[Description("Sensing Method")]
 		SensingMethod = 0xA217,
-		[ExifDataType(typeof(ExifTagFileSource))]
+		[ExifDataType(typeof(ExifTagFileSource), ExifType.UInt16)]
 		[Description("File Source")]
 		FileSource = 0xA300,
-		[ExifDataType(typeof(ExifTagSceneType))]
+		[ExifDataType(typeof(ExifTagSceneType), ExifType.UInt16)]
 		[Description("Scene Type")]
 		SceneType = 0xA301,
 		[Description("CFA Pattern")]
 		CfaPattern = 0xA302,
-		[ExifDataType(typeof(ExifTagCustomRendered))]
+		[ExifDataType(typeof(ExifTagCustomRendered), ExifType.UInt16)]
 		[Description("Custom Rendered")]
 		CustomRendered = 0xA401,
-		[ExifDataType(typeof(ExifTagExposureMode))]
+		[ExifDataType(typeof(ExifTagExposureMode), ExifType.UInt16)]
 		[Description("Exposure Mode")]
 		ExposureMode = 0xA402,
-		[ExifDataType(typeof(ExifTagWhiteBalance))]
+		[ExifDataType(typeof(ExifTagWhiteBalance), ExifType.UInt16)]
 		[Description("White Balance")]
 		WhiteBalance = 0xA403,
 		[Description("Digital Zoom Ratio")]
 		DigitalZoomRatio = 0xA404,
 		[Description("Focal Length In 35mm Film")]
 		FocalLengthIn35mmFilm = 0xA405,
-		[ExifDataType(typeof(ExifTagSceneCaptureType))]
+		[ExifDataType(typeof(ExifTagSceneCaptureType), ExifType.UInt16)]
 		[Description("Scene Capture Type")]
 		SceneCaptureType = 0xA406,
-		[ExifDataType(typeof(ExifTagGainControl))]
+		[ExifDataType(typeof(ExifTagGainControl), ExifType.UInt16)]
 		[Description("Gain Control")]
 		GainControl = 0xA407,
-		[ExifDataType(typeof(ExifTagContrast))]
+		[ExifDataType(typeof(ExifTagContrast), ExifType.UInt16)]
 		Contrast = 0xA408,
-		[ExifDataType(typeof(ExifTagSaturation))]
+		[ExifDataType(typeof(ExifTagSaturation), ExifType.UInt16)]
 		Saturation = 0xA409,
-		[ExifDataType(typeof(ExifTagSharpness))]
+		[ExifDataType(typeof(ExifTagSharpness), ExifType.UInt16)]
 		Sharpness = 0xA40A,
 		[Description("Device Setting Description")]
 		DeviceSettingDescription = 0xA40B,
-		[ExifDataType(typeof(ExifTagSubjectDistanceRange))]
+		[ExifDataType(typeof(ExifTagSubjectDistanceRange), ExifType.UInt16)]
 		[Description("Subject Distance Range")]
 		SubjectDistanceRange = 0xA40C,
 
@@ -308,7 +311,7 @@ namespace PhotoLib.Model.Exif
 		GpsLongitudeRef = 0x0003,
 		[Description("GPS Longitude")]
 		GpsLongitude = 0x0004,
-		[ExifDataType(typeof(ExifTagGpsAltitudeRef))]
+		[ExifDataType(typeof(ExifTagGpsAltitudeRef), ExifType.UInt16)]
 		[Description("GPS Altitude Ref")]
 		GpsAltitudeRef = 0x0005,
 		[Description("GPS Altitude")]
@@ -357,10 +360,10 @@ namespace PhotoLib.Model.Exif
 		GpsProcessingMethod = 0x001B,
 		[Description("GPS Area Information")]
 		GpsAreaInformation = 0x001C,
-		[ExifDataType(typeof(DateTime))]
+		[ExifDataType(typeof(DateTime), ExifType.Ascii)]
 		[Description("GPS DateStamp")]
 		GpsDateStamp = 0x001D,
-		[ExifDataType(typeof(ExifTagGpsDifferential))]
+		[ExifDataType(typeof(ExifTagGpsDifferential), ExifType.UInt16)]
 		[Description("GPS Differential")]
 		GpsDifferential = 0x001E,
 
@@ -374,7 +377,7 @@ namespace PhotoLib.Model.Exif
 		ThumbnailImageWidth = 0x5020,
 		[Description("Thumbnail Bits Per Sample")]
 		ThumbnailBitsPerSample = 0x5022,
-		[ExifDataType(typeof(ExifTagCompression))]
+		[ExifDataType(typeof(ExifTagCompression), ExifType.UInt16)]
 		[Description("Thumbnail Compression")]
 		ThumbnailCompression = 0x5023,
 		[Description("Thumbnail Photometric Interpretation")]
@@ -387,7 +390,7 @@ namespace PhotoLib.Model.Exif
 		ThumbnailModel = 0x5027,
 		[Description("Thumbnail Strip Offsets")]
 		ThumbnailStripOffsets = 0x5028,
-		[ExifDataType(typeof(ExifTagOrientation))]
+		[ExifDataType(typeof(ExifTagOrientation), ExifType.UInt16)]
 		[Description("Thumbnail Orientation")]
 		ThumbnailOrientation = 0x5029,
 		[Description("Thumbnail Samples Per Pixel")]
@@ -402,14 +405,14 @@ namespace PhotoLib.Model.Exif
 		ThumbnailYResolution = 0x502E,
 		[Description("Thumbnail Planar Config")]
 		ThumbnailPlanarConfig = 0x502F,
-		[ExifDataType(typeof(ExifTagResolutionUnit))]
+		[ExifDataType(typeof(ExifTagResolutionUnit), ExifType.UInt16)]
 		[Description("Thumbnail Resolution Unit")]
 		ThumbnailResolutionUnit = 0x5030,
 		[Description("Thumbnail Transfer Function")]
 		ThumbnailTransferFunction = 0x5031,
 		[Description("Thumbnail Software")]
 		ThumbnailSoftware = 0x5032,
-		[ExifDataType(typeof(DateTime))]
+		[ExifDataType(typeof(DateTime), ExifType.Ascii)]
 		[Description("Thumbnail DateTime")]
 		ThumbnailDateTime = 0x5033,
 		[Description("Thumbnail Artist")]
@@ -458,20 +461,21 @@ namespace PhotoLib.Model.Exif
 		CellWidth = 0x0108,
 		[Description("Chrominance Table")]
 		ChrominanceTable = 0x5091,
-		[ExifDataType(typeof(ExifTagCleanFaxData))]
+		[ExifDataType(typeof(ExifTagCleanFaxData), ExifType.UInt16)]
 		[Description("Clean Fax Data")]
 		CleanFaxData = 0x0147,
 		[Description("Color Map")]
 		ColorMap = 0x0140,
 		[Description("Color Transfer Function")]
 		ColorTransferFunction = 0x501A,
+		[ExifDataType(ExifType.Ascii)]
 		[Description("Document Name")]
 		DocumentName = 0x010D,
 		[Description("Dot Range")]
 		DotRange = 0x0150,
 		[Description("Extra Samples")]
 		ExtraSamples = 0x0152,
-		[ExifDataType(typeof(ExifTagFillOrder))]
+		[ExifDataType(typeof(ExifTagFillOrder), ExifType.UInt16)]
 		[Description("Fill Order")]
 		FillOrder = 0x010A,
 		[Description("Frame Delay")]
@@ -509,6 +513,7 @@ namespace PhotoLib.Model.Exif
 		ICCProfile = 0x8773,
 		[Description("ICC Profile Descriptor")]
 		ICCProfileDescriptor = 0x0302,
+		[ExifDataType(ExifType.Ascii)]
 		[Description("Image Title")]
 		ImageTitle = 0x0320,
 		[Description("Index Background")]
@@ -517,7 +522,7 @@ namespace PhotoLib.Model.Exif
 		IndexTransparent = 0x5104,
 		[Description("Ink Names")]
 		InkNames = 0x014D,
-		[ExifDataType(typeof(ExifTagInkSet))]
+		[ExifDataType(typeof(ExifTagInkSet), ExifType.UInt16)]
 		[Description("Ink Set")]
 		InkSet = 0x014C,
 		[Description("JPEG AC Tables")]
@@ -528,7 +533,7 @@ namespace PhotoLib.Model.Exif
 		JpegLosslessPredictors = 0x0205,
 		[Description("JPEG Point Transforms")]
 		JpegPointTransforms = 0x0206,
-		[ExifDataType(typeof(ExifTagJPEGProc))]
+		[ExifDataType(typeof(ExifTagJPEGProc), ExifType.UInt16)]
 		[Description("JPEG Proc")]
 		JpegProc = 0x0200,
 		[Description("JPEG Q Tables")]
@@ -561,7 +566,7 @@ namespace PhotoLib.Model.Exif
 		PixelPerUnitY = 0x5112,
 		[Description("Pixel Unit")]
 		PixelUnit = 0x5110,
-		[ExifDataType(typeof(ExifTagPredictor))]
+		[ExifDataType(typeof(ExifTagPredictor), ExifType.UInt16)]
 		Predictor = 0x013D,
 		[Description("Print Flags")]
 		PrintFlags = 0x5005,
@@ -581,7 +586,7 @@ namespace PhotoLib.Model.Exif
 		ResolutionYLengthUnit = 0x5004,
 		[Description("Vertical Resolution Unit")]
 		ResolutionYUnit = 0x5002,
-		[ExifDataType(typeof(ExifTagSampleFormat))]
+		[ExifDataType(typeof(ExifTagSampleFormat), ExifType.UInt16)]
 		[Description("Sample Format")]
 		SampleFormat = 0x0153,
 		[Description("SMax Sample Value")]
@@ -598,7 +603,7 @@ namespace PhotoLib.Model.Exif
 		T6Option = 0x0125,
 		[Description("Target Printer")]
 		TargetPrinter = 0x0151,
-		[ExifDataType(typeof(ExifTagThreshholding))]
+		[ExifDataType(typeof(ExifTagThreshholding), ExifType.UInt16)]
 		Threshholding = 0x0107,
 		[Description("Tile Byte Counts")]
 		TileByteCounts = 0x0145,
@@ -622,19 +627,19 @@ namespace PhotoLib.Model.Exif
 
 		#region Microsoft Fields
 
-		[ExifDataType(typeof(System.Text.UnicodeEncoding))]
+		[ExifDataType(typeof(System.Text.UnicodeEncoding), ExifType.Byte)]
 		[Description("MS Title")]
 		MSTitle = 0x9C9B,
-		[ExifDataType(typeof(System.Text.UnicodeEncoding))]
+		[ExifDataType(typeof(System.Text.UnicodeEncoding), ExifType.Byte)]
 		[Description("MS Comments")]
 		MSComments = 0x9C9C,
-		[ExifDataType(typeof(System.Text.UnicodeEncoding))]
+		[ExifDataType(typeof(System.Text.UnicodeEncoding), ExifType.Byte)]
 		[Description("MS Author")]
 		MSAuthor = 0x9C9D,
-		[ExifDataType(typeof(System.Text.UnicodeEncoding))]
+		[ExifDataType(typeof(System.Text.UnicodeEncoding), ExifType.Byte)]
 		[Description("MS Keywords")]
 		MSKeywords = 0x9C9E,
-		[ExifDataType(typeof(System.Text.UnicodeEncoding))]
+		[ExifDataType(typeof(System.Text.UnicodeEncoding), ExifType.Byte)]
 		[Description("MS Subject")]
 		MSSubject = 0x9C9F
 

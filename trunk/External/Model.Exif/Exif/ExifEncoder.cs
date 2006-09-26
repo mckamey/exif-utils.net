@@ -10,17 +10,6 @@ namespace PhotoLib.Model.Exif
 	/// </remarks>
 	internal static class ExifEncoder
 	{
-		public static System.Drawing.Imaging.PropertyItem ToPropertyItem(ExifProperty exif)
-		{
-			Type propType = typeof(System.Drawing.Imaging.PropertyItem);
-			System.Reflection.ConstructorInfo ctor = propType.GetConstructor(new Type[0]);
-			System.Drawing.Imaging.PropertyItem propertyItem = ctor.Invoke(new object[0]) as System.Drawing.Imaging.PropertyItem;
-
-			// set value here
-			
-			return propertyItem;
-		}
-
 		#region Byte Encoding
 
 		/// <summary>
@@ -54,5 +43,14 @@ namespace PhotoLib.Model.Exif
 		}
 
 		#endregion Byte Encoding
+
+		#region Data Conversion
+
+		private static byte[] ConvertData(Type targetType, object value)
+		{
+			return null;
+		}
+
+		#endregion Data Conversion
 	}
 }
