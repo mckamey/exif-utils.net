@@ -11,6 +11,11 @@ namespace PhotoLib.Model.Exif
 	public enum ExifType
 	{
 		/// <summary>
+		/// Specifies that the type is either unknown or not defined.
+		/// </summary>
+		Unknown = 0,
+
+		/// <summary>
 		/// Specifies that the value data member is an array of bytes.
 		/// </summary>
 		Byte = 1,

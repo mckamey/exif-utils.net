@@ -239,8 +239,8 @@ namespace PhotoLib.Model.Exif
 					value = ((Array)value).GetValue(0);
 			}
 
-			if (value is string)
-				value = ((string)value).Trim();
+			if (value is String)
+				value = ((String)value).Trim();
 
 			if (targetType == null || value == null)
 				return value;
