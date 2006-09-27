@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.ComponentModel;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,6 +18,90 @@ namespace PhotoLib.Model.Exif
 		private SortedDictionary<Int32, ExifProperty> items = new SortedDictionary<int, ExifProperty>();
 
 		#endregion Fields
+
+		#region Init
+
+		/// <summary>
+		/// Ctor.
+		/// </summary>
+		public ExifPropertyCollection()
+		{
+		}
+
+		/// <summary>
+		/// Creates a ExifPropertyCollection from a collection of ExifProperties.
+		/// Also works as a copy constructor.
+		/// </summary>
+		/// <param name="properties"></param>
+		public ExifPropertyCollection(ICollection<ExifProperty> properties)
+		{
+			if (properties == null)
+				return;
+
+			// add all the Exif properties
+			foreach (ExifProperty property in properties)
+			{
+				this.Add(property);
+			}
+		}
+
+		/// <summary>
+		/// Creates a ExifPropertyCollection from a collection of PropertyItems.
+		/// </summary>
+		/// <param name="propertyItems"></param>
+		public ExifPropertyCollection(ICollection<System.Drawing.Imaging.PropertyItem> propertyItems)
+		{
+			if (propertyItems == null)
+				return;
+
+			// copy all the Exif properties
+			foreach (System.Drawing.Imaging.PropertyItem property in propertyItems)
+			{
+				this.Add(new ExifProperty(property));
+			}
+		}
+
+		/// <summary>
+		/// Creates a ExifPropertyCollection from the PropertyItems of a Bitmap.
+		/// </summary>
+		/// <param name="imagePath"></param>
+		/// <returns></returns>
+		public static ExifPropertyCollection FromImage(System.Drawing.Image image)
+		{
+			return new ExifPropertyCollection(image.PropertyItems);
+		}
+
+		/// <summary>
+		/// Creates a ExifPropertyCollection from an image file path.
+		/// Minimally loads image only enough to get PropertyItems.
+		/// </summary>
+		/// <param name="imagePath"></param>
+		/// <returns>null on error, or collection of ExifProperty</returns>
+		public static ExifPropertyCollection FromImagePath(string imagePath)
+		{
+			try
+			{
+				System.Drawing.Imaging.PropertyItem[] propertyItems;
+
+				using (FileStream stream = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
+				{
+					// minimally load image
+					using (System.Drawing.Image image = System.Drawing.Image.FromStream(stream, true, false))
+					{
+						propertyItems = image.PropertyItems;
+					}
+				}
+
+				return new ExifPropertyCollection(propertyItems);
+			}
+			catch
+			{
+				return null;
+			}
+		}
+
+
+		#endregion Init
 
 		#region Properties
 
