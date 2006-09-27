@@ -373,6 +373,14 @@ namespace PhotoLib.Model.Exif
 			}
 			this.propertyItem.Len = this.propertyItem.Value.Length;
 
+			//foreach (int id in image.PropertyIdList)
+			//{
+			//    if (id == this.propertyItem.Id)
+			//    {
+			//        image.RemovePropertyItem(id);
+			//        break;
+			//    }
+			//}
 			image.SetPropertyItem(this.propertyItem);
 		}
 
