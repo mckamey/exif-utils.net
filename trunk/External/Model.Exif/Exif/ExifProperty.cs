@@ -324,7 +324,7 @@ namespace PhotoLib.Model.Exif
 			}
 		}
 
-		public void AddExifToImage(System.Drawing.Bitmap image)
+		public void AddExifToImage(System.Drawing.Image image)
 		{
 			#region Create a PropertyItem
 
