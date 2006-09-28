@@ -76,28 +76,21 @@ namespace PhotoLib.Model.Exif
 		/// Minimally loads image only enough to get PropertyItems.
 		/// </summary>
 		/// <param name="imagePath"></param>
-		/// <returns>null on error, or collection of ExifProperty</returns>
+		/// <returns>Collection of ExifProperty items</returns>
 		public static ExifPropertyCollection FromFile(string imagePath)
 		{
-			try
-			{
-				System.Drawing.Imaging.PropertyItem[] propertyItems;
+			System.Drawing.Imaging.PropertyItem[] propertyItems;
 
-				using (FileStream stream = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
+			using (FileStream stream = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
+			{
+				// minimally load image
+				using (System.Drawing.Image image = System.Drawing.Image.FromStream(stream, true, false))
 				{
-					// minimally load image
-					using (System.Drawing.Image image = System.Drawing.Image.FromStream(stream, true, false))
-					{
-						propertyItems = image.PropertyItems;
-					}
+					propertyItems = image.PropertyItems;
 				}
+			}
 
-				return new ExifPropertyCollection(propertyItems);
-			}
-			catch
-			{
-				return null;
-			}
+			return new ExifPropertyCollection(propertyItems);
 		}
 
 
