@@ -301,13 +301,14 @@ namespace PhotoLib.Model.Exif
 						if (!type.IsPrimitive || type == typeof(char) || type == typeof(float) || type == typeof(double))
 							return Convert.ToString(rawValue);
 
+						const int ElemsPerRow = 40;
 						int charSize = 2*System.Runtime.InteropServices.Marshal.SizeOf(type);
 						string format = "{0:X"+(charSize)+"}";
-						System.Text.StringBuilder builder = new System.Text.StringBuilder((charSize*array.Length)+(2*array.Length/8));
+						System.Text.StringBuilder builder = new System.Text.StringBuilder((charSize*array.Length)+(2*array.Length/ElemsPerRow));
 						for (int i=0; i<array.Length; i++)
 						{
 							builder.AppendFormat(format, array.GetValue(i));
-							if ((i+1)%8 == 0)
+							if ((i+1)%ElemsPerRow == 0)
 							{
 								builder.AppendLine();
 							}

@@ -77,7 +77,7 @@ namespace PhotoLib.Model.Exif
 		/// </summary>
 		/// <param name="imagePath"></param>
 		/// <returns>null on error, or collection of ExifProperty</returns>
-		public static ExifPropertyCollection FromImagePath(string imagePath)
+		public static ExifPropertyCollection FromFile(string imagePath)
 		{
 			try
 			{
