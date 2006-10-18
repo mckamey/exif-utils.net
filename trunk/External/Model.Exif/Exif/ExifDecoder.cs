@@ -258,6 +258,12 @@ namespace PhotoLib.Model.Exif
 
 			if (targetType.IsEnum)
 			{
+				Type underlyingType = Enum.GetUnderlyingType(targetType);
+				if (value.GetType() != underlyingType)
+				{
+					value = Convert.ChangeType(value, underlyingType);
+				}
+
 				if (Enum.IsDefined(targetType, value) || FlagsAttribute.IsDefined(targetType, typeof(FlagsAttribute)))
 				{
 					try { return Enum.ToObject(targetType, value); }

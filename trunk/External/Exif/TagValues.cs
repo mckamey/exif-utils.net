@@ -239,6 +239,11 @@ namespace PhotoLib.Model.Exif.TagValues
 
 	public enum ExifTagFileSource : byte
 	{
+		[Description("Film Scannner")]
+		FilmScannner = 1,
+		[Description("Reflection Print Scanner")]
+		ReflectionPrintScanner = 2,
+		[Description("Digital Still Camera")]
 		DSC = 3
 	}
 
@@ -393,8 +398,9 @@ namespace PhotoLib.Model.Exif.TagValues
 
 	public enum ExifTagGpsAltitudeRef : byte
 	{
-		SeaLevel = 0,
-		[Description("SeaLevel Reference")]
+		[Description("Sea Level")]
+		SeaLevel=0,
+		[Description("Sea Level Reference")]
 		SeaLevelReference = 1,
 	}
 
