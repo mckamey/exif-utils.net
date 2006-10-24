@@ -628,19 +628,19 @@ namespace PhotoLib.Model.Exif
 		#region Microsoft Fields
 
 		[ExifDataType(typeof(System.Text.UnicodeEncoding), ExifType.Byte)]
-		[Description("WinXP Title")]
+		[Description("Title")]
 		MSTitle = 0x9C9B,
 		[ExifDataType(typeof(System.Text.UnicodeEncoding), ExifType.Byte)]
-		[Description("WinXP Comments")]
+		[Description("Comments")]
 		MSComments = 0x9C9C,
 		[ExifDataType(typeof(System.Text.UnicodeEncoding), ExifType.Byte)]
-		[Description("WinXP Author")]
+		[Description("Author")]
 		MSAuthor = 0x9C9D,
 		[ExifDataType(typeof(System.Text.UnicodeEncoding), ExifType.Byte)]
-		[Description("WinXP Keywords")]
+		[Description("Keywords")]
 		MSKeywords = 0x9C9E,
 		[ExifDataType(typeof(System.Text.UnicodeEncoding), ExifType.Byte)]
-		[Description("WinXP Subject")]
+		[Description("Subject")]
 		MSSubject = 0x9C9F
 
 		#endregion Microsoft Fields
