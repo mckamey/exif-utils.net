@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace PseudoCode
 {
@@ -16,36 +17,35 @@ namespace PseudoCode
 		/// <param name="enumType">the enum type</param>
 		/// <param name="value">the combined value</param>
 		/// <returns>list of flag enums</returns>
+		/// <remarks>
+		/// from PseudoCode.EnumHelper
+		/// </remarks>
 		public static Enum[] GetFlagList(Type enumType, object value)
 		{
-			Enum[] enums = null;
-
 			ulong longVal = Convert.ToUInt64(value);
 			string[] enumNames = Enum.GetNames(enumType);
 			Array enumValues = Enum.GetValues(enumType);
 
-			ArrayList enumList = new ArrayList(enumValues.Length);
+			List<Enum> enums = new List<Enum>(enumValues.Length);
 
 			// check for empty
 			if (longVal == 0L)
 			{
-				enums = new Enum[1];
-
 				// Return the value of empty, or zero if none exists
 				if (Convert.ToUInt64(enumValues.GetValue(0)) == 0L)
-					enums[0] = enumValues.GetValue(0) as Enum;
+					enums.Add(enumValues.GetValue(0) as Enum);
 				else
-					enums[0] = null;
-				return enums;
+					enums.Add(null);
+				return enums.ToArray();
 			}
 
-			for (int i = 0; i < enumValues.Length; i++)
+			for (int i = enumValues.Length-1; i >= 0; i--)
 			{
 				ulong enumValue = Convert.ToUInt64(enumValues.GetValue(i));
 
 				if ((i == 0) && (enumValue == 0L))
 					continue;
- 
+
 				// matches a value in enumeration
 				if ((longVal & enumValue) == enumValue)
 				{
@@ -53,16 +53,14 @@ namespace PseudoCode
 					longVal -= enumValue;
 
 					// add enum to list
-					enumList.Add(enumValues.GetValue(i)); 
+					enums.Add(enumValues.GetValue(i) as Enum);
 				}
 			}
- 
-			if (longVal != 0x0L)
-				enumList.Add(longVal); 
 
-			enums = new Enum[enumList.Count];
-			enumList.CopyTo(enums);
-			return enums; 
+			if (longVal != 0x0L)
+				enums.Add(Enum.ToObject(enumType, longVal) as Enum);
+
+			return enums.ToArray();
 		}
 
 		#endregion GetFlagList
