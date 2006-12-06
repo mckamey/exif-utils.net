@@ -62,13 +62,47 @@ namespace PhotoLib.Model.Exif
 		}
 
 		/// <summary>
+		/// Creates a ExifPropertyCollection from a collection of PropertyItems only including explicitly named ExifTags.
+		/// </summary>
+		/// <param name="propertyItems"></param>
+		/// <param name="exifTags">collection of EXIF tags to include</param>
+		public ExifPropertyCollection(ICollection<System.Drawing.Imaging.PropertyItem> propertyItems, ICollection<ExifTag> exifTags)
+		{
+			if (propertyItems == null)
+				return;
+
+			// copy all the Exif properties
+			foreach (System.Drawing.Imaging.PropertyItem property in propertyItems)
+			{
+				if (exifTags != null && (!Enum.IsDefined(typeof(ExifTag), property.Id) || !exifTags.Contains((ExifTag)property.Id)))
+					continue;
+
+				this.Add(new ExifProperty(property));
+			}
+		}
+
+		/// <summary>
 		/// Creates a ExifPropertyCollection from the PropertyItems of a Bitmap.
 		/// </summary>
-		/// <param name="imagePath"></param>
+		/// <param name="image"></param>
+		/// <param name="exifTags">collection of EXIF tags to include</param>
+		/// <returns></returns>
+		public static ExifPropertyCollection FromImage(System.Drawing.Image image, ICollection<ExifTag> exifTags)
+		{
+			if (exifTags == null)
+				return new ExifPropertyCollection(image.PropertyItems);
+
+			return new ExifPropertyCollection(image.PropertyItems, exifTags);
+		}
+
+		/// <summary>
+		/// Creates a ExifPropertyCollection from the PropertyItems of a Bitmap.
+		/// </summary>
+		/// <param name="image"></param>
 		/// <returns></returns>
 		public static ExifPropertyCollection FromImage(System.Drawing.Image image)
 		{
-			return new ExifPropertyCollection(image.PropertyItems);
+			return ExifPropertyCollection.FromImage(image, null);
 		}
 
 		/// <summary>
@@ -76,8 +110,9 @@ namespace PhotoLib.Model.Exif
 		/// Minimally loads image only enough to get PropertyItems.
 		/// </summary>
 		/// <param name="imagePath"></param>
+		/// <param name="exifTags">collection of EXIF tags to include</param>
 		/// <returns>Collection of ExifProperty items</returns>
-		public static ExifPropertyCollection FromFile(string imagePath)
+		public static ExifPropertyCollection FromFile(string imagePath, ICollection<ExifTag> exifTags)
 		{
 			System.Drawing.Imaging.PropertyItem[] propertyItems;
 
@@ -90,9 +125,22 @@ namespace PhotoLib.Model.Exif
 				}
 			}
 
-			return new ExifPropertyCollection(propertyItems);
+			if (exifTags == null)
+				return new ExifPropertyCollection(propertyItems);
+
+			return new ExifPropertyCollection(propertyItems, exifTags);
 		}
 
+		/// <summary>
+		/// Creates a ExifPropertyCollection from an image file path.
+		/// Minimally loads image only enough to get PropertyItems.
+		/// </summary>
+		/// <param name="imagePath"></param>
+		/// <returns>Collection of ExifProperty items</returns>
+		public static ExifPropertyCollection FromFile(string imagePath)
+		{
+			return ExifPropertyCollection.FromFile(imagePath, null);
+		}
 
 		#endregion Init
 
