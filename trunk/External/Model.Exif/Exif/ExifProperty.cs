@@ -241,12 +241,33 @@ namespace PhotoLib.Model.Exif
 				}
 				case ExifTag.ShutterSpeed:
 				{
-					double speed = Math.Pow(2.0, Convert.ToDouble(rawValue));
-					return String.Format("1/{0:##0} sec", speed);
+					Rational<int> shutter = (Rational<int>)rawValue;
+					if (shutter.Numerator > 0)
+					{
+						double speed = Math.Pow(2.0, Convert.ToDouble(shutter));
+						return String.Format("1/{0:####0} sec", speed);
+					}
+					else
+					{
+						double speed = Math.Pow(2.0, -Convert.ToDouble(shutter));
+						return String.Format("{0:####0.0#} sec", speed);
+					}
 				}
 				case ExifTag.ExposureTime:
 				{
-					return String.Format("1/{0:###0} sec", 1m/Convert.ToDecimal(rawValue));
+					Rational<uint> exposure = (Rational<uint>)rawValue;
+					if (exposure.Numerator == exposure.Denominator)
+					{
+						return String.Format("{0} sec", Convert.ToInt32(rawValue));
+					}
+					if (exposure.Numerator < exposure.Denominator)
+					{
+						return String.Format("1/{0:####0} sec", 1m/Convert.ToDecimal(rawValue));
+					}
+					else
+					{
+						return String.Format("{0:####0.0#} sec", Convert.ToDecimal(rawValue));
+					}
 				}
 				case ExifTag.XResolution:
 				case ExifTag.YResolution:

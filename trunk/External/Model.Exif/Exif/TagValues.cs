@@ -212,11 +212,11 @@ namespace PhotoLib.Model.Exif.TagValues
 		ReturnDetected = 0x0006,
 		[Description("Return Not Detected")]
 		ReturnNotDetected = 0x0004,
-		[Description("Mode Auto")]
+		[Description("Auto Flash")]
 		ModeAuto = 0x0018,
-		[Description("Mode On")]
+		[Description("Flash On")]
 		ModeOn = 0x0008,
-		[Description("Mode Off")]
+		[Description("Flash Off")]
 		ModeOff = 0x0010
 	}
 
