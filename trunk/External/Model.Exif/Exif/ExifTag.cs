@@ -121,6 +121,7 @@ namespace PhotoLib.Model.Exif
 		Model = 0x0110,
 		Software = 0x0131,
 		[ExifDataType(ExifType.Ascii)]
+		[Description("Photographer")]
 		Artist=0x013B,
 		[ExifDataType(ExifType.Ascii)]
 		Copyright=0x8298,
