@@ -113,6 +113,7 @@ namespace PhotoLib.Model.Exif
 		#region Other
 
 		[ExifDataType(typeof(DateTime), ExifType.Ascii)]
+		[Description("DateStamp")]
 		DateTime = 0x0132,
 		[ExifDataType(ExifType.Ascii)]
 		[Description("Image Description")]
@@ -182,10 +183,10 @@ namespace PhotoLib.Model.Exif
 		#region Date and Time
 
 		[ExifDataType(typeof(DateTime), ExifType.Ascii)]
-		[Description("DateTime Original")]
+		[Description("DateStamp Original")]
 		DateTimeOriginal = 0x9003,
 		[ExifDataType(typeof(DateTime), ExifType.Ascii)]
-		[Description("DateTime Digitized")]
+		[Description("DateStamp Digitized")]
 		DateTimeDigitized = 0x9004,
 		[Description("SubSec Time")]
 		SubSecTime = 0x9290,
@@ -414,7 +415,7 @@ namespace PhotoLib.Model.Exif
 		[Description("Thumbnail Software")]
 		ThumbnailSoftware = 0x5032,
 		[ExifDataType(typeof(DateTime), ExifType.Ascii)]
-		[Description("Thumbnail DateTime")]
+		[Description("Thumbnail DateStamp")]
 		ThumbnailDateTime = 0x5033,
 		[Description("Thumbnail Artist")]
 		ThumbnailArtist = 0x5034,
