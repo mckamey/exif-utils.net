@@ -222,6 +222,9 @@ namespace PhotoLib.Model.Exif
 			{
 				case ExifTag.ISOSpeed:
 				{
+					if (!(rawValue is IConvertible))
+						goto default;
+
 					return String.Format("ISO-{0:###0}", Convert.ToDecimal(rawValue));
 				}
 				case ExifTag.Aperture:
@@ -241,6 +244,9 @@ namespace PhotoLib.Model.Exif
 				}
 				case ExifTag.ShutterSpeed:
 				{
+					if (!(rawValue is Rational<int>))
+						goto default;
+
 					Rational<int> shutter = (Rational<int>)rawValue;
 					if (shutter.Numerator > 0)
 					{
@@ -255,6 +261,9 @@ namespace PhotoLib.Model.Exif
 				}
 				case ExifTag.ExposureTime:
 				{
+					if (!(rawValue is Rational<uint>))
+						goto default;
+
 					Rational<uint> exposure = (Rational<uint>)rawValue;
 					if (exposure.Numerator == exposure.Denominator)
 					{
