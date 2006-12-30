@@ -57,7 +57,10 @@ namespace PhotoLib.Model.Exif
 			// copy all the Exif properties
 			foreach (System.Drawing.Imaging.PropertyItem property in propertyItems)
 			{
-				this.Add(new ExifProperty(property));
+				if (property.Value != null)
+				{
+					this.Add(new ExifProperty(property));
+				}
 			}
 		}
 
@@ -77,7 +80,10 @@ namespace PhotoLib.Model.Exif
 				if (exifTags != null && (!Enum.IsDefined(typeof(ExifTag), property.Id) || !exifTags.Contains((ExifTag)property.Id)))
 					continue;
 
-				this.Add(new ExifProperty(property));
+				if (property.Value != null)
+				{
+					this.Add(new ExifProperty(property));
+				}
 			}
 		}
 
