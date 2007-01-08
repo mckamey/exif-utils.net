@@ -222,6 +222,14 @@ namespace PhotoLib.Model.Exif
 			{
 				case ExifTag.ISOSpeed:
 				{
+					if (rawValue is Array)
+					{
+						Array array = (Array)rawValue;
+						if (array.Length < 1 || !(array.GetValue(0) is IConvertible))
+							goto default;
+						rawValue = array.GetValue(0);
+					}
+
 					if (!(rawValue is IConvertible))
 						goto default;
 
