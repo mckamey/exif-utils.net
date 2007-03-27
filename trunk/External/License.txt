@@ -1,5 +1,4 @@
-CssCompactor is open-source under The MIT License
-http://www.opensource.org/licenses/mit-license.php
+CssCompactor is distributed under the terms of an MIT-style license:
 
 The MIT License
 
