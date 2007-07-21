@@ -238,12 +238,14 @@ namespace PhotoLib.Model.Exif
 				case ExifTag.Aperture:
 				case ExifTag.MaxAperture:
 				{
+					// f/x.x
 					double fStop = Math.Pow(2.0, Convert.ToDouble(rawValue)/2.0);
-					return String.Format("f/{0:#0.0}", fStop);
+					return String.Format("\u0192/{0:#0.0}", fStop);
 				}
 				case ExifTag.FNumber:
 				{
-					return String.Format("f/{0:#0.0}", Convert.ToDecimal(rawValue));
+					// f/x.x
+					return String.Format("\u0192/{0:#0.0}", Convert.ToDecimal(rawValue));
 				}
 				case ExifTag.FocalLength:
 				case ExifTag.FocalLengthIn35mmFilm:
