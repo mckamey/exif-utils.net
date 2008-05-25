@@ -3,7 +3,7 @@ using System.Drawing;
 
 using PhotoLib.Model.Exif;
 
-namespace ExifDemoDriver
+namespace ExifDemo
 {
 	class Program
 	{
