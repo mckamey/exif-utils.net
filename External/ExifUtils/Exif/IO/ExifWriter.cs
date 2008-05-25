@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Reflection;
 
-namespace PhotoLib.Model.Exif
+namespace ExifUtils.Exif.IO
 {
 	/// <summary>
 	/// Utility class for writing EXIF data

@@ -5,9 +5,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
 
-using PhotoLib.Model.Exif.TypeConverters;
+using ExifUtils.Exif.TypeConverters;
 
-namespace PhotoLib.Model.Exif
+namespace ExifUtils.Exif
 {
 	/// <summary>
 	/// Collection of ExifProperty items

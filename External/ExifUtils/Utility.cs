@@ -4,7 +4,7 @@ using System.Text;
 using System.Reflection;
 using System.Collections.Generic;
 
-namespace PhotoLib.Model
+namespace ExifUtils
 {
 	/// <summary>
 	/// Internal Utility Class

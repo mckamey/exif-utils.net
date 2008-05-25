@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 
-namespace PhotoLib.Model.Exif
+namespace ExifUtils.Exif.IO
 {
 	/// <summary>
 	/// Utility class for reading EXIF data 

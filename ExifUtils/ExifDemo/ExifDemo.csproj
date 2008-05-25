@@ -30,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -40,9 +41,9 @@
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\MediaLib\PhotoLib.Model.Exif\PhotoLib.Model.Exif.csproj">
+    <ProjectReference Include="..\..\MediaLib\ExifUtils\ExifUtils.csproj">
       <Project>{823C67A7-41FF-471D-BFC4-B134DF506A6F}</Project>
-      <Name>PhotoLib.Model.Exif</Name>
+      <Name>ExifUtils %28ExifUtils\ExifUtils%29</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

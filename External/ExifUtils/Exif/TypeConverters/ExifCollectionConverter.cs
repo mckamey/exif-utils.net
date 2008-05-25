@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Globalization;
 
-namespace PhotoLib.Model.Exif.TypeConverters
+namespace ExifUtils.Exif.TypeConverters
 {
 	public class ExifCollectionConverter : CollectionConverter
 	{

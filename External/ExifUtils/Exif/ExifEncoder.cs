@@ -1,6 +1,6 @@
 using System;
 
-namespace PhotoLib.Model.Exif
+namespace ExifUtils.Exif
 {
 	/// <summary>
 	/// Encodes the GDI+ representation of EXIF properties.
