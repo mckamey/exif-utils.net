@@ -48,7 +48,7 @@
     <Compile Include="Exif\IO\ExifReader.cs" />
     <Compile Include="Exif\IO\ExifWriter.cs" />
     <Compile Include="Exif\IO\IfdReader.cs" />
-    <Compile Include="Exif\TagValues.cs" />
+    <Compile Include="Exif\TagValues\TagValues.cs" />
     <Compile Include="Exif\TypeConverters\ExifCollectionConverter.cs" />
     <Compile Include="Exif\TypeConverters\ExifConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
