@@ -3,7 +3,7 @@ using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace ExifUtils.Exif
+namespace ExifUtils.Exif.IO
 {
 	/// <summary>
 	/// Decodes the GDI+ representation of EXIF properties.

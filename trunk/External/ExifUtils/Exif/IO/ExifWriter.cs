@@ -11,6 +11,12 @@ namespace ExifUtils.Exif.IO
 	/// </summary>
 	public static class ExifWriter
 	{
+		#region Fields
+
+		private static ConstructorInfo ctorPropertyItem = null;
+
+		#endregion Fields
+
 		#region Write Methods
 
 		/// <summary>
@@ -85,23 +91,16 @@ namespace ExifUtils.Exif.IO
 
 			PropertyItem propertyItem;
 
+			// The .NET interface for GDI+ does not allow instantiation of the
+			// PropertyItem class. Therefore one must be stolen off the Image
+			// and repurposed.  GDI+ uses PropertyItem by value so there is no
+			// side effect when changing the values and reassigning to the image.
 			if (image.PropertyItems == null || image.PropertyItems.Length < 1)
 			{
-				// Must use Reflection to get access to PropertyItem constructor
-				ConstructorInfo ctor = typeof(PropertyItem).GetConstructor(Type.EmptyTypes);
-				if (ctor == null)
-				{
-					throw new NotSupportedException("Unable to instantiate a System.Drawing.Imaging.PropertyItem");
-				}
-
-				propertyItem = ctor.Invoke(null) as PropertyItem;
+				propertyItem = ExifWriter.CreatePropertyItem();
 			}
 			else
 			{
-				// The .NET interface for GDI+ does not allow instantiation of the
-				// PropertyItem class. Therefore one must be stolen off the Image
-				// and repurposed.  GDI+ uses PropertyItem by value so there is no
-				// side effect when changing the values and reassigning to the image.
 				propertyItem = image.PropertyItems[0];
 			}
 
@@ -152,6 +151,11 @@ namespace ExifUtils.Exif.IO
 
 		#region Copy Methods
 
+		/// <summary>
+		/// Copies EXIF data from one image to another
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="dest"></param>
 		public static void CloneExifData(Image source, Image dest)
 		{
 			ExifWriter.CloneExifData(source, dest, -1);
@@ -181,5 +185,28 @@ namespace ExifUtils.Exif.IO
 		}
 
 		#endregion Copy Methods
+
+		#region Utility Methods
+
+		/// <summary>
+		/// Uses Reflection to instantiate a PropertyItem
+		/// </summary>
+		/// <returns></returns>
+		internal static PropertyItem CreatePropertyItem()
+		{
+			if (ExifWriter.ctorPropertyItem == null)
+			{
+				// Must use Reflection to get access to PropertyItem constructor
+				ExifWriter.ctorPropertyItem = typeof(PropertyItem).GetConstructor(Type.EmptyTypes);
+				if (ExifWriter.ctorPropertyItem == null)
+				{
+					throw new NotSupportedException("Unable to instantiate a System.Drawing.Imaging.PropertyItem");
+				}
+			}
+
+			return (PropertyItem)ExifWriter.ctorPropertyItem.Invoke(null);
+		}
+
+		#endregion Utility Methods
 	}
 }

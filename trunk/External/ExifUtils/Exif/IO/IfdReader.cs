@@ -1,6 +1,8 @@
 using System;
+using System.IO;
+using System.Drawing.Imaging;
 
-namespace ExifUtils.Exif
+namespace ExifUtils.Exif.IO
 {
 	#region Example Usage
 
@@ -8,72 +10,20 @@ namespace ExifUtils.Exif
 	//{
 	//    static void Main(string[] args)
 	//    {
-	//        const string FILENAME = @"..\..\..\Tims_10D.JPG";
-	//        System.Drawing.Imaging.PropertyItem2 prop;
-	//        using (System.Drawing.Bitmap photo = new System.Drawing.Bitmap(FILENAME))
+	//        const string FileName = @"..\..\..\Example.jpg";
+	//        System.Drawing.Imaging.PropertyItem prop;
+	//        using (System.Drawing.Bitmap photo = new System.Drawing.Bitmap(FileName))
 	//        {
 	//            prop = photo.GetPropertyItem(/*MakerNote*/0x927c);
 	//        }
-	//        using (System.IO.FileStream file = new System.IO.FileStream(FILENAME, System.IO.FileMode.Open))
+	//        using (System.IO.FileStream file = new System.IO.FileStream(FileName, System.IO.FileMode.Open))
 	//        {
-	//            PropertyItem2[] makerNotes = IfdReader.DecodeIFD(prop.Value, file);
+	//            PropertyItem[] makerNotes = IfdReader.DecodeIFD(prop.Value, file);
 	//        }
 	//    }
 	//}
 
 	#endregion Example Usage
-
-	#region PropertyItem2
-
-	internal class PropertyItem2
-	{
-		#region Fields
-
-		private int id;
-		private int len;
-		private short type;
-		private byte[] value;
-
-		#endregion Fields
-
-		#region Init
-
-		public PropertyItem2()
-		{
-		}
-
-		#endregion Init
-
-		#region Properties
-
-		public int Id
-		{
-			get { return this.id; }
-			set { this.id = value; }
-		}
-
-		public int Len
-		{
-			get { return this.len; }
-			set { this.len = value; }
-		}
-
-		public short Type
-		{
-			get { return this.type; }
-			set { this.type = value; }
-		}
-
-		public byte[] Value
-		{
-			get { return this.value; }
-			set { this.value = value; }
-		}
-
-		#endregion Properties
-	}
-
-	#endregion PropertyItem2
 
 	#region IfdReader
 
@@ -92,6 +42,7 @@ namespace ExifUtils.Exif
 		/// 
 		/// </summary>
 		/// <param name="bytes"></param>
+		/// <param name="fullFile"></param>
 		/// <returns></returns>
 		/// <remarks>
 		/// References:
@@ -100,16 +51,16 @@ namespace ExifUtils.Exif
 		/// http://www.burren.cx/david/canon.html
 		/// http://cpan.uwinnipeg.ca/htdocs/Image-ExifTool/Image/ExifTool/Canon.pm.html
 		/// </remarks>
-		public static PropertyItem2[] DecodeIFD(byte[] bytes, System.IO.FileStream fullFile)
+		public static PropertyItem[] DecodeIFD(byte[] bytes, FileStream fullFile)
 		{
 			int index = 0;
 			int count = (int)BitConverter.ToUInt16(bytes, index);
 			index += UInt16_Size;
-			PropertyItem2[] items = new PropertyItem2[count];
+			PropertyItem[] items = new PropertyItem[count];
 
 			for (int i=0; i<count; i++)
 			{
-				items[i] = new PropertyItem2();
+				items[i] = ExifWriter.CreatePropertyItem();
 
 				// read in the ID (2 bytes)
 				items[i].Id = (int)BitConverter.ToUInt16(bytes, index);
@@ -146,19 +97,19 @@ namespace ExifUtils.Exif
 
 		#endregion Methods
 
-		#region Helper Methods
+		#region Utility Methods
 
 		private static byte[] CopyBytes(byte[] bytes, int index, int length)
 		{
 #if DEBUG
 			try
-			{
 #endif
-			byte[] data = new byte[length];
-			Array.Copy(bytes, index, data, 0, length);
-			return data;
-#if DEBUG
+			{
+				byte[] data = new byte[length];
+				Array.Copy(bytes, index, data, 0, length);
+				return data;
 			}
+#if DEBUG
 			catch
 			{
 				return null;
@@ -171,36 +122,61 @@ namespace ExifUtils.Exif
 			switch (type)
 			{
 				case 1:/* unsigned byte */
-				return 1;
+				{
+					return 1;
+				}
 				case 2:/* ascii strings */
-				return 1;
+				{
+					return 1;
+				}
 				case 3:/* unsigned short */
-				return 2;
+				{
+					return 2;
+				}
 				case 4:/* unsigned long */
-				return 4;
+				{
+					return 4;
+				}
 				case 5:/* unsigned rational */
-				return 8;
+				{
+					return 8;
+				}
 				case 6:/* signed byte */
-				return 1;
+				{
+					return 1;
+				}
 				case 7:/* undefined */
-				return 1;
+				{
+					return 1;
+				}
 				case 8:/* signed short */
-				return 2;
+				{
+					return 2;
+				}
 				case 9:/* signed long */
-				return 4;
+				{
+					return 4;
+				}
 				case 10:/* signed rational */
-				return 8;
+				{
+					return 8;
+				}
 				case 11:/* single float */
-				return 4;
+				{
+					return 4;
+				}
 				case 12:/* double float */
-				return 8;
-
+				{
+					return 8;
+				}
 				default:
-				return 0;
+				{
+					return 0;
+				}
 			}
 		}
 
-		#endregion Helper Methods
+		#endregion Utility Methods
 	}
 
 	#endregion IfdReader

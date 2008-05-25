@@ -1,12 +1,12 @@
 using System;
 
-namespace ExifUtils.Exif
+namespace ExifUtils.Exif.IO
 {
 	/// <summary>
 	/// Encodes the GDI+ representation of EXIF properties.
 	/// </summary>
 	/// <remarks>
-	/// This is not built yet.
+	/// This is not yet supported.
 	/// </remarks>
 	internal static class ExifEncoder
 	{
