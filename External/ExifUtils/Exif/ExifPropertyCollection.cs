@@ -25,7 +25,7 @@ namespace ExifUtils.Exif
 		#region Init
 
 		/// <summary>
-		/// Ctor.
+		/// Ctor
 		/// </summary>
 		public ExifPropertyCollection()
 		{

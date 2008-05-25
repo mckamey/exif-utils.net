@@ -6,17 +6,6 @@ namespace ExifUtils.Exif.TypeConverters
 {
 	public class ExifCollectionConverter : CollectionConverter
 	{
-		#region Init
-
-		/// <summary>
-		/// Ctor.
-		/// </summary>
-		public ExifCollectionConverter()
-		{
-		}
-
-		#endregion Init
-
 		#region Methods
 
 		public override PropertyDescriptorCollection GetProperties(
