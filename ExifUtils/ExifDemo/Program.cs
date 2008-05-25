@@ -17,7 +17,7 @@ namespace ExifDemoDriver
 			//----------------------------------------------
 
 			// minimally loads image and closes it
-			ExifPropertyCollection properties = ExifReader.LoadFromFile(imagePath);
+			ExifPropertyCollection properties = ExifReader.GetExifData(imagePath);
 
 			// dump properties to console
 			foreach (ExifProperty property in properties)
@@ -28,20 +28,18 @@ namespace ExifDemoDriver
 
 			//----------------------------------------------
 
-			using (Image image = Image.FromFile(imagePath))
-			{
-				imagePath = imagePath.Substring(0, imagePath.LastIndexOf('.'))+"_COPYRIGHT_LOREM_IPSUM"+imagePath.Substring(imagePath.LastIndexOf('.'));
-				Console.WriteLine("Adding dummy copyright to image and saving to: "+imagePath);
+			int lastDot = imagePath.LastIndexOf('.');
+			string outputPath = imagePath.Substring(0, lastDot)+"_COPYRIGHT_LOREM_IPSUM"+imagePath.Substring(lastDot);
+			Console.WriteLine("Adding dummy copyright to image and saving to:\r\n\t"+outputPath);
 
-				// add copyright tag
-				ExifProperty copyright = new ExifProperty();
-				copyright.Tag = ExifTag.Copyright;
-				copyright.Value = "Copyright (c)2006 Lorem ipsum dolor sit amet.";
-				copyright.AddExifToImage(image);
+			// add copyright tag
+			ExifProperty copyright = new ExifProperty();
+			copyright.Tag = ExifTag.Copyright;
+			copyright.Value = String.Format(
+				"Copyright (c){0} Lorem ipsum dolor sit amet. All rights reserved.",
+				DateTime.Now.Year);
 
-				// save a copy
-				image.Save(imagePath);
-			}
+			ExifWriter.AddExifData(imagePath, outputPath, copyright);
 		}
 	}
 }
