@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("PhotoLib.Model")]
 [assembly: AssemblyDescription("Photo Library Model")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("PseudoCode Solutions")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("MediaLib")]
-[assembly: AssemblyCopyright("Copyright ©2005-2006 Stephen M. McKamey & PseudoCode Solutions")]
+[assembly: AssemblyCopyright("Copyright ©2005-2006 Stephen M. McKamey. All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("2a877c4b-ebff-4aaa-beb6-bdc651cd5379")]
+[assembly: Guid("B0B49A48-BCFC-4230-9412-F030247551AD")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -31,5 +31,5 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("1.0.0.2")]
-[assembly: AssemblyFileVersion("1.0.0.2")]
+[assembly: AssemblyVersion("1.0.1.0")]
+[assembly: AssemblyFileVersion("1.0.1.0")]

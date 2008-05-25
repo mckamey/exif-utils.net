@@ -1,7 +1,9 @@
 using System;
+using System.Text;
 using System.ComponentModel;
 using System.Globalization;
 using System.Xml.Serialization;
+using System.Drawing.Imaging;
 
 using PhotoLib.Model.Exif.TagValues;
 
@@ -19,7 +21,7 @@ namespace PhotoLib.Model.Exif
 	{
 		#region Fields
 
-		private System.Drawing.Imaging.PropertyItem propertyItem = null;
+		private PropertyItem propertyItem = null;
 		private int id = (int)ExifTag.Unknown;
 		private ExifType type = ExifType.Unknown;
 		private object value = null;
@@ -39,7 +41,7 @@ namespace PhotoLib.Model.Exif
 		/// Ctor.
 		/// </summary>
 		/// <param name="property"></param>
-		public ExifProperty(System.Drawing.Imaging.PropertyItem property)
+		public ExifProperty(PropertyItem property)
 		{
 			this.propertyItem = property;
 			this.id = property.Id;
@@ -128,7 +130,7 @@ namespace PhotoLib.Model.Exif
 		[XmlElement(typeof(Rational<uint>))]
 		[XmlElement(typeof(Rational<uint>[]))]
 		[XmlElement(typeof(DateTime))]
-		[XmlElement(typeof(System.Text.UnicodeEncoding))]
+		[XmlElement(typeof(UnicodeEncoding))]
 		[XmlElement(typeof(ExifTagColorSpace))]
 		[XmlElement(typeof(ExifTagCleanFaxData))]
 		[XmlElement(typeof(ExifTagCompression))]
@@ -189,9 +191,11 @@ namespace PhotoLib.Model.Exif
 			{
 				if (this.Tag != ExifTag.Unknown)
 				{
-					string label = PseudoCode.ReflectionHelper.GetDescription(this.Tag);
+					string label = Utility.GetDescription(this.Tag);
 					if (String.IsNullOrEmpty(label))
+					{
 						label = this.Tag.ToString("g");
+					}
 					return label;
 				}
 				else
@@ -327,9 +331,11 @@ namespace PhotoLib.Model.Exif
 				{
 					if (rawValue is Enum)
 					{
-						string description = PseudoCode.ReflectionHelper.GetDescription((Enum)rawValue);
+						string description = Utility.GetDescription((Enum)rawValue);
 						if (!String.IsNullOrEmpty(description))
+						{
 							return description;
+						}
 					}
 					else if (rawValue is Array)
 					{
@@ -344,7 +350,7 @@ namespace PhotoLib.Model.Exif
 						//const int ElemsPerRow = 40;
 						int charSize = 2*System.Runtime.InteropServices.Marshal.SizeOf(type);
 						string format = "{0:X"+(charSize)+"}";
-						System.Text.StringBuilder builder = new System.Text.StringBuilder(((charSize+1)*array.Length)/*+(2*array.Length/ElemsPerRow)*/);
+						StringBuilder builder = new StringBuilder(((charSize+1)*array.Length)/*+(2*array.Length/ElemsPerRow)*/);
 						for (int i=0; i<array.Length; i++)
 						{
 							builder.AppendFormat(format, array.GetValue(i));
@@ -392,14 +398,14 @@ namespace PhotoLib.Model.Exif
 			{
 				case ExifType.Ascii:
 				{
-					this.propertyItem.Value = System.Text.Encoding.ASCII.GetBytes(Convert.ToString(this.Value)+'\0');
+					this.propertyItem.Value = Encoding.ASCII.GetBytes(Convert.ToString(this.Value)+'\0');
 					break;
 				}
 				case ExifType.Byte:
 				{
-					if (dataType == typeof(System.Text.UnicodeEncoding))
+					if (dataType == typeof(UnicodeEncoding))
 					{
-						this.propertyItem.Value = System.Text.Encoding.Unicode.GetBytes(Convert.ToString(this.Value)+'\0');
+						this.propertyItem.Value = Encoding.Unicode.GetBytes(Convert.ToString(this.Value)+'\0');
 					}
 					else
 					{
