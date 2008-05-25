@@ -11,7 +11,7 @@ namespace PhotoLib.Model.Exif
 	/// </summary>
 	public static class ExifWriter
 	{
-		#region Methods
+		#region Write Methods
 
 		/// <summary>
 		/// Adds a collection of EXIF properties to an image.
@@ -148,6 +148,38 @@ namespace PhotoLib.Model.Exif
 			image.SetPropertyItem(propertyItem);
 		}
 
-		#endregion Methods
+		#endregion Write Methods
+
+		#region Copy Methods
+
+		public static void CloneExifData(Image source, Image dest)
+		{
+			ExifWriter.CloneExifData(source, dest, -1);
+		}
+
+		/// <summary>
+		/// Copies EXIF data from one image to another
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="dest"></param>
+		/// <param name="maxPropertyBytes">setting to filter properties</param>
+		public static void CloneExifData(Image source, Image dest, int maxPropertyBytes)
+		{
+			bool filter = (maxPropertyBytes > 0);
+
+			// preserve EXIF
+			foreach (PropertyItem prop in source.PropertyItems)
+			{
+				if (filter && prop.Len > maxPropertyBytes)
+				{
+					// skip large sections
+					continue;
+				}
+
+				dest.SetPropertyItem(prop);
+			}
+		}
+
+		#endregion Copy Methods
 	}
 }
