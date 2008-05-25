@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("PhotoLib.Model")]
-[assembly: AssemblyDescription("Photo Library Model")]
+[assembly: AssemblyTitle("ExifUtils")]
+[assembly: AssemblyDescription("EXIF Utility Library")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("MediaLib")]
+[assembly: AssemblyProduct("BuildTools")]
 [assembly: AssemblyCopyright("Copyright ©2005-2006 Stephen M. McKamey. All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
