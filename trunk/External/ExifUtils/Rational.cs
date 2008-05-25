@@ -19,7 +19,7 @@ namespace ExifUtils
 		#region Init
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ExifUtilsRational{T}"/> class.
+		/// Initializes a new instance of the <see cref="ExifUtils.Rational{T}"/> class.
 		/// </summary>
 		/// <param name="numerator">The numerator of the rational number.</param>
 		/// <param name="denominator">The denominator of the rational number.</param>

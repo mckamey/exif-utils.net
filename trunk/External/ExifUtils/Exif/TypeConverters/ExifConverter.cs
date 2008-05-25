@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace ExifUtils.Exif.TypeConverters
 {
-	public class ExifConverter : ExpandableObjectConverter
+	internal class ExifConverter : ExpandableObjectConverter
 	{
 		#region Methods
 
