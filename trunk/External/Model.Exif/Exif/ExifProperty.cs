@@ -3,9 +3,11 @@ using System.Text;
 using System.ComponentModel;
 using System.Globalization;
 using System.Xml.Serialization;
+using System.Drawing;
 using System.Drawing.Imaging;
 
 using PhotoLib.Model.Exif.TagValues;
+using PhotoLib.Model.Exif.TypeConverters;
 
 namespace PhotoLib.Model.Exif
 {
@@ -16,7 +18,7 @@ namespace PhotoLib.Model.Exif
 	/// Should try to serialize as EXIF+RDF http://www.w3.org/2003/12/exif/
 	/// </remarks>
 	[Serializable]
-	[TypeConverter(typeof(PhotoLib.Model.Exif.TypeConverters.ExifConverter))]
+	[TypeConverter(typeof(ExifConverter))]
 	public class ExifProperty
 	{
 		#region Fields
@@ -31,14 +33,14 @@ namespace PhotoLib.Model.Exif
 		#region Init
 
 		/// <summary>
-		/// Ctor.
+		/// Ctor
 		/// </summary>
 		public ExifProperty()
 		{
 		}
 
 		/// <summary>
-		/// Ctor.
+		/// Ctor
 		/// </summary>
 		/// <param name="property"></param>
 		public ExifProperty(PropertyItem property)
@@ -205,6 +207,15 @@ namespace PhotoLib.Model.Exif
 			}
 		}
 
+		/// <summary>
+		/// Gets and sets the internal GDI+ PropertyItem
+		/// </summary>
+		internal PropertyItem PropertyItem
+		{
+			get { return this.propertyItem; }
+			set { this.propertyItem = value; }
+		}
+
 		#endregion Properties
 
 		#region Methods
@@ -369,66 +380,6 @@ namespace PhotoLib.Model.Exif
 					return Convert.ToString(rawValue);
 				}
 			}
-		}
-
-		public void AddExifToImage(System.Drawing.Image image)
-		{
-			#region Create a PropertyItem
-
-			if (this.propertyItem == null)
-			{
-				if (image.PropertyItems != null && image.PropertyItems.Length > 0)
-				{
-					this.propertyItem = image.PropertyItems[0];
-				}
-				else
-				{
-					throw new NotImplementedException("Can only add EXIF properties to images which already have properties.");
-				}
-			}
-
-			#endregion Create a PropertyItem
-
-			this.propertyItem.Id = (int)this.Tag;
-			this.propertyItem.Type = (short)this.Type;
-
-			Type dataType = ExifDataTypeAttribute.GetDataType(this.Tag);
-
-			switch (this.Type)
-			{
-				case ExifType.Ascii:
-				{
-					this.propertyItem.Value = Encoding.ASCII.GetBytes(Convert.ToString(this.Value)+'\0');
-					break;
-				}
-				case ExifType.Byte:
-				{
-					if (dataType == typeof(UnicodeEncoding))
-					{
-						this.propertyItem.Value = Encoding.Unicode.GetBytes(Convert.ToString(this.Value)+'\0');
-					}
-					else
-					{
-						goto default;
-					}
-					break;
-				}
-				default:
-				{
-					throw new NotImplementedException(String.Format("Encoding for EXIF property \"{0}\" has not yet been implemented.", this.DisplayName));
-				}
-			}
-			this.propertyItem.Len = this.propertyItem.Value.Length;
-
-			//foreach (int id in image.PropertyIdList)
-			//{
-			//    if (id == this.propertyItem.Id)
-			//    {
-			//        image.RemovePropertyItem(id);
-			//        break;
-			//    }
-			//}
-			image.SetPropertyItem(this.propertyItem);
 		}
 
 		#endregion Methods
