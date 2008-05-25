@@ -7,7 +7,7 @@ using System.Drawing.Imaging;
 namespace PhotoLib.Model.Exif
 {
 	/// <summary>
-	/// Utility class which 
+	/// Utility class for reading EXIF data 
 	/// </summary>
 	public static class ExifReader
 	{
