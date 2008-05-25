@@ -3,10 +3,10 @@ using System;
 namespace ExifUtils.Exif
 {
 	/// <summary>
-	/// 
+	/// Attribute which provides hints about EXIF data types
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Field, AllowMultiple=false)]
-	public sealed class ExifDataTypeAttribute : Attribute
+	internal sealed class ExifDataTypeAttribute : Attribute
 	{
 		#region Fields
 
@@ -18,14 +18,14 @@ namespace ExifUtils.Exif
 		#region Init
 
 		/// <summary>
-		/// Ctor.
+		/// Ctor
 		/// </summary>
 		public ExifDataTypeAttribute()
 		{
 		}
 
 		/// <summary>
-		/// Ctor.
+		/// Ctor
 		/// </summary>
 		/// <param name="dataType"></param>
 		public ExifDataTypeAttribute(Type dataType)
@@ -34,7 +34,7 @@ namespace ExifUtils.Exif
 		}
 
 		/// <summary>
-		/// Ctor.
+		/// Ctor
 		/// </summary>
 		/// <param name="exifType"></param>
 		public ExifDataTypeAttribute(ExifType exifType)
@@ -43,7 +43,7 @@ namespace ExifUtils.Exif
 		}
 
 		/// <summary>
-		/// Ctor.
+		/// Ctor
 		/// </summary>
 		/// <param name="type"></param>
 		/// <param name="exifType"></param>

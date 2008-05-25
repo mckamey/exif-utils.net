@@ -6,17 +6,6 @@ namespace ExifUtils.Exif.TypeConverters
 {
 	public class ExifConverter : ExpandableObjectConverter
 	{
-		#region Init
-
-		/// <summary>
-		/// Ctor.
-		/// </summary>
-		public ExifConverter()
-		{
-		}
-
-		#endregion Init
-
 		#region Methods
 
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
