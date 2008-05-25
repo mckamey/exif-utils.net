@@ -38,16 +38,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Exif\ExifDecoder.cs" />
-    <Compile Include="Exif\ExifEncoder.cs" />
     <Compile Include="Exif\ExifProperty.cs" />
     <Compile Include="Exif\ExifPropertyCollection.cs" />
     <Compile Include="Exif\ExifTag.cs" />
     <Compile Include="Exif\ExifType.cs" />
     <Compile Include="Exif\ExifTypeAttribute.cs" />
-    <Compile Include="Exif\IfdReader.cs" />
+    <Compile Include="Exif\IO\ExifDecoder.cs" />
+    <Compile Include="Exif\IO\ExifEncoder.cs" />
     <Compile Include="Exif\IO\ExifReader.cs" />
     <Compile Include="Exif\IO\ExifWriter.cs" />
+    <Compile Include="Exif\IO\IfdReader.cs" />
     <Compile Include="Exif\TagValues.cs" />
     <Compile Include="Exif\TypeConverters\ExifCollectionConverter.cs" />
     <Compile Include="Exif\TypeConverters\ExifConverter.cs" />

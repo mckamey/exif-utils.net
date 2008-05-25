@@ -6,6 +6,7 @@ using System.Xml.Serialization;
 using System.Drawing;
 using System.Drawing.Imaging;
 
+using ExifUtils.Exif.IO;
 using ExifUtils.Exif.TagValues;
 using ExifUtils.Exif.TypeConverters;
 
