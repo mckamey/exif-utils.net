@@ -19,7 +19,7 @@ namespace PhotoLib.Model.Exif
 		/// <param name="image"></param>
 		/// <param name="exifTags">additional EXIF tags to include</param>
 		/// <returns></returns>
-		public static ExifPropertyCollection LoadFromImage(Image image, ICollection<ExifTag> exifTags)
+		public static ExifPropertyCollection GetExifData(Image image, ICollection<ExifTag> exifTags)
 		{
 			if (exifTags == null)
 			{
@@ -34,9 +34,9 @@ namespace PhotoLib.Model.Exif
 		/// </summary>
 		/// <param name="image"></param>
 		/// <returns></returns>
-		public static ExifPropertyCollection LoadFromImage(Image image)
+		public static ExifPropertyCollection GetExifData(Image image)
 		{
-			return ExifReader.LoadFromImage(image, null);
+			return ExifReader.GetExifData(image, null);
 		}
 
 		/// <summary>
@@ -46,7 +46,7 @@ namespace PhotoLib.Model.Exif
 		/// <param name="imagePath"></param>
 		/// <param name="exifTags">collection of EXIF tags to include</param>
 		/// <returns>Collection of ExifProperty items</returns>
-		public static ExifPropertyCollection LoadFromFile(string imagePath, ICollection<ExifTag> exifTags)
+		public static ExifPropertyCollection GetExifData(string imagePath, ICollection<ExifTag> exifTags)
 		{
 			PropertyItem[] propertyItems;
 
@@ -73,9 +73,9 @@ namespace PhotoLib.Model.Exif
 		/// </summary>
 		/// <param name="imagePath"></param>
 		/// <returns>Collection of ExifProperty items</returns>
-		public static ExifPropertyCollection LoadFromFile(string imagePath)
+		public static ExifPropertyCollection GetExifData(string imagePath)
 		{
-			return ExifReader.LoadFromFile(imagePath, null);
+			return ExifReader.GetExifData(imagePath, null);
 		}
 
 		#endregion Methods
