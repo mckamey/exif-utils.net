@@ -1,9 +1,10 @@
 using System;
 using System.ComponentModel;
+using System.Globalization;
 
 namespace PhotoLib.Model.Exif.TypeConverters
 {
-	public class ExifCollectionConverter : System.ComponentModel.CollectionConverter
+	public class ExifCollectionConverter : CollectionConverter
 	{
 		#region Init
 
@@ -19,7 +20,9 @@ namespace PhotoLib.Model.Exif.TypeConverters
 		#region Methods
 
 		public override PropertyDescriptorCollection GetProperties(
-			ITypeDescriptorContext context, object value, Attribute[] attributes)
+			ITypeDescriptorContext context,
+			object value,
+			Attribute[] attributes)
 		{
 			PropertyDescriptor[] descriptors = null;
 			ExifPropertyCollection exifs = value as ExifPropertyCollection;
@@ -29,8 +32,7 @@ namespace PhotoLib.Model.Exif.TypeConverters
 				int i = 0;
 				foreach (ExifProperty exif in (((ExifPropertyCollection)value)))
 				{
-					descriptors[i++] =
-						new ExifCollectionConverter.ExifPropertyDescriptor(exif.Tag, exif.DisplayName);
+					descriptors[i++] = new ExifCollectionConverter.ExifPropertyDescriptor(exif.Tag, exif.DisplayName);
 				}
 			}
 			return new PropertyDescriptorCollection(descriptors);
@@ -41,10 +43,16 @@ namespace PhotoLib.Model.Exif.TypeConverters
 			return true;
 		}
 
-		public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
+		public override object ConvertTo(
+			ITypeDescriptorContext context,
+			CultureInfo culture,
+			object value,
+			Type destinationType)
 		{
 			if (value is ExifPropertyCollection && destinationType == typeof(string))
+			{
 				return ((ExifPropertyCollection)value).Count+" EXIF Properties";
+			}
 
 			return base.ConvertTo(context, culture, value, destinationType);
 		}
