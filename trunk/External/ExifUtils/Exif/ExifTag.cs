@@ -40,6 +40,7 @@ namespace ExifUtils.Exif
 	/// </summary>
 	/// <remarks>
 	/// References:
+	/// http://it.jeita.or.jp/document/publica/standard/exif/english/jeida49e.htm
 	/// http://www.exif.org/Exif2-2.PDF
 	/// http://msdn.microsoft.com/library/en-us/gdicpp/GDIPlus/GDIPlusreference/constants/imagepropertytagconstants/propertytagsinnumericalorder.asp
 	/// http://msdn.microsoft.com/library/en-us/gdicpp/GDIPlus/GDIPlusreference/constants/imagepropertytagconstants/propertyitemdescriptions.asp
