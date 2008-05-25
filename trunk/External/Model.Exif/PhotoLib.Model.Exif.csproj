@@ -42,6 +42,7 @@
     <Compile Include="Exif\ExifEncoder.cs" />
     <Compile Include="Exif\ExifProperty.cs" />
     <Compile Include="Exif\ExifPropertyCollection.cs" />
+    <Compile Include="Exif\ExifReader.cs" />
     <Compile Include="Exif\ExifTag.cs" />
     <Compile Include="Exif\ExifType.cs" />
     <Compile Include="Exif\ExifTypeAttribute.cs" />
