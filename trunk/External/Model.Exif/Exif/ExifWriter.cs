@@ -1,6 +1,8 @@
 using System;
 using System.Text;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.Reflection;
 
 namespace PhotoLib.Model.Exif
 {
@@ -12,45 +14,114 @@ namespace PhotoLib.Model.Exif
 		#region Methods
 
 		/// <summary>
-		/// Adds an EXIF property to an image
+		/// Adds a collection of EXIF properties to an image.
+		/// </summary>
+		/// <param name="inputPath">file path of original image</param>
+		/// <param name="outputPath">file path of modified image</param>
+		/// <param name="properties"></param>
+		public static void AddExifData(string inputPath, string outputPath, ExifPropertyCollection properties)
+		{
+			using (Image image = Image.FromFile(inputPath))
+			{
+				ExifWriter.AddExifData(image, properties);
+				image.Save(outputPath);
+			}
+		}
+
+		/// <summary>
+		/// Adds an EXIF property to an image.
+		/// </summary>
+		/// <param name="inputPath">file path of original image</param>
+		/// <param name="outputPath">file path of modified image</param>
+		/// <param name="property"></param>
+		public static void AddExifData(string inputPath, string outputPath, ExifProperty property)
+		{
+			using (Image image = Image.FromFile(inputPath))
+			{
+				ExifWriter.AddExifData(image, property);
+				image.Save(outputPath);
+			}
+		}
+
+		/// <summary>
+		/// Adds a collection of EXIF properties to an image.
 		/// </summary>
 		/// <param name="image"></param>
-		/// <param name="exif"></param>
-		public static void AddToImage(Image image, ExifProperty exif)
+		/// <param name="properties"></param>
+		public static void AddExifData(Image image, ExifPropertyCollection properties)
 		{
-			#region Create a PropertyItem
-
-			if (exif.PropertyItem == null)
+			if (image == null)
 			{
-				if (image.PropertyItems != null && image.PropertyItems.Length > 0)
-				{
-					exif.PropertyItem = image.PropertyItems[0];
-				}
-				else
-				{
-					throw new NotImplementedException("Can only add EXIF properties to images which already have properties.");
-				}
+				throw new NullReferenceException("image was null");
 			}
 
-			#endregion Create a PropertyItem
+			if (properties == null || properties.Count < 1)
+			{
+				return;
+			}
 
-			exif.PropertyItem.Id = (int)exif.Tag;
-			exif.PropertyItem.Type = (short)exif.Type;
+			foreach (ExifProperty property in properties)
+			{
+				ExifWriter.AddExifData(image, property);
+			}
+		}
 
-			Type dataType = ExifDataTypeAttribute.GetDataType(exif.Tag);
+		/// <summary>
+		/// Adds an EXIF property to an image.
+		/// </summary>
+		/// <param name="image"></param>
+		/// <param name="property"></param>
+		public static void AddExifData(Image image, ExifProperty property)
+		{
+			if (image == null)
+			{
+				throw new NullReferenceException("image was null");
+			}
 
-			switch (exif.Type)
+			if (property == null)
+			{
+				return;
+			}
+
+			PropertyItem propertyItem;
+
+			if (image.PropertyItems == null || image.PropertyItems.Length < 1)
+			{
+				// Must use Reflection to get access to PropertyItem constructor
+				ConstructorInfo ctor = typeof(PropertyItem).GetConstructor(Type.EmptyTypes);
+				if (ctor == null)
+				{
+					throw new NotSupportedException("Unable to instantiate a System.Drawing.Imaging.PropertyItem");
+				}
+
+				propertyItem = ctor.Invoke(null) as PropertyItem;
+			}
+			else
+			{
+				// The .NET interface for GDI+ does not allow instantiation of the
+				// PropertyItem class. Therefore one must be stolen off the Image
+				// and repurposed.  GDI+ uses PropertyItem by value so there is no
+				// side effect when changing the values and reassigning to the image.
+				propertyItem = image.PropertyItems[0];
+			}
+
+			propertyItem.Id = (int)property.Tag;
+			propertyItem.Type = (short)property.Type;
+
+			Type dataType = ExifDataTypeAttribute.GetDataType(property.Tag);
+
+			switch (property.Type)
 			{
 				case ExifType.Ascii:
 				{
-					exif.PropertyItem.Value = Encoding.ASCII.GetBytes(Convert.ToString(exif.Value)+'\0');
+					propertyItem.Value = Encoding.ASCII.GetBytes(Convert.ToString(property.Value)+'\0');
 					break;
 				}
 				case ExifType.Byte:
 				{
 					if (dataType == typeof(UnicodeEncoding))
 					{
-						exif.PropertyItem.Value = Encoding.Unicode.GetBytes(Convert.ToString(exif.Value)+'\0');
+						propertyItem.Value = Encoding.Unicode.GetBytes(Convert.ToString(property.Value)+'\0');
 					}
 					else
 					{
@@ -60,11 +131,12 @@ namespace PhotoLib.Model.Exif
 				}
 				default:
 				{
-					throw new NotImplementedException(String.Format("Encoding for EXIF property \"{0}\" has not yet been implemented.", exif.DisplayName));
+					throw new NotImplementedException(String.Format("Encoding for EXIF property \"{0}\" has not yet been implemented.", property.DisplayName));
 				}
 			}
-			exif.PropertyItem.Len = exif.PropertyItem.Value.Length;
+			propertyItem.Len = propertyItem.Value.Length;
 
+			// This appears to not be necessary
 			//foreach (int id in image.PropertyIdList)
 			//{
 			//    if (id == exif.PropertyItem.Id)
@@ -73,7 +145,7 @@ namespace PhotoLib.Model.Exif
 			//        break;
 			//    }
 			//}
-			image.SetPropertyItem(exif.PropertyItem);
+			image.SetPropertyItem(propertyItem);
 		}
 
 		#endregion Methods

@@ -23,7 +23,6 @@ namespace PhotoLib.Model.Exif
 	{
 		#region Fields
 
-		private PropertyItem propertyItem = null;
 		private int id = (int)ExifTag.Unknown;
 		private ExifType type = ExifType.Unknown;
 		private object value = null;
@@ -42,10 +41,18 @@ namespace PhotoLib.Model.Exif
 		/// <summary>
 		/// Ctor
 		/// </summary>
+		public ExifProperty(ExifTag tag, object value)
+		{
+			this.Tag = tag;
+			this.value = value;
+		}
+
+		/// <summary>
+		/// Ctor
+		/// </summary>
 		/// <param name="property"></param>
 		public ExifProperty(PropertyItem property)
 		{
-			this.propertyItem = property;
 			this.id = property.Id;
 			this.type = (ExifType)property.Type;
 			this.value = ExifDecoder.FromPropertyItem(property);
@@ -205,15 +212,6 @@ namespace PhotoLib.Model.Exif
 					return String.Format("Exif_0x{0:x4}", this.ID);
 				}
 			}
-		}
-
-		/// <summary>
-		/// Gets and sets the internal GDI+ PropertyItem
-		/// </summary>
-		internal PropertyItem PropertyItem
-		{
-			get { return this.propertyItem; }
-			set { this.propertyItem = value; }
 		}
 
 		#endregion Properties
