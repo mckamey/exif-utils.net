@@ -7,8 +7,8 @@
     <ProjectGuid>{844DF2C4-BF99-4CEA-87C6-E7A222849BF8}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ExifDemoDriver</RootNamespace>
-    <AssemblyName>ExifDemoDriver</AssemblyName>
+    <RootNamespace>ExifDemo</RootNamespace>
+    <AssemblyName>ExifDemo</AssemblyName>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
