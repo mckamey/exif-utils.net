@@ -7,8 +7,8 @@
     <ProjectGuid>{823C67A7-41FF-471D-BFC4-B134DF506A6F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PhotoLib.Model</RootNamespace>
-    <AssemblyName>PhotoLib.Model.Exif</AssemblyName>
+    <RootNamespace>ExifUtils</RootNamespace>
+    <AssemblyName>ExifUtils</AssemblyName>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
@@ -30,7 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\PhotoLib.Model.Exif.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\ExifUtils.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -42,12 +42,12 @@
     <Compile Include="Exif\ExifEncoder.cs" />
     <Compile Include="Exif\ExifProperty.cs" />
     <Compile Include="Exif\ExifPropertyCollection.cs" />
-    <Compile Include="Exif\ExifReader.cs" />
     <Compile Include="Exif\ExifTag.cs" />
     <Compile Include="Exif\ExifType.cs" />
     <Compile Include="Exif\ExifTypeAttribute.cs" />
-    <Compile Include="Exif\ExifWriter.cs" />
     <Compile Include="Exif\IfdReader.cs" />
+    <Compile Include="Exif\IO\ExifReader.cs" />
+    <Compile Include="Exif\IO\ExifWriter.cs" />
     <Compile Include="Exif\TagValues.cs" />
     <Compile Include="Exif\TypeConverters\ExifCollectionConverter.cs" />
     <Compile Include="Exif\TypeConverters\ExifConverter.cs" />

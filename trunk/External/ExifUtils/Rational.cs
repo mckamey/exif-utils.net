@@ -1,6 +1,6 @@
 using System;
 
-namespace PhotoLib.Model
+namespace ExifUtils
 {
 	/// <summary>
 	/// Represents a rational number.
@@ -19,7 +19,7 @@ namespace PhotoLib.Model
 		#region Init
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="PhotoLib.Model.Rational{T}"/> class.
+		/// Initializes a new instance of the <see cref="ExifUtilsRational{T}"/> class.
 		/// </summary>
 		/// <param name="numerator">The numerator of the rational number.</param>
 		/// <param name="denominator">The denominator of the rational number.</param>

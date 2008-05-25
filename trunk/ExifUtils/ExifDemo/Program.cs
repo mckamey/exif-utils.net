@@ -1,7 +1,8 @@
 using System;
 using System.Drawing;
 
-using PhotoLib.Model.Exif;
+using ExifUtils.Exif;
+using ExifUtils.Exif.IO;
 
 namespace ExifDemo
 {

@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel;
 
-namespace PhotoLib.Model.Exif.TagValues
+namespace ExifUtils.Exif.TagValues
 {
 	#region TIFF Rev 6.0 Tags
 

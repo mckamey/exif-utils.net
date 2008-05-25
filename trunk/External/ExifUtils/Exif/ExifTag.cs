@@ -1,9 +1,9 @@
 using System;
 using System.ComponentModel;
 
-using PhotoLib.Model.Exif.TagValues;
+using ExifUtils.Exif.TagValues;
 
-namespace PhotoLib.Model.Exif
+namespace ExifUtils.Exif
 {
 	/// <summary>
 	/// Defines EXIF Property Tag ID values.

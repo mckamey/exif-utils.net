@@ -6,10 +6,10 @@ using System.Xml.Serialization;
 using System.Drawing;
 using System.Drawing.Imaging;
 
-using PhotoLib.Model.Exif.TagValues;
-using PhotoLib.Model.Exif.TypeConverters;
+using ExifUtils.Exif.TagValues;
+using ExifUtils.Exif.TypeConverters;
 
-namespace PhotoLib.Model.Exif
+namespace ExifUtils.Exif
 {
 	/// <summary>
 	/// Represents a single EXIF property.
