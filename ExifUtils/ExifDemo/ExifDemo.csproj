@@ -41,7 +41,7 @@
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\MediaLib\ExifUtils\ExifUtils.csproj">
+    <ProjectReference Include="..\ExifUtils\ExifUtils.csproj">
       <Project>{823C67A7-41FF-471D-BFC4-B134DF506A6F}</Project>
       <Name>ExifUtils %28ExifUtils\ExifUtils%29</Name>
     </ProjectReference>
