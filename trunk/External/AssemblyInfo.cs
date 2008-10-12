@@ -8,9 +8,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("PhotoLib.Model")]
 [assembly: AssemblyDescription("Photo Library Model")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("PseudoCode Solutions")]
 [assembly: AssemblyProduct("MediaLib")]
-[assembly: AssemblyCopyright("Copyright ©2005-2006 Stephen M. McKamey & PseudoCode Solutions")]
+[assembly: AssemblyCopyright("Copyright ©2005-2008 Stephen M. McKamey. All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
