@@ -32,6 +32,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\ExifUtils.xml</DocumentationFile>
     <UseVSHostingProcess>false</UseVSHostingProcess>
+    <NoWarn>1570,1571,1572,1573,1591,1592</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
