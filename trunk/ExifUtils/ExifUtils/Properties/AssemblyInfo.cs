@@ -34,15 +34,13 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("ExifUtils")]
 [assembly: AssemblyDescription("EXIF Utility Library")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("BuildTools")]
-[assembly: AssemblyCopyright("Copyright ©2005-2009 Stephen M. McKamey. All rights reserved.")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-
-[assembly: ComVisible(false)]
+[assembly: AssemblyProduct("JsonFx.NET")]
+[assembly: AssemblyCopyright("Copyright © 2005-2009 Stephen M. McKamey. All rights reserved.")]
+[assembly: AssemblyCompany("http://jsonfx.net")]
+#if DEBUG
+[assembly: AssemblyConfiguration("Debug")]
+#else
+[assembly: AssemblyConfiguration("Release")]
+#endif
 
 [assembly: Guid("B0B49A48-BCFC-4230-9412-F030247551AD")]
-
-[assembly: AssemblyFileVersion("1.0.0.0")]
