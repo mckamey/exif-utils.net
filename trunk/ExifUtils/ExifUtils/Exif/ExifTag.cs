@@ -29,6 +29,7 @@
 #endregion License
 
 using System;
+using System.Text;
 using System.ComponentModel;
 
 using ExifUtils.Exif.TagValues;
@@ -42,6 +43,7 @@ namespace ExifUtils.Exif
 	/// References:
 	/// http://it.jeita.or.jp/document/publica/standard/exif/english/jeida49e.htm
 	/// http://www.exif.org/Exif2-2.PDF
+	/// http://msdn.microsoft.com/en-us/library/ms534413(VS.85).aspx
 	/// http://msdn.microsoft.com/library/en-us/gdicpp/GDIPlus/GDIPlusreference/constants/imagepropertytagconstants/propertytagsinnumericalorder.asp
 	/// http://msdn.microsoft.com/library/en-us/gdicpp/GDIPlus/GDIPlusreference/constants/imagepropertytagconstants/propertyitemdescriptions.asp
 	/// http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/EXIF.html
@@ -660,19 +662,19 @@ namespace ExifUtils.Exif
 
 		#region Microsoft Fields
 
-		[ExifDataType(typeof(System.Text.UnicodeEncoding), ExifType.Byte)]
+		[ExifDataType(typeof(UnicodeEncoding), ExifType.Byte)]
 		[Description("Title")]
 		MSTitle = 0x9C9B,
-		[ExifDataType(typeof(System.Text.UnicodeEncoding), ExifType.Byte)]
+		[ExifDataType(typeof(UnicodeEncoding), ExifType.Byte)]
 		[Description("Comments")]
 		MSComments = 0x9C9C,
-		[ExifDataType(typeof(System.Text.UnicodeEncoding), ExifType.Byte)]
+		[ExifDataType(typeof(UnicodeEncoding), ExifType.Byte)]
 		[Description("Author")]
 		MSAuthor = 0x9C9D,
-		[ExifDataType(typeof(System.Text.UnicodeEncoding), ExifType.Byte)]
+		[ExifDataType(typeof(UnicodeEncoding), ExifType.Byte)]
 		[Description("Keywords")]
 		MSKeywords = 0x9C9E,
-		[ExifDataType(typeof(System.Text.UnicodeEncoding), ExifType.Byte)]
+		[ExifDataType(typeof(UnicodeEncoding), ExifType.Byte)]
 		[Description("Subject")]
 		MSSubject = 0x9C9F
 
