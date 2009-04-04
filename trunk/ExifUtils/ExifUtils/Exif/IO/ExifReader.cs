@@ -80,13 +80,10 @@ namespace ExifUtils.Exif.IO
 		{
 			PropertyItem[] propertyItems;
 
-			using (FileStream stream = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
+			// minimally load image
+			using (Image image = ExifReader.LoadImage(imagePath))
 			{
-				// minimally load image
-				using (Image image = Image.FromStream(stream, true, false))
-				{
-					propertyItems = image.PropertyItems;
-				}
+				propertyItems = image.PropertyItems;
 			}
 
 			if (exifTags == null)
@@ -109,5 +106,22 @@ namespace ExifUtils.Exif.IO
 		}
 
 		#endregion Methods
+
+		#region Utility Methods
+
+		/// <summary>
+		/// Minimally load image without verifying image data.
+		/// </summary>
+		/// <param name="filePath"></param>
+		/// <returns></returns>
+		internal static Image LoadImage(string imagePath)
+		{
+			using (FileStream stream = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
+			{
+				return Image.FromStream(stream, true, false);
+			}
+		}
+
+		#endregion Utility Methods
 	}
 }
