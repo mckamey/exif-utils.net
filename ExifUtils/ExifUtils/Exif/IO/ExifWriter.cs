@@ -33,6 +33,7 @@ using System.Text;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Reflection;
+using System.IO;
 
 namespace ExifUtils.Exif.IO
 {
@@ -57,7 +58,8 @@ namespace ExifUtils.Exif.IO
 		/// <param name="properties"></param>
 		public static void AddExifData(string inputPath, string outputPath, ExifPropertyCollection properties)
 		{
-			using (Image image = Image.FromFile(inputPath))
+			// minimally load image
+			using (Image image = ExifReader.LoadImage(inputPath))
 			{
 				ExifWriter.AddExifData(image, properties);
 				image.Save(outputPath);
@@ -72,7 +74,8 @@ namespace ExifUtils.Exif.IO
 		/// <param name="property"></param>
 		public static void AddExifData(string inputPath, string outputPath, ExifProperty property)
 		{
-			using (Image image = Image.FromFile(inputPath))
+			// minimally load image
+			using (Image image = ExifReader.LoadImage(inputPath))
 			{
 				ExifWriter.AddExifData(image, property);
 				image.Save(outputPath);
