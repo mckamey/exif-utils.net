@@ -29,6 +29,7 @@
 #endregion License
 
 using System;
+using System.IO;
 
 using ExifUtils.Exif;
 using ExifUtils.Exif.IO;
@@ -42,6 +43,7 @@ namespace ExifDemo
 			// choose an image
 			Console.Write("Enter image load path: ");
 			string imagePath = Console.ReadLine();
+			int lastDot = imagePath.LastIndexOf('.');
 			Console.WriteLine();
 
 			//----------------------------------------------
@@ -49,16 +51,20 @@ namespace ExifDemo
 			// minimally loads image and closes it
 			ExifPropertyCollection properties = ExifReader.GetExifData(imagePath);
 
-			// dump properties to console
-			foreach (ExifProperty property in properties)
+			string dumpPath = imagePath.Substring(0, lastDot)+"_EXIF"+imagePath.Substring(lastDot)+".txt";
+			using (StreamWriter dumpWriter = File.CreateText(dumpPath))
 			{
-				Console.WriteLine("{0}: {1}", property.DisplayName, property.DisplayValue);
+				// dump properties to console
+				foreach (ExifProperty property in properties)
+				{
+					dumpWriter.WriteLine("{0} ({1}): {2}", property.DisplayName, property.Tag, property.DisplayValue);
+				}
 			}
+
 			Console.WriteLine();
 
 			//----------------------------------------------
 
-			int lastDot = imagePath.LastIndexOf('.');
 			string outputPath = imagePath.Substring(0, lastDot)+"_COPYRIGHT_LOREM_IPSUM"+imagePath.Substring(lastDot);
 			Console.WriteLine("Adding dummy copyright to image and saving to:\r\n\t"+outputPath);
 
