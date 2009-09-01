@@ -59,10 +59,14 @@ namespace ExifUtils.Exif.IO
 		public static void AddExifData(string inputPath, string outputPath, ExifPropertyCollection properties)
 		{
 			// minimally load image
-			using (Image image = ExifReader.LoadImage(inputPath))
+			Image image;
+			using (ExifReader.LoadImage(inputPath, out image))
 			{
-				ExifWriter.AddExifData(image, properties);
-				image.Save(outputPath);
+				using (image)
+				{
+					ExifWriter.AddExifData(image, properties);
+					image.Save(outputPath);
+				}
 			}
 		}
 
@@ -75,10 +79,14 @@ namespace ExifUtils.Exif.IO
 		public static void AddExifData(string inputPath, string outputPath, ExifProperty property)
 		{
 			// minimally load image
-			using (Image image = ExifReader.LoadImage(inputPath))
+			Image image;
+			using (ExifReader.LoadImage(inputPath, out image))
 			{
-				ExifWriter.AddExifData(image, property);
-				image.Save(outputPath);
+				using (image)
+				{
+					ExifWriter.AddExifData(image, property);
+					image.Save(outputPath);
+				}
 			}
 		}
 
