@@ -29,7 +29,10 @@
 #endregion License
 
 using System;
+using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -66,7 +69,9 @@ namespace ExifUtils.Exif.IO
 		public static object FromPropertyItem(PropertyItem propertyItem)
 		{
 			if (propertyItem == null)
+			{
 				return null;
+			}
 
 			object data = null;
 
@@ -217,9 +222,6 @@ namespace ExifUtils.Exif.IO
 		private static ushort ReadUInt16(byte[] buffer, int offset)
 		{
 			return BitConverter.ToUInt16(buffer, offset);
-			//return (ushort)(
-			//    ((ushort)buffer[offset] +
-			//    ((ushort)buffer[offset + 1] << 8)));
 		}
 
 		/// <summary>
@@ -231,11 +233,6 @@ namespace ExifUtils.Exif.IO
 		private static int ReadInt32(byte[] buffer, int offset)
 		{
 			return BitConverter.ToInt32(buffer, offset);
-			//return (int)(
-			//    ((uint)buffer[offset] +
-			//    ((uint)buffer[offset + 1] << 8) +
-			//    ((uint)buffer[offset + 2] << 16) +
-			//    ((int)buffer[offset + 3] << 24)));
 		}
 
 		/// <summary>
@@ -247,11 +244,6 @@ namespace ExifUtils.Exif.IO
 		private static uint ReadUInt32(byte[] buffer, int offset)
 		{
 			return BitConverter.ToUInt32(buffer, offset);
-			//return (uint)(
-			//    ((uint)buffer[offset] +
-			//    ((uint)buffer[offset + 1] << 8) +
-			//    ((uint)buffer[offset + 2] << 16) +
-			//    ((uint)buffer[offset + 3] << 24)));
 		}
 
 		#endregion Byte Decoding
@@ -264,26 +256,34 @@ namespace ExifUtils.Exif.IO
 			{
 				int length = ((Array)value).Length;
 				if (length < 1)
+				{
 					value = null;
+				}
 				else if (length == 1)
+				{
 					value = ((Array)value).GetValue(0);
+				}
 			}
 
 			if (value is String)
+			{
 				value = ((String)value).Trim();
+			}
 
 			if (targetType == null || value == null)
+			{
 				return value;
+			}
 
 			if (targetType == typeof(DateTime) && value is String)
+			{
+				DateTime dateTime;
+				if (DateTime.TryParseExact((string)value, ExifDecoder.ExifDateTimeFormats,
+					DateTimeFormatInfo.InvariantInfo,
+					DateTimeStyles.AllowWhiteSpaces, out dateTime))
 				{
-					DateTime dateTime;
-					if (DateTime.TryParseExact((string)value, ExifDecoder.ExifDateTimeFormats,
-						System.Globalization.DateTimeFormatInfo.InvariantInfo,
-						System.Globalization.DateTimeStyles.AllowWhiteSpaces, out dateTime))
-					{
-						return dateTime;
-					}
+					return dateTime;
+				}
 			}
 
 			if (targetType.IsEnum)
@@ -296,29 +296,36 @@ namespace ExifUtils.Exif.IO
 
 				if (Enum.IsDefined(targetType, value) || FlagsAttribute.IsDefined(targetType, typeof(FlagsAttribute)))
 				{
-					try { return Enum.ToObject(targetType, value); }
+					try
+					{
+						return Enum.ToObject(targetType, value);
+					}
 					catch { }
 				}
 			}
 
-			if (targetType == typeof(System.Text.UnicodeEncoding) && value is byte[])
+			if (targetType == typeof(UnicodeEncoding) && value is byte[])
 			{
 				byte[] bytes = (byte[])value;
 				if (bytes.Length <= 1)
+				{
 					return String.Empty;
+				}
 
-				return System.Text.Encoding.Unicode.GetString(bytes, 0, bytes.Length-1);
+				return Encoding.Unicode.GetString(bytes, 0, bytes.Length-1);
 			}
 
-			if (targetType == typeof(System.Drawing.Bitmap) && value is byte[])
+			if (targetType == typeof(Bitmap) && value is byte[])
 			{
 				byte[] bytes = (byte[])value;
 				if (bytes.Length < 1)
-					return null;
-
-				using (System.IO.MemoryStream stream = new System.IO.MemoryStream(bytes))
 				{
-					return System.Drawing.Bitmap.FromStream(stream);
+					return null;
+				}
+
+				using (MemoryStream stream = new MemoryStream(bytes))
+				{
+					return Bitmap.FromStream(stream);
 				}
 			}
 
