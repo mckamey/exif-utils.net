@@ -33,6 +33,7 @@ using System.IO;
 
 using ExifUtils.Exif;
 using ExifUtils.Exif.IO;
+using ExifUtils.Exif.TagValues;
 
 namespace ExifDemo
 {
@@ -76,6 +77,23 @@ namespace ExifDemo
 				DateTime.Now.Year);
 
 			ExifWriter.AddExifData(imagePath, outputPath, copyright);
+
+			Console.WriteLine();
+
+			//----------------------------------------------
+
+			foreach (ExifTagOrientation i in Enum.GetValues(typeof(ExifTagOrientation)))
+			{
+				outputPath = imagePath.Substring(0, lastDot) + "_Orientation_"+(int)i + imagePath.Substring(lastDot);
+				Console.WriteLine("Adding orientation to image and saving to:\r\n\t" + outputPath);
+
+				// add orientation tag
+				ExifProperty orientTag = new ExifProperty();
+				orientTag.Tag = ExifTag.Orientation;
+				orientTag.Value = i;
+
+				ExifWriter.AddExifData(imagePath, outputPath, orientTag);
+			}
 		}
 	}
 }
