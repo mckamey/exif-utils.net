@@ -150,30 +150,7 @@ namespace ExifUtils.Exif.IO
 
 			Type dataType = ExifDataTypeAttribute.GetDataType(property.Tag);
 
-			switch (property.Type)
-			{
-				case ExifType.Ascii:
-				{
-					propertyItem.Value = Encoding.ASCII.GetBytes(Convert.ToString(property.Value)+'\0');
-					break;
-				}
-				case ExifType.Byte:
-				{
-					if (dataType == typeof(UnicodeEncoding))
-					{
-						propertyItem.Value = Encoding.Unicode.GetBytes(Convert.ToString(property.Value)+'\0');
-					}
-					else
-					{
-						goto default;
-					}
-					break;
-				}
-				default:
-				{
-					throw new NotImplementedException(String.Format("Encoding for EXIF property \"{0}\" has not yet been implemented.", property.DisplayName));
-				}
-			}
+			propertyItem.Value = ExifEncoder.ConvertData(dataType, property.Type, property.Value);
 			propertyItem.Len = propertyItem.Value.Length;
 
 			// This appears to not be necessary

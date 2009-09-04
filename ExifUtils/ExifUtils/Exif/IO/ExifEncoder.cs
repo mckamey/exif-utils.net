@@ -29,15 +29,13 @@
 #endregion License
 
 using System;
+using System.Text;
 
 namespace ExifUtils.Exif.IO
 {
 	/// <summary>
 	/// Encodes the GDI+ representation of EXIF properties.
 	/// </summary>
-	/// <remarks>
-	/// This is not yet supported.
-	/// </remarks>
 	internal static class ExifEncoder
 	{
 		#region Byte Encoding
@@ -47,9 +45,36 @@ namespace ExifUtils.Exif.IO
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		private static byte[] WriteUInt16(UInt16 value)
+		private static byte[] WriteBytes(object value)
 		{
-			return BitConverter.GetBytes(value);
+			if (value == null)
+			{
+				return new byte[0];
+			}
+
+			if (value is Array)
+			{
+				Array array = value as Array;
+				int count = array.Length;
+				byte[] data = new byte[count];
+
+				for (int i=0; i<count; i++)
+				{
+					data[i] = Convert.ToByte(array.GetValue(i));
+				}
+
+				return data;
+			}
+
+			if (value.GetType().IsValueType || value is IConvertible)
+			{
+				return new byte[]
+				{
+					Convert.ToByte(value)
+				};
+			}
+
+			throw new ArgumentException(String.Format("Error converting {0} to byte[].", value.GetType().Name));
 		}
 
 		/// <summary>
@@ -57,9 +82,34 @@ namespace ExifUtils.Exif.IO
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		private static byte[] WriteInt32(Int32 value)
+		private static byte[] WriteUInt16(object value)
 		{
-			return BitConverter.GetBytes(value);
+			if (value == null)
+			{
+				return new byte[0];
+			}
+
+			if (value is Array)
+			{
+				Array array = value as Array;
+				int count = array.Length;
+				byte[] data = new byte[count*ExifDecoder.UInt16Size];
+
+				for (int i=0; i<count; i++)
+				{
+					byte[] item = BitConverter.GetBytes(Convert.ToUInt16(array.GetValue(i)));
+					item.CopyTo(data, i*ExifDecoder.UInt16Size);
+				}
+
+				return data;
+			}
+
+			if (value.GetType().IsValueType || value is IConvertible)
+			{
+				return BitConverter.GetBytes(Convert.ToUInt16(value));
+			}
+
+			throw new ArgumentException(String.Format("Error converting {0} to UInt16[].", value.GetType().Name));
 		}
 
 		/// <summary>
@@ -67,18 +117,118 @@ namespace ExifUtils.Exif.IO
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		private static byte[] WriteUInt32(UInt32 value)
+		private static byte[] WriteInt32(object value)
 		{
-			return BitConverter.GetBytes(value);
+			if (value == null)
+			{
+				return new byte[0];
+			}
+
+			if (value is Array)
+			{
+				Array array = value as Array;
+				int count = array.Length;
+				byte[] data = new byte[count*ExifDecoder.Int32Size];
+
+				for (int i=0; i<count; i++)
+				{
+					byte[] item = BitConverter.GetBytes(Convert.ToInt32(array.GetValue(i)));
+					item.CopyTo(data, i*ExifDecoder.Int32Size);
+				}
+
+				return data;
+			}
+
+			if (value.GetType().IsValueType || value is IConvertible)
+			{
+				return BitConverter.GetBytes(Convert.ToInt32(value));
+			}
+
+			throw new ArgumentException(String.Format("Error converting {0} to Int32[].", value.GetType().Name));
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		private static byte[] WriteUInt32(object value)
+		{
+			if (value == null)
+			{
+				return new byte[0];
+			}
+
+			if (value is Array)
+			{
+				Array array = value as Array;
+				int count = array.Length;
+				byte[] data = new byte[count*ExifDecoder.UInt32Size];
+
+				for (int i=0; i<count; i++)
+				{
+					byte[] item = BitConverter.GetBytes(Convert.ToUInt32(array.GetValue(i)));
+					item.CopyTo(data, i*ExifDecoder.UInt32Size);
+				}
+
+				return data;
+			}
+
+			if (value.GetType().IsValueType || value is IConvertible)
+			{
+				return BitConverter.GetBytes(Convert.ToUInt32(value));
+			}
+
+			throw new ArgumentException(String.Format("Error converting {0} to UInt32[].", value.GetType().Name));
 		}
 
 		#endregion Byte Encoding
 
 		#region Data Conversion
 
-		private static byte[] ConvertData(Type targetType, object value)
+		public static byte[] ConvertData(Type dataType, ExifType targetType, object value)
 		{
-			return null;
+			switch (targetType)
+			{
+				case ExifType.Ascii:
+				{
+					return Encoding.ASCII.GetBytes(Convert.ToString(value) + '\0');
+				}
+				case ExifType.Byte:
+				case ExifType.Raw:
+				{
+					if (dataType == typeof(UnicodeEncoding))
+					{
+						return Encoding.Unicode.GetBytes(Convert.ToString(value) + '\0');
+					}
+
+					return ExifEncoder.WriteBytes(value);
+				}
+				case ExifType.Int32:
+				{
+					return ExifEncoder.WriteInt32(value);
+				}
+				case ExifType.Rational:
+				{
+					goto default;
+				}
+				case ExifType.UInt16:
+				{
+					return ExifEncoder.WriteUInt16(value);
+				}
+				case ExifType.UInt32:
+				{
+					return ExifEncoder.WriteUInt32(value);
+				}
+				case ExifType.URational:
+				{
+					goto default;
+				}
+				default:
+				{
+					throw new NotImplementedException(String.Format("Encoding for EXIF type \"{0}\" has not yet been implemented.", targetType));
+				}
+			}
 		}
 
 		#endregion Data Conversion
