@@ -51,11 +51,11 @@ namespace ExifUtils.Exif.IO
 			"    :  :   HH:mm:ss",
 		};
 
-		private static readonly int UInt16Size = Marshal.SizeOf(typeof(ushort));
-		private static readonly int Int32Size = Marshal.SizeOf(typeof(int));
-		private static readonly int UInt32Size = Marshal.SizeOf(typeof(uint));
-		private static readonly int RationalSize = 2 * Marshal.SizeOf(typeof(int));
-		private static readonly int URationalSize = 2 * Marshal.SizeOf(typeof(uint));
+		internal static readonly int UInt16Size = Marshal.SizeOf(typeof(ushort));
+		internal static readonly int Int32Size = Marshal.SizeOf(typeof(int));
+		internal static readonly int UInt32Size = Marshal.SizeOf(typeof(uint));
+		internal static readonly int RationalSize = 2 * Marshal.SizeOf(typeof(int));
+		internal static readonly int URationalSize = 2 * Marshal.SizeOf(typeof(uint));
 
 		#endregion Constants
 
