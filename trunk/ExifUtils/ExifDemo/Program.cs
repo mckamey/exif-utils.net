@@ -93,6 +93,8 @@ namespace ExifDemo
 				orientTag.Value = i;
 
 				ExifWriter.AddExifData(imagePath, outputPath, orientTag);
+
+				Console.WriteLine();
 			}
 		}
 	}

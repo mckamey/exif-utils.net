@@ -182,6 +182,90 @@ namespace ExifUtils.Exif.IO
 			throw new ArgumentException(String.Format("Error converting {0} to UInt32[].", value.GetType().Name));
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		private static byte[] WriteRational(object value)
+		{
+			if (value == null)
+			{
+				return new byte[0];
+			}
+
+			if (value is Array)
+			{
+				Array array = value as Array;
+				int count = array.Length;
+				byte[] data = new byte[count*ExifDecoder.RationalSize];
+
+				for (int i=0; i<count; i++)
+				{
+					Rational<int> item = (Rational<int>)Convert.ChangeType(array.GetValue(i), typeof(Rational<int>));
+					BitConverter.GetBytes(item.Numerator).CopyTo(data, i*ExifDecoder.RationalSize);
+					BitConverter.GetBytes(item.Numerator).CopyTo(data, i*ExifDecoder.RationalSize+ExifDecoder.Int32Size);
+				}
+
+				return data;
+			}
+
+			if (value.GetType().IsValueType || value is IConvertible)
+			{
+				byte[] data = new byte[ExifDecoder.RationalSize];
+
+				Rational<int> item = (Rational<int>)Convert.ChangeType(value, typeof(Rational<int>));
+				BitConverter.GetBytes(item.Numerator).CopyTo(data, 0);
+				BitConverter.GetBytes(item.Numerator).CopyTo(data, ExifDecoder.UInt32Size);
+
+				return data;
+			}
+
+			throw new ArgumentException(String.Format("Error converting {0} to Rational<int>[].", value.GetType().Name));
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		private static byte[] WriteURational(object value)
+		{
+			if (value == null)
+			{
+				return new byte[0];
+			}
+
+			if (value is Array)
+			{
+				Array array = value as Array;
+				int count = array.Length;
+				byte[] data = new byte[count*ExifDecoder.URationalSize];
+
+				for (int i=0; i<count; i++)
+				{
+					Rational<uint> item = (Rational<uint>)Convert.ChangeType(array.GetValue(i), typeof(Rational<uint>));
+					BitConverter.GetBytes(item.Numerator).CopyTo(data, i*ExifDecoder.URationalSize);
+					BitConverter.GetBytes(item.Numerator).CopyTo(data, i*ExifDecoder.URationalSize+ExifDecoder.UInt32Size);
+				}
+
+				return data;
+			}
+
+			if (value.GetType().IsValueType || value is IConvertible)
+			{
+				byte[] data = new byte[ExifDecoder.RationalSize];
+
+				Rational<uint> item = (Rational<uint>)Convert.ChangeType(value, typeof(Rational<uint>));
+				BitConverter.GetBytes(item.Numerator).CopyTo(data, 0);
+				BitConverter.GetBytes(item.Numerator).CopyTo(data, ExifDecoder.UInt32Size);
+
+				return data;
+			}
+
+			throw new ArgumentException(String.Format("Error converting {0} to Rational<uint>[].", value.GetType().Name));
+		}
+
 		#endregion Byte Encoding
 
 		#region Data Conversion
@@ -210,7 +294,7 @@ namespace ExifUtils.Exif.IO
 				}
 				case ExifType.Rational:
 				{
-					goto default;
+					return ExifEncoder.WriteRational(value);
 				}
 				case ExifType.UInt16:
 				{
@@ -222,7 +306,7 @@ namespace ExifUtils.Exif.IO
 				}
 				case ExifType.URational:
 				{
-					goto default;
+					return ExifEncoder.WriteURational(value);
 				}
 				default:
 				{
