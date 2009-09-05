@@ -185,14 +185,14 @@ namespace ExifUtils.Exif.TagValues
 		[Description("Flip Vertical")]
 		FlipVertical = 4,
 
-		[Description("Rotate 270 Flip Horizontal")]
-		Rotate270FlipHorizontal = 5,
+		[Description("Rotate 90 Flip Horizontal")]
+		Rotate90FlipHorizontal = 5,
 
 		[Description("Rotate 90")]
 		Rotate90 = 6,
 
-		[Description("Rotate 90 Flip Horizontal")]
-		Rotate90FlipHorizontal = 7,
+		[Description("Rotate 270 Flip Horizontal")]
+		Rotate270FlipHorizontal = 7,
 
 		[Description("Rotate 270-CW")]
 		Rotate270 = 8
