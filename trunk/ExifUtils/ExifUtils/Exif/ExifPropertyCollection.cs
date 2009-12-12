@@ -29,11 +29,11 @@
 #endregion License
 
 using System;
-using System.IO;
 using System.ComponentModel;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
+using System.IO;
 
 using ExifUtils.Exif.TypeConverters;
 
@@ -84,28 +84,17 @@ namespace ExifUtils.Exif
 		/// Creates a ExifPropertyCollection from a collection of PropertyItems.
 		/// </summary>
 		/// <param name="propertyItems"></param>
-		public ExifPropertyCollection(IEnumerable<PropertyItem> propertyItems)
+		/// <param name="exifTags">filter of EXIF tags to include</param>
+		public ExifPropertyCollection(IEnumerable<PropertyItem> propertyItems, params ExifTag[] exifTags)
+			: this(propertyItems, (ICollection<ExifTag>)exifTags)
 		{
-			if (propertyItems == null)
-			{
-				return;
-			}
-
-			// copy all the Exif properties
-			foreach (PropertyItem property in propertyItems)
-			{
-				if (property.Value != null)
-				{
-					this.Add(new ExifProperty(property));
-				}
-			}
 		}
 
 		/// <summary>
 		/// Creates a ExifPropertyCollection from a collection of PropertyItems only including explicitly named ExifTags.
 		/// </summary>
 		/// <param name="propertyItems"></param>
-		/// <param name="exifTags">additional EXIF tags to include</param>
+		/// <param name="exifTags">filter of EXIF tags to include</param>
 		public ExifPropertyCollection(IEnumerable<PropertyItem> propertyItems, ICollection<ExifTag> exifTags)
 		{
 			if (propertyItems == null)
@@ -116,9 +105,10 @@ namespace ExifUtils.Exif
 			// copy all the Exif properties
 			foreach (PropertyItem property in propertyItems)
 			{
-				if (exifTags != null &&
+				if (exifTags != null && exifTags.Count > 0 &&
 					(!Enum.IsDefined(typeof(ExifTag), property.Id) || !exifTags.Contains((ExifTag)property.Id)))
 				{
+					// filter those not in the set
 					continue;
 				}
 
