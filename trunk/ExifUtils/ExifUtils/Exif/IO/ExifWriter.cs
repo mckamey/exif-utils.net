@@ -215,7 +215,7 @@ namespace ExifUtils.Exif.IO
 			if (ExifWriter.ctorPropertyItem == null)
 			{
 				// Must use Reflection to get access to PropertyItem constructor
-				ExifWriter.ctorPropertyItem = typeof(PropertyItem).GetConstructor(Type.EmptyTypes);
+				ExifWriter.ctorPropertyItem = typeof(PropertyItem).GetConstructor(BindingFlags.NonPublic|BindingFlags.Instance, null, Type.EmptyTypes, null);
 				if (ExifWriter.ctorPropertyItem == null)
 				{
 					throw new NotSupportedException("Unable to instantiate a System.Drawing.Imaging.PropertyItem");
