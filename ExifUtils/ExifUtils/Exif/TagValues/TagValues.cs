@@ -194,7 +194,7 @@ namespace ExifUtils.Exif.TagValues
 		[Description("Rotate 270 Flip Horizontal")]
 		Rotate270FlipHorizontal = 7,
 
-		[Description("Rotate 270-CW")]
+		[Description("Rotate 270")]
 		Rotate270 = 8
 	}
 
