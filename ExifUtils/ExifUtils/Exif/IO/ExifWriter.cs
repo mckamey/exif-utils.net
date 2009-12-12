@@ -44,7 +44,7 @@ namespace ExifUtils.Exif.IO
 	{
 		#region Fields
 
-		private static ConstructorInfo ctorPropertyItem = null;
+		private static ConstructorInfo PropertyItem_Ctor = null;
 
 		#endregion Fields
 
@@ -212,17 +212,17 @@ namespace ExifUtils.Exif.IO
 		/// <returns></returns>
 		internal static PropertyItem CreatePropertyItem()
 		{
-			if (ExifWriter.ctorPropertyItem == null)
+			if (ExifWriter.PropertyItem_Ctor == null)
 			{
 				// Must use Reflection to get access to PropertyItem constructor
-				ExifWriter.ctorPropertyItem = typeof(PropertyItem).GetConstructor(BindingFlags.NonPublic|BindingFlags.Instance, null, Type.EmptyTypes, null);
-				if (ExifWriter.ctorPropertyItem == null)
+				ExifWriter.PropertyItem_Ctor = typeof(PropertyItem).GetConstructor(BindingFlags.NonPublic|BindingFlags.Instance, null, Type.EmptyTypes, null);
+				if (ExifWriter.PropertyItem_Ctor == null)
 				{
-					throw new NotSupportedException("Unable to instantiate a System.Drawing.Imaging.PropertyItem");
+					throw new NotSupportedException("Unable to instantiate a "+typeof(PropertyItem).FullName);
 				}
 			}
 
-			return (PropertyItem)ExifWriter.ctorPropertyItem.Invoke(null);
+			return (PropertyItem)ExifWriter.PropertyItem_Ctor.Invoke(null);
 		}
 
 		#endregion Utility Methods
