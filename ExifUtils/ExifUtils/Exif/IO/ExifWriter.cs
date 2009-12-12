@@ -29,11 +29,12 @@
 #endregion License
 
 using System;
-using System.Text;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Reflection;
 using System.IO;
+using System.Reflection;
+using System.Text;
 
 namespace ExifUtils.Exif.IO
 {
@@ -99,7 +100,7 @@ namespace ExifUtils.Exif.IO
 		{
 			if (image == null)
 			{
-				throw new NullReferenceException("image was null");
+				throw new ArgumentNullException("image");
 			}
 
 			if (properties == null || properties.Count < 1)
@@ -122,9 +123,8 @@ namespace ExifUtils.Exif.IO
 		{
 			if (image == null)
 			{
-				throw new NullReferenceException("image was null");
+				throw new ArgumentNullException("image");
 			}
-
 			if (property == null)
 			{
 				return;
@@ -154,15 +154,79 @@ namespace ExifUtils.Exif.IO
 			propertyItem.Len = propertyItem.Value.Length;
 
 			// This appears to not be necessary
-			//foreach (int id in image.PropertyIdList)
-			//{
-			//    if (id == exif.PropertyItem.Id)
-			//    {
-			//        image.RemovePropertyItem(id);
-			//        break;
-			//    }
-			//}
+			ExifWriter.RemoveExifData(image, property.Tag);
 			image.SetPropertyItem(propertyItem);
+		}
+
+		/// <summary>
+		/// Remvoes EXIF properties from an image.
+		/// </summary>
+		/// <param name="inputPath">file path of original image</param>
+		/// <param name="outputPath">file path of modified image</param>
+		/// <param name="exifTags">tags to remove</param>
+		public static void RemoveExifData(string inputPath, string outputPath, params ExifTag[] exifTags)
+		{
+			ExifWriter.RemoveExifData(inputPath, outputPath, (IEnumerable<ExifTag>)exifTags);
+		}
+
+		/// <summary>
+		/// Remvoes EXIF properties from an image.
+		/// </summary>
+		/// <param name="inputPath">file path of original image</param>
+		/// <param name="outputPath">file path of modified image</param>
+		/// <param name="exifTags">tags to remove</param>
+		public static void RemoveExifData(string inputPath, string outputPath, IEnumerable<ExifTag> exifTags)
+		{
+			// minimally load image
+			Image image;
+			using (ExifReader.LoadImage(inputPath, out image))
+			{
+				using (image)
+				{
+					ExifWriter.RemoveExifData(image, exifTags);
+					image.Save(outputPath);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Remvoes EXIF properties from an image.
+		/// </summary>
+		/// <param name="image"></param>
+		/// <param name="exifTags">tags to remove</param>
+		public static void RemoveExifData(Image image, params ExifTag[] exifTags)
+		{
+			ExifWriter.RemoveExifData(image, (IEnumerable<ExifTag>)exifTags);
+		}
+
+		/// <summary>
+		/// Remvoes EXIF properties from an image.
+		/// </summary>
+		/// <param name="image"></param>
+		/// <param name="exifTags">tags to remove</param>
+		public static void RemoveExifData(Image image, IEnumerable<ExifTag> exifTags)
+		{
+			if (image == null)
+			{
+				throw new ArgumentNullException("image");
+			}
+			if (exifTags == null)
+			{
+				return;
+			}
+
+			foreach (ExifTag tag in exifTags)
+			{
+				int propertyID = (int)tag;
+				foreach (int id in image.PropertyIdList)
+				{
+					if (id == propertyID)
+					{
+						image.RemovePropertyItem(propertyID);
+						break;
+					}
+				}
+			}
 		}
 
 		#endregion Write Methods

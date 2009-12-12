@@ -29,10 +29,10 @@
 #endregion License
 
 using System;
-using System.IO;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 
 namespace ExifUtils.Exif.IO
 {
@@ -44,29 +44,15 @@ namespace ExifUtils.Exif.IO
 		#region Methods
 
 		/// <summary>
-		/// Creates a ExifPropertyCollection from the PropertyItems of a Bitmap.
+		/// Creates a ExifPropertyCollection from an image file path.
+		/// Minimally loads image only enough to get PropertyItems.
 		/// </summary>
-		/// <param name="image"></param>
-		/// <param name="exifTags">additional EXIF tags to include</param>
-		/// <returns></returns>
-		public static ExifPropertyCollection GetExifData(Image image, ICollection<ExifTag> exifTags)
+		/// <param name="imagePath"></param>
+		/// <param name="exifTags">filter of EXIF tags to include</param>
+		/// <returns>Collection of ExifProperty items</returns>
+		public static ExifPropertyCollection GetExifData(string imagePath, params ExifTag[] exifTags)
 		{
-			if (exifTags == null)
-			{
-				return new ExifPropertyCollection(image.PropertyItems);
-			}
-
-			return new ExifPropertyCollection(image.PropertyItems, exifTags);
-		}
-
-		/// <summary>
-		/// Creates a ExifPropertyCollection from the PropertyItems of a Bitmap.
-		/// </summary>
-		/// <param name="image"></param>
-		/// <returns></returns>
-		public static ExifPropertyCollection GetExifData(Image image)
-		{
-			return ExifReader.GetExifData(image, null);
+			return ExifReader.GetExifData(imagePath, (ICollection<ExifTag>)exifTags);
 		}
 
 		/// <summary>
@@ -90,23 +76,29 @@ namespace ExifUtils.Exif.IO
 				}
 			}
 
-			if (exifTags == null)
-			{
-				return new ExifPropertyCollection(propertyItems);
-			}
-
 			return new ExifPropertyCollection(propertyItems, exifTags);
 		}
 
 		/// <summary>
-		/// Creates a ExifPropertyCollection from an image file path.
-		/// Minimally loads image only enough to get PropertyItems.
+		/// Creates a ExifPropertyCollection from the PropertyItems of a Bitmap.
 		/// </summary>
-		/// <param name="imagePath"></param>
-		/// <returns>Collection of ExifProperty items</returns>
-		public static ExifPropertyCollection GetExifData(string imagePath)
+		/// <param name="image"></param>
+		/// <param name="exifTags">filter of EXIF tags to include</param>
+		/// <returns></returns>
+		public static ExifPropertyCollection GetExifData(Image image, params ExifTag[] exifTags)
 		{
-			return ExifReader.GetExifData(imagePath, null);
+			return ExifReader.GetExifData(image, (ICollection<ExifTag>)exifTags);
+		}
+
+		/// <summary>
+		/// Creates a ExifPropertyCollection from the PropertyItems of a Bitmap.
+		/// </summary>
+		/// <param name="image"></param>
+		/// <param name="exifTags">filter of EXIF tags to include</param>
+		/// <returns></returns>
+		public static ExifPropertyCollection GetExifData(Image image, ICollection<ExifTag> exifTags)
+		{
+			return new ExifPropertyCollection(image.PropertyItems, exifTags);
 		}
 
 		#endregion Methods
