@@ -58,7 +58,16 @@ namespace ExifDemo
 				// dump properties to console
 				foreach (ExifProperty property in properties)
 				{
-					dumpWriter.WriteLine("{0} ({1}): {2}", property.DisplayName, property.Tag, property.DisplayValue);
+					dumpWriter.WriteLine("{0}.{1}: \"{2}\"",
+						property.Tag.GetType().Name,
+						property.Tag,
+						property.DisplayName);
+					dumpWriter.WriteLine("{0}: {1}",
+						GetPropertyTypeName(property.Value),
+						property.Value);
+					dumpWriter.WriteLine("\"{0}\"",
+						property.DisplayValue);
+					dumpWriter.WriteLine();
 				}
 			}
 
@@ -96,6 +105,49 @@ namespace ExifDemo
 
 				Console.WriteLine();
 			}
+		}
+
+		private static string GetPropertyTypeName(object value)
+		{
+			if (value == null)
+			{
+				return "null";
+			}
+
+			Type type = value.GetType();
+
+			if (type.IsArray || type.HasElementType)
+			{
+				return type.GetElementType().Name+'['+((Array)value).Length+']';
+			}
+
+			if (type.IsGenericType)
+			{
+				string name = type.Name;
+				if (name.IndexOf('`') >= 0)
+				{
+					name = name.Substring(0, name.IndexOf('`'));
+				}
+				name += '<';
+				Type[] args = type.GetGenericArguments();
+				for (int i=0; i<args.Length; i++)
+				{
+					if (i > 0)
+					{
+						name += ',';
+					}
+					name += args[i].Name;
+				}
+				name += '>';
+				return name;
+			}
+
+			if (type.IsEnum)
+			{
+				return type.Name+':'+Enum.GetUnderlyingType(type).Name;
+			}
+
+			return type.Name;
 		}
 	}
 }
