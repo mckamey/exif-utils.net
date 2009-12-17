@@ -270,12 +270,16 @@ namespace ExifUtils.Exif
 					{
 						Array array = (Array)rawValue;
 						if (array.Length < 1 || !(array.GetValue(0) is IConvertible))
+						{
 							goto default;
+						}
 						rawValue = array.GetValue(0);
 					}
 
 					if (!(rawValue is IConvertible))
+					{
 						goto default;
+					}
 
 					return String.Format("ISO-{0:###0}", Convert.ToDecimal(rawValue));
 				}
@@ -299,7 +303,9 @@ namespace ExifUtils.Exif
 				case ExifTag.ShutterSpeed:
 				{
 					if (!(rawValue is Rational<int>))
+					{
 						goto default;
+					}
 
 					Rational<int> shutter = (Rational<int>)rawValue;
 					if (shutter.Numerator > 0)
@@ -316,7 +322,9 @@ namespace ExifUtils.Exif
 				case ExifTag.ExposureTime:
 				{
 					if (!(rawValue is Rational<uint>))
+					{
 						goto default;
+					}
 
 					Rational<uint> exposure = (Rational<uint>)rawValue;
 					if (exposure.Numerator == exposure.Denominator)
@@ -367,6 +375,44 @@ namespace ExifUtils.Exif
 				{
 					return Convert.ToString(rawValue).Replace('/', ':');
 				}
+				case ExifTag.GpsLatitude:
+				case ExifTag.GpsLongitude:
+				case ExifTag.GpsDestLatitude:
+				case ExifTag.GpsDestLongitude:
+				{
+					if (!(rawValue is Array))
+					{
+						goto default;
+					}
+
+					Array array = (Array)rawValue;
+					if (array.Length < 1)
+					{
+						return String.Empty;
+					}
+					else if (array.Length != 3)
+					{
+						goto default;
+					}
+
+					decimal value = Convert.ToDecimal(array.GetValue(0))+ Decimal.Divide(Convert.ToDecimal(array.GetValue(1)), 60m) + Decimal.Divide(Convert.ToDecimal(array.GetValue(2)), 3600m);
+					return value.ToString("0.0######");
+				}
+				case ExifTag.GpsTimeStamp:
+				{
+					Array array = (Array)rawValue;
+					if (array.Length < 1)
+					{
+						return String.Empty;
+					}
+
+					string[] time = new string[array.Length];
+					for (int i=0; i<array.Length; i++)
+					{
+						time[i] = Convert.ToDecimal(array.GetValue(i)).ToString();
+					}
+					return String.Join(":", time);
+				}
 				default:
 				{
 					if (rawValue is Enum)
@@ -381,11 +427,15 @@ namespace ExifUtils.Exif
 					{
 						Array array = (Array)rawValue;
 						if (array.Length < 1)
+						{
 							return String.Empty;
+						}
 
 						Type type = array.GetValue(0).GetType();
 						if (!type.IsPrimitive || type == typeof(char) || type == typeof(float) || type == typeof(double))
+						{
 							return Convert.ToString(rawValue);
+						}
 
 						//const int ElemsPerRow = 40;
 						int charSize = 2*System.Runtime.InteropServices.Marshal.SizeOf(type);
