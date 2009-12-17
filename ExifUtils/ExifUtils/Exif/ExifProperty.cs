@@ -284,12 +284,12 @@ namespace ExifUtils.Exif
 				{
 					// f/x.x
 					double fStop = Math.Pow(2.0, Convert.ToDouble(rawValue)/2.0);
-					return String.Format("\u0192/{0:#0.0}", fStop);
+					return String.Format("f/{0:#0.0}", fStop);
 				}
 				case ExifTag.FNumber:
 				{
 					// f/x.x
-					return String.Format("\u0192/{0:#0.0}", Convert.ToDecimal(rawValue));
+					return String.Format("f/{0:#0.0}", Convert.ToDecimal(rawValue));
 				}
 				case ExifTag.FocalLength:
 				case ExifTag.FocalLengthIn35mmFilm:
