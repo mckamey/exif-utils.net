@@ -443,15 +443,19 @@ namespace ExifUtils.Exif
 						StringBuilder builder = new StringBuilder(((charSize+1)*array.Length)/*+(2*array.Length/ElemsPerRow)*/);
 						for (int i=0; i<array.Length; i++)
 						{
-							builder.AppendFormat(format, array.GetValue(i));
-							//if ((i+1)%ElemsPerRow == 0)
-							//{
-							//    builder.AppendLine();
-							//}
-							//else
+							if (i > 0)
 							{
-								builder.Append(" ");
+								//if ((i+1)%ElemsPerRow == 0)
+								//{
+								//    builder.AppendLine();
+								//}
+								//else
+								{
+									builder.Append(" ");
+								}
 							}
+							
+							builder.AppendFormat(format, array.GetValue(i));
 						}
 						return builder.ToString();
 					}
