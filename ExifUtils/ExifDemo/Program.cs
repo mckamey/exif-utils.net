@@ -116,9 +116,19 @@ namespace ExifDemo
 
 			Type type = value.GetType();
 
+			return GetPropertyTypeName(type, type.IsArray ? ((Array)value).Length : 0);
+		}
+
+		private static string GetPropertyTypeName(Type type, int length)
+		{
+			if (type == null)
+			{
+				return "null";
+			}
+
 			if (type.IsArray || type.HasElementType)
 			{
-				return type.GetElementType().Name+'['+((Array)value).Length+']';
+				return GetPropertyTypeName(type.GetElementType(), 0)+'['+length+']';
 			}
 
 			if (type.IsGenericType)
