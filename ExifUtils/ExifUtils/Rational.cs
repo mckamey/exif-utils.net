@@ -51,7 +51,7 @@ namespace ExifUtils
 		#region Constants
 
 		private const char Delim = '/';
-		private static readonly char[] DelimSet = new char[] { '/' };
+		private static readonly char[] DelimSet = new char[] { Delim };
 
 		#endregion Constants
 
