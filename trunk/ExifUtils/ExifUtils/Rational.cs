@@ -38,7 +38,9 @@ namespace ExifUtils
 	/// </summary>
 	[Serializable]
 	public struct Rational<T> :
-		IConvertible
+		IConvertible,
+		IComparable,
+		IComparable<T>
 		where T : IConvertible
 	{
 		#region Delegate Types
@@ -67,7 +69,7 @@ namespace ExifUtils
 		#region Init
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ExifUtils.Rational{T}"/> class.
+		/// Initializes a new instance of the <see cref="Rational&lt;T&gt;"/> class.
 		/// </summary>
 		/// <param name="numerator">The numerator of the rational number.</param>
 		/// <param name="denominator">The denominator of the rational number.</param>
@@ -78,7 +80,7 @@ namespace ExifUtils
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ExifUtils.Rational{T}"/> class.
+		/// Initializes a new instance of the <see cref="Rational&lt;T&gt;"/> class.
 		/// </summary>
 		/// <param name="numerator">The numerator of the rational number.</param>
 		/// <param name="denominator">The denominator of the rational number.</param>
@@ -117,218 +119,6 @@ namespace ExifUtils
 		}
 
 		#endregion Properties
-
-		#region Operators
-
-		/// <summary>
-		/// Addition
-		/// </summary>
-		/// <param name="r1"></param>
-		/// <param name="r2"></param>
-		/// <returns></returns>
-		public static Rational<T> operator+(Rational<T> r1, Rational<T> r2)
-		{
-			decimal r1n = Convert.ToDecimal(r1.numerator);
-			decimal r1d = Convert.ToDecimal(r1.denominator);
-			decimal r2n = Convert.ToDecimal(r2.numerator);
-			decimal r2d = Convert.ToDecimal(r2.denominator);
-
-			decimal denominator = Rational<T>.LCD(r1d, r2d);
-			if (denominator > r1d)
-			{
-				r1n *= (denominator/r1d);
-			}
-			if (denominator > r2d)
-			{
-				r2n *= (denominator/r2d);
-			}
-
-			decimal numerator = r1n + r2n;
-
-			return new Rational<T>((T)Convert.ChangeType(numerator, typeof(T)), (T)Convert.ChangeType(denominator, typeof(T)));
-		}
-
-		/// <summary>
-		/// Negation
-		/// </summary>
-		/// <param name="r"></param>
-		/// <returns></returns>
-		public static Rational<T> operator-(Rational<T> r)
-		{
-			T numerator = (T)Convert.ChangeType(-Convert.ToDecimal(r.numerator), typeof(T));
-			return new Rational<T>(numerator, r.denominator);
-		}
-
-		/// <summary>
-		/// Subtraction
-		/// </summary>
-		/// <param name="r1"></param>
-		/// <param name="r2"></param>
-		/// <returns></returns>
-		public static Rational<T> operator-(Rational<T> r1, Rational<T> r2)
-		{
-			return r1 + (-r2);
-		}
-
-		/// <summary>
-		/// Multiplication
-		/// </summary>
-		/// <param name="r1"></param>
-		/// <param name="r2"></param>
-		/// <returns></returns>
-		public static Rational<T> operator*(Rational<T> r1, Rational<T> r2)
-		{
-			decimal numerator = Convert.ToDecimal(r1.numerator) * Convert.ToDecimal(r2.numerator);
-			decimal denominator = Convert.ToDecimal(r1.denominator) * Convert.ToDecimal(r2.denominator);
-
-			return new Rational<T>((T)Convert.ChangeType(numerator, typeof(T)), (T)Convert.ChangeType(denominator, typeof(T)));
-		}
-
-		/// <summary>
-		/// Division
-		/// </summary>
-		/// <param name="r1"></param>
-		/// <param name="r2"></param>
-		/// <returns></returns>
-		public static Rational<T> operator/(Rational<T> r1, Rational<T> r2)
-		{
-			return r1 * new Rational<T>(r2.denominator, r2.numerator);
-		}
-
-		#endregion Operators
-
-		#region Object Overrides
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public override string ToString()
-		{
-			return Convert.ToString(this);
-		}
-
-		#endregion Object Overrides
-
-		#region IConvertible Members
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="provider"></param>
-		/// <returns></returns>
-		public string ToString(IFormatProvider provider)
-		{
-			return String.Concat(
-				this.Numerator.ToString(provider),
-				Rational<T>.Delim,
-				this.Denominator.ToString(provider));
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="provider"></param>
-		/// <returns></returns>
-		public decimal ToDecimal(IFormatProvider provider)
-		{
-			try
-			{
-				return this.Numerator.ToDecimal(provider)/this.Denominator.ToDecimal(provider);
-			}
-			catch (InvalidCastException)
-			{
-				return ((IConvertible)this.Numerator.ToInt64(provider)).ToDecimal(provider) /
-					((IConvertible)this.Denominator.ToInt64(provider)).ToDecimal(provider);
-			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="provider"></param>
-		/// <returns></returns>
-		public double ToDouble(IFormatProvider provider)
-		{
-			return this.Numerator.ToDouble(provider)/this.Denominator.ToDouble(provider);
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="provider"></param>
-		/// <returns></returns>
-		public float ToSingle(IFormatProvider provider)
-		{
-			return this.Numerator.ToSingle(provider)/this.Denominator.ToSingle(provider);
-		}
-
-		bool IConvertible.ToBoolean(IFormatProvider provider)
-		{
-			return ((IConvertible)this.ToDecimal(provider)).ToBoolean(provider);
-		}
-
-		byte IConvertible.ToByte(IFormatProvider provider)
-		{
-			return ((IConvertible)this.ToDecimal(provider)).ToByte(provider);
-		}
-
-		char IConvertible.ToChar(IFormatProvider provider)
-		{
-			return ((IConvertible)this.ToDecimal(provider)).ToChar(provider);
-		}
-
-		short IConvertible.ToInt16(IFormatProvider provider)
-		{
-			return ((IConvertible)this.ToDecimal(provider)).ToInt16(provider);
-		}
-
-		int IConvertible.ToInt32(IFormatProvider provider)
-		{
-			return ((IConvertible)this.ToDecimal(provider)).ToInt32(provider);
-		}
-
-		long IConvertible.ToInt64(IFormatProvider provider)
-		{
-			return ((IConvertible)this.ToDecimal(provider)).ToInt64(provider);
-		}
-
-		sbyte IConvertible.ToSByte(IFormatProvider provider)
-		{
-			return ((IConvertible)this.ToDecimal(provider)).ToSByte(provider);
-		}
-
-		ushort IConvertible.ToUInt16(IFormatProvider provider)
-		{
-			return ((IConvertible)this.ToDecimal(provider)).ToUInt16(provider);
-		}
-
-		uint IConvertible.ToUInt32(IFormatProvider provider)
-		{
-			return ((IConvertible)this.ToDecimal(provider)).ToUInt32(provider);
-		}
-
-		ulong IConvertible.ToUInt64(IFormatProvider provider)
-		{
-			return ((IConvertible)this.ToDecimal(provider)).ToUInt64(provider);
-		}
-
-		DateTime IConvertible.ToDateTime(IFormatProvider provider)
-		{
-			return new DateTime(((IConvertible)this).ToInt64(provider));
-		}
-
-		TypeCode IConvertible.GetTypeCode()
-		{
-			return this.Numerator.GetTypeCode();
-		}
-
-		object IConvertible.ToType(Type conversionType, IFormatProvider provider)
-		{
-			return Convert.ChangeType(this, conversionType, provider);
-		}
-
-		#endregion IConvertible Members
 
 		#region Parse Methods
 
@@ -564,5 +354,311 @@ namespace ExifUtils
 		}
 
 		#endregion Math Methods
+
+		#region IConvertible Members
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="provider"></param>
+		/// <returns></returns>
+		public string ToString(IFormatProvider provider)
+		{
+			return String.Concat(
+				this.Numerator.ToString(provider),
+				Rational<T>.Delim,
+				this.Denominator.ToString(provider));
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="provider"></param>
+		/// <returns></returns>
+		public decimal ToDecimal(IFormatProvider provider)
+		{
+			try
+			{
+				return this.Numerator.ToDecimal(provider)/this.Denominator.ToDecimal(provider);
+			}
+			catch (InvalidCastException)
+			{
+				return ((IConvertible)this.Numerator.ToInt64(provider)).ToDecimal(provider) /
+					((IConvertible)this.Denominator.ToInt64(provider)).ToDecimal(provider);
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="provider"></param>
+		/// <returns></returns>
+		public double ToDouble(IFormatProvider provider)
+		{
+			return this.Numerator.ToDouble(provider)/this.Denominator.ToDouble(provider);
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="provider"></param>
+		/// <returns></returns>
+		public float ToSingle(IFormatProvider provider)
+		{
+			return this.Numerator.ToSingle(provider)/this.Denominator.ToSingle(provider);
+		}
+
+		bool IConvertible.ToBoolean(IFormatProvider provider)
+		{
+			return ((IConvertible)this.ToDecimal(provider)).ToBoolean(provider);
+		}
+
+		byte IConvertible.ToByte(IFormatProvider provider)
+		{
+			return ((IConvertible)this.ToDecimal(provider)).ToByte(provider);
+		}
+
+		char IConvertible.ToChar(IFormatProvider provider)
+		{
+			return ((IConvertible)this.ToDecimal(provider)).ToChar(provider);
+		}
+
+		short IConvertible.ToInt16(IFormatProvider provider)
+		{
+			return ((IConvertible)this.ToDecimal(provider)).ToInt16(provider);
+		}
+
+		int IConvertible.ToInt32(IFormatProvider provider)
+		{
+			return ((IConvertible)this.ToDecimal(provider)).ToInt32(provider);
+		}
+
+		long IConvertible.ToInt64(IFormatProvider provider)
+		{
+			return ((IConvertible)this.ToDecimal(provider)).ToInt64(provider);
+		}
+
+		sbyte IConvertible.ToSByte(IFormatProvider provider)
+		{
+			return ((IConvertible)this.ToDecimal(provider)).ToSByte(provider);
+		}
+
+		ushort IConvertible.ToUInt16(IFormatProvider provider)
+		{
+			return ((IConvertible)this.ToDecimal(provider)).ToUInt16(provider);
+		}
+
+		uint IConvertible.ToUInt32(IFormatProvider provider)
+		{
+			return ((IConvertible)this.ToDecimal(provider)).ToUInt32(provider);
+		}
+
+		ulong IConvertible.ToUInt64(IFormatProvider provider)
+		{
+			return ((IConvertible)this.ToDecimal(provider)).ToUInt64(provider);
+		}
+
+		DateTime IConvertible.ToDateTime(IFormatProvider provider)
+		{
+			return new DateTime(((IConvertible)this).ToInt64(provider));
+		}
+
+		TypeCode IConvertible.GetTypeCode()
+		{
+			return this.Numerator.GetTypeCode();
+		}
+
+		object IConvertible.ToType(Type conversionType, IFormatProvider provider)
+		{
+			return Convert.ChangeType(this, conversionType, provider);
+		}
+
+		#endregion IConvertible Members
+
+		#region IComparable Members
+
+		/// <summary>
+		/// Compares this instance to a specified System.Object.
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		public int CompareTo(object that)
+		{
+			return Convert.ToDecimal(this).CompareTo(Convert.ToDecimal(that));
+		}
+
+		#endregion IComparable Members
+
+		#region IComparable<T> Members
+
+		/// <summary>
+		/// Compares this instance to another <see cref="T"/> instance.
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		public int CompareTo(T that)
+		{
+			return Decimal.Compare(Convert.ToDecimal(this), Convert.ToDecimal(that));
+		}
+
+		#endregion IComparable<T> Members
+
+		#region Operators
+
+		/// <summary>
+		/// Negation
+		/// </summary>
+		/// <param name="r"></param>
+		/// <returns></returns>
+		public static Rational<T> operator-(Rational<T> r)
+		{
+			T numerator = (T)Convert.ChangeType(-Convert.ToDecimal(r.numerator), typeof(T));
+			return new Rational<T>(numerator, r.denominator);
+		}
+
+		/// <summary>
+		/// Addition
+		/// </summary>
+		/// <param name="r1"></param>
+		/// <param name="r2"></param>
+		/// <returns></returns>
+		public static Rational<T> operator+(Rational<T> r1, Rational<T> r2)
+		{
+			decimal r1n = Convert.ToDecimal(r1.numerator);
+			decimal r1d = Convert.ToDecimal(r1.denominator);
+			decimal r2n = Convert.ToDecimal(r2.numerator);
+			decimal r2d = Convert.ToDecimal(r2.denominator);
+
+			decimal denominator = Rational<T>.LCD(r1d, r2d);
+			if (denominator > r1d)
+			{
+				r1n *= (denominator/r1d);
+			}
+			if (denominator > r2d)
+			{
+				r2n *= (denominator/r2d);
+			}
+
+			decimal numerator = r1n + r2n;
+
+			return new Rational<T>((T)Convert.ChangeType(numerator, typeof(T)), (T)Convert.ChangeType(denominator, typeof(T)));
+		}
+
+		/// <summary>
+		/// Subtraction
+		/// </summary>
+		/// <param name="r1"></param>
+		/// <param name="r2"></param>
+		/// <returns></returns>
+		public static Rational<T> operator-(Rational<T> r1, Rational<T> r2)
+		{
+			return r1 + (-r2);
+		}
+
+		/// <summary>
+		/// Multiplication
+		/// </summary>
+		/// <param name="r1"></param>
+		/// <param name="r2"></param>
+		/// <returns></returns>
+		public static Rational<T> operator*(Rational<T> r1, Rational<T> r2)
+		{
+			decimal numerator = Convert.ToDecimal(r1.numerator) * Convert.ToDecimal(r2.numerator);
+			decimal denominator = Convert.ToDecimal(r1.denominator) * Convert.ToDecimal(r2.denominator);
+
+			return new Rational<T>((T)Convert.ChangeType(numerator, typeof(T)), (T)Convert.ChangeType(denominator, typeof(T)));
+		}
+
+		/// <summary>
+		/// Division
+		/// </summary>
+		/// <param name="r1"></param>
+		/// <param name="r2"></param>
+		/// <returns></returns>
+		public static Rational<T> operator/(Rational<T> r1, Rational<T> r2)
+		{
+			return r1 * new Rational<T>(r2.denominator, r2.numerator);
+		}
+
+		/// <summary>
+		/// Less than
+		/// </summary>
+		/// <param name="r1"></param>
+		/// <param name="r2"></param>
+		/// <returns></returns>
+		public static bool operator<(Rational<T> r1, Rational<T> r2)
+		{
+			return r1.CompareTo(r2) < 0;
+		}
+
+		/// <summary>
+		/// Less than or equal to
+		/// </summary>
+		/// <param name="r1"></param>
+		/// <param name="r2"></param>
+		/// <returns></returns>
+		public static bool operator<=(Rational<T> r1, Rational<T> r2)
+		{
+			return r1.CompareTo(r2) <= 0;
+		}
+
+		/// <summary>
+		/// Greater than
+		/// </summary>
+		/// <param name="r1"></param>
+		/// <param name="r2"></param>
+		/// <returns></returns>
+		public static bool operator>(Rational<T> r1, Rational<T> r2)
+		{
+			return r1.CompareTo(r2) > 0;
+		}
+
+		/// <summary>
+		/// Greater than or equal to
+		/// </summary>
+		/// <param name="r1"></param>
+		/// <param name="r2"></param>
+		/// <returns></returns>
+		public static bool operator>=(Rational<T> r1, Rational<T> r2)
+		{
+			return r1.CompareTo(r2) >= 0;
+		}
+
+		/// <summary>
+		/// Equal to
+		/// </summary>
+		/// <param name="r1"></param>
+		/// <param name="r2"></param>
+		/// <returns></returns>
+		public static bool operator==(Rational<T> r1, Rational<T> r2)
+		{
+			return r1.CompareTo(r2) == 0;
+		}
+
+		/// <summary>
+		/// Not equal to
+		/// </summary>
+		/// <param name="r1"></param>
+		/// <param name="r2"></param>
+		/// <returns></returns>
+		public static bool operator!=(Rational<T> r1, Rational<T> r2)
+		{
+			return r1.CompareTo(r2) != 0;
+		}
+
+		#endregion Operators
+
+		#region Object Overrides
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		public override string ToString()
+		{
+			return Convert.ToString(this);
+		}
+
+		#endregion Object Overrides
 	}
 }
