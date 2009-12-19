@@ -29,6 +29,7 @@
 #endregion License
 
 using System;
+using System.Reflection;
 
 namespace ExifUtils
 {
@@ -40,10 +41,26 @@ namespace ExifUtils
 		IConvertible
 		where T : IConvertible
 	{
+		#region Delegate Types
+
+		private delegate T ParseDelegate(string value);
+		private delegate bool TryParseDelegate(string value, out T rational);
+
+		#endregion Delegate Types
+
+		#region Constants
+
+		private const char Delim = '/';
+		private static readonly char[] DelimSet = new char[] { '/' };
+
+		#endregion Constants
+
 		#region Fields
 
 		private T numerator;
 		private T denominator;
+		private static ParseDelegate Parser;
+		private static TryParseDelegate TryParser;
 
 		#endregion Fields
 
@@ -54,36 +71,26 @@ namespace ExifUtils
 		/// </summary>
 		/// <param name="numerator">The numerator of the rational number.</param>
 		/// <param name="denominator">The denominator of the rational number.</param>
+		/// <remarks>reduces by default</remarks>
 		public Rational(T numerator, T denominator)
+			: this(numerator, denominator, false)
 		{
-			bool reduced = false;
-			decimal n = Convert.ToDecimal(numerator);
-			decimal d = Convert.ToDecimal(denominator);
+		}
 
-			decimal gcd = GCD(n, d);
-			if (gcd != 1m && gcd != 0m)
-			{
-				reduced = true;
-				n /= gcd;
-				d /= gcd;
-			}
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ExifUtils.Rational{T}"/> class.
+		/// </summary>
+		/// <param name="numerator">The numerator of the rational number.</param>
+		/// <param name="denominator">The denominator of the rational number.</param>
+		/// <param name="reduce">determines if should reduce by greatest common divisor</param>
+		public Rational(T numerator, T denominator, bool reduce)
+		{
+			this.numerator = numerator;
+			this.denominator = denominator;
 
-			if (d < 0m)
+			if (reduce)
 			{
-				reduced = true;
-				n = -n;
-				d = -d;
-			}
-
-			if (reduced)
-			{
-				this.numerator = (T)Convert.ChangeType(n, typeof(T));
-				this.denominator = (T)Convert.ChangeType(d, typeof(T));
-			}
-			else
-			{
-				this.numerator = numerator;
-				this.denominator = denominator;
+				this.Reduce();
 			}
 		}
 
@@ -126,7 +133,7 @@ namespace ExifUtils
 			decimal r2n = Convert.ToDecimal(r2.numerator);
 			decimal r2d = Convert.ToDecimal(r2.denominator);
 
-			decimal denominator = LCD(r1d, r2d);
+			decimal denominator = Rational<T>.LCD(r1d, r2d);
 			if (denominator > r1d)
 			{
 				r1n *= (denominator/r1d);
@@ -212,7 +219,10 @@ namespace ExifUtils
 		/// <returns></returns>
 		public string ToString(IFormatProvider provider)
 		{
-			return String.Format("{0}/{1}", this.Numerator.ToString(provider), this.Denominator.ToString(provider));
+			return String.Concat(
+				this.Numerator.ToString(provider),
+				Rational<T>.Delim,
+				this.Denominator.ToString(provider));
 		}
 
 		/// <summary>
@@ -320,48 +330,223 @@ namespace ExifUtils
 
 		#endregion IConvertible Members
 
+		#region Parse Methods
+
+		/// <summary>
+		/// Converts the string representation of a number to its <see cref="Rational&lt;T&gt;"/> equivalent.
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public static Rational<T> Parse(string value)
+		{
+			Rational<T> rational = new Rational<T>();
+
+			if (String.IsNullOrEmpty(value))
+			{
+				return rational;
+			}
+
+			if (Rational<T>.Parser == null)
+			{
+				Rational<T>.Parser = Rational<T>.BuildParser();
+			}
+
+			string[] parts = value.Split(Rational<T>.DelimSet, 2, StringSplitOptions.RemoveEmptyEntries);
+			rational.numerator = Rational<T>.Parser(parts[0]);
+			if (parts.Length > 1)
+			{
+				rational.denominator = Rational<T>.Parser(parts[1]);
+			}
+
+			return rational;
+		}
+
+		/// <summary>
+		/// Converts the string representation of a number to its <see cref="Rational&lt;T&gt;"/> equivalent.
+		/// A return value indicates whether the conversion succeeded or failed.
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="rational"></param>
+		/// <returns></returns>
+		public static bool TryParse(string value, out Rational<T> rational)
+		{
+			rational = new Rational<T>();
+
+			if (String.IsNullOrEmpty(value))
+			{
+				return false;
+			}
+
+			if (Rational<T>.TryParser == null)
+			{
+				Rational<T>.TryParser = Rational<T>.BuildTryParser();
+			}
+
+			string[] parts = value.Split(Rational<T>.DelimSet, 2, StringSplitOptions.RemoveEmptyEntries);
+			if (!Rational<T>.TryParser(parts[0], out rational.numerator))
+			{
+				return false;
+			}
+			if (parts.Length > 1)
+			{
+				if (!Rational<T>.TryParser(parts[1], out rational.denominator))
+				{
+					return false;
+				}
+			}
+
+			return (parts.Length == 2);
+		}
+
+		private static Rational<T>.ParseDelegate BuildParser()
+		{
+			MethodInfo parse = typeof(T).GetMethod(
+				"Parse",
+				BindingFlags.Public|BindingFlags.Static,
+				null,
+				new Type[] { typeof(string) },
+				null);
+
+			if (parse == null)
+			{
+				throw new InvalidOperationException("Underlying Rational type T must support Parse in order to parse Rational<T>.");
+			}
+
+			return new Rational<T>.ParseDelegate(
+				delegate(string value)
+				{
+					try
+					{
+						return (T)parse.Invoke(null, new object[] { value });
+					}
+					catch (TargetInvocationException ex)
+					{
+						if (ex.InnerException != null)
+						{
+							throw ex.InnerException;
+						}
+						throw;
+					}
+				});
+		}
+
+		private static Rational<T>.TryParseDelegate BuildTryParser()
+		{
+			// http://stackoverflow.com/questions/1933369
+
+			MethodInfo tryParse = typeof(T).GetMethod(
+				"TryParse",
+				BindingFlags.Public|BindingFlags.Static,
+				null,
+				new Type[] { typeof(string), typeof(T).MakeByRefType() },
+				null);
+
+			if (tryParse == null)
+			{
+				throw new InvalidOperationException("Underlying Rational type T must support TryParse in order to try-parse Rational<T>.");
+			}
+
+			return new Rational<T>.TryParseDelegate(
+				delegate(string value, out T output)
+				{
+					object[] args = new object[] { value, default(T) };
+					try
+					{
+						bool success = (bool)tryParse.Invoke(null, args);
+						output = (T)args[1];
+						return success;
+					}
+					catch (TargetInvocationException ex)
+					{
+						if (ex.InnerException != null)
+						{
+							throw ex.InnerException;
+						}
+						throw;
+					}
+				});
+		}
+
+		#endregion Parse Methods
+
 		#region Math Methods
 
 		/// <summary>
-		/// Lowest Common Denominatir
+		/// Finds the greatest common divisor and reduces the fraction by this amount.
+		/// </summary>
+		/// <returns>true if <see cref="Rations&lt;T&gt;" /> was reduced</returns>
+		public bool Reduce()
+		{
+			bool reduced = false;
+			decimal n = Convert.ToDecimal(numerator);
+			decimal d = Convert.ToDecimal(denominator);
+
+			// greatest common divisor
+			decimal gcd = Rational<T>.GCD(n, d);
+			if (gcd != Decimal.One && gcd != Decimal.Zero)
+			{
+				reduced = true;
+				n /= gcd;
+				d /= gcd;
+			}
+
+			// cancel out signs
+			if (d < Decimal.Zero)
+			{
+				reduced = true;
+				n = -n;
+				d = -d;
+			}
+
+			if (reduced)
+			{
+				this.numerator = (T)Convert.ChangeType(n, typeof(T));
+				this.denominator = (T)Convert.ChangeType(d, typeof(T));
+			}
+
+			return reduced;
+		}
+
+		/// <summary>
+		/// Lowest Common Denominator
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
 		/// <returns></returns>
 		private static decimal LCD(decimal a, decimal b)
 		{
-			if (a == 0m && b == 0m)
+			if (a == Decimal.Zero && b == Decimal.Zero)
 			{
-				return 0m;
+				return Decimal.Zero;
 			}
 
-			return (a * b) / GCD(a, b);
+			return (a * b) / Rational<T>.GCD(a, b);
 		}
 
 		/// <summary>
-		/// Greatest Common Denominator
+		/// Greatest Common Devisor
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
 		/// <returns></returns>
 		private static decimal GCD(decimal a, decimal b)
 		{
-			if (a < 0m)
+			if (a < Decimal.Zero)
 			{
 				a = -a;
 			}
-			if (b < 0m)
+			if (b < Decimal.Zero)
 			{
 				b = -b;
 			}
 
 			while (a != b)
 			{
-				if (a == 0m)
+				if (a == Decimal.Zero)
 				{
 					return b;
 				}
-				if (b == 0m)
+				if (b == Decimal.Zero)
 				{
 					return a;
 				}
