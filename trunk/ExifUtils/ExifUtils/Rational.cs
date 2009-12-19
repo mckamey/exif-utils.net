@@ -33,10 +33,11 @@ using System;
 namespace ExifUtils
 {
 	/// <summary>
-	/// Represents a rational number.
+	/// Represents a rational number
 	/// </summary>
 	[Serializable]
-	public struct Rational<T> : IConvertible
+	public struct Rational<T> :
+		IConvertible
 		where T : IConvertible
 	{
 		#region Fields
@@ -91,7 +92,7 @@ namespace ExifUtils
 		#region Properties
 
 		/// <summary>
-		/// Gets the numerator of the rational number.
+		/// Gets and sets the numerator of the rational number
 		/// </summary>
 		public T Numerator
 		{
@@ -100,7 +101,7 @@ namespace ExifUtils
 		}
 
 		/// <summary>
-		/// Gets the denominator of the rational number.
+		/// Gets and sets the denominator of the rational number
 		/// </summary>
 		public T Denominator
 		{
@@ -127,9 +128,13 @@ namespace ExifUtils
 
 			decimal denominator = LCD(r1d, r2d);
 			if (denominator > r1d)
+			{
 				r1n *= (denominator/r1d);
+			}
 			if (denominator > r2d)
+			{
 				r2n *= (denominator/r2d);
+			}
 
 			decimal numerator = r1n + r2n;
 
@@ -317,32 +322,58 @@ namespace ExifUtils
 
 		#region Math Methods
 
+		/// <summary>
+		/// Lowest Common Denominatir
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <returns></returns>
 		private static decimal LCD(decimal a, decimal b)
 		{
 			if (a == 0m && b == 0m)
+			{
 				return 0m;
+			}
 
-			return (a*b)/GCD(a, b);
+			return (a * b) / GCD(a, b);
 		}
 
+		/// <summary>
+		/// Greatest Common Denominator
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <returns></returns>
 		private static decimal GCD(decimal a, decimal b)
 		{
 			if (a < 0m)
+			{
 				a = -a;
+			}
 			if (b < 0m)
+			{
 				b = -b;
+			}
 
 			while (a != b)
 			{
 				if (a == 0m)
+				{
 					return b;
+				}
 				if (b == 0m)
+				{
 					return a;
+				}
 
 				if (a > b)
+				{
 					a %= b;
+				}
 				else
+				{
 					b %= a;
+				}
 			}
 			return a;
 		}
