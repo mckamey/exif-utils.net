@@ -365,7 +365,17 @@ namespace ExifUtils.Exif
 				case ExifTag.ExposureBias:
 				case ExifTag.Brightness:
 				{
-					return String.Format("{0:###0.0} EV", Convert.ToDecimal(rawValue));
+					string val;
+					if (rawValue is Rational<int>)
+					{
+						val = ((Rational<int>)rawValue).Numerator != 0 ? rawValue.ToString() : "0";
+					}
+					else
+					{
+						val = Convert.ToDecimal(rawValue).ToString();
+					}
+
+					return String.Format("{0} EV", val);
 				}
 				case ExifTag.CompressedBitsPerPixel:
 				{
