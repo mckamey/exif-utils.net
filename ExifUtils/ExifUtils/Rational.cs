@@ -29,6 +29,7 @@
 #endregion License
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace ExifUtils
@@ -650,13 +651,22 @@ namespace ExifUtils
 
 		#region Object Overrides
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
 		public override string ToString()
 		{
 			return Convert.ToString(this);
+		}
+
+		public override bool Equals(object obj)
+		{
+			return (this.CompareTo(obj) == 0);
+		}
+
+		public override int GetHashCode()
+		{
+			// adapted from Anonymous Type: { uint Numerator, uint Denominator }
+			int num = 0x1fb8d67d;
+			num = (-1521134295 * num) + EqualityComparer<T>.Default.GetHashCode(this.Numerator);
+			return ((-1521134295 * num) + EqualityComparer<T>.Default.GetHashCode(this.Denominator));
 		}
 
 		#endregion Object Overrides
