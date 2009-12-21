@@ -65,6 +65,7 @@ namespace ExifUtils
 		private T denominator;
 		private static ParseDelegate Parser;
 		private static TryParseDelegate TryParser;
+		private static int? Precision;
 
 		#endregion Fields
 
@@ -130,16 +131,18 @@ namespace ExifUtils
 		/// <param name="raw">raw decimal value to approximate</param>
 		/// <param name="numerator">an approximate numerator</param>
 		/// <param name="denominator">an approximate numerator</param>
-		public static Rational<T> Approximate(decimal raw, int precision)
+		public static Rational<T> Approximate(decimal raw)
 		{
+			Rational<T>.EnsurePrecision();
+
 			char[] Delims = new char[] { 'e' };
-			string[] parts = raw.ToString("e"+precision.ToString(), CultureInfo.InvariantCulture).Split(Delims, 2, StringSplitOptions.RemoveEmptyEntries);
+			string[] parts = raw.ToString("e"+Rational<T>.Precision.ToString(), CultureInfo.InvariantCulture).Split(Delims, 2, StringSplitOptions.RemoveEmptyEntries);
 
 			int exponent = Int32.Parse(parts[1], CultureInfo.InvariantCulture);
 			decimal numerator = Decimal.Parse(parts[0], CultureInfo.InvariantCulture);
 
 			// convert to integers
-			while (Decimal.Remainder(numerator, 1) > Decimal.Zero)
+			while (Decimal.Remainder(numerator, 1) > Decimal.Zero && Rational<T>.Precision > -exponent)
 			{
 				numerator *= 10m;
 				exponent--;
@@ -148,9 +151,41 @@ namespace ExifUtils
 			decimal denominator = (decimal)Math.Pow(10.0, (double)-exponent);
 
 			return new Rational<T>(
-				(T)Convert.ChangeType(Math.Floor(numerator), typeof(T)),
-				(T)Convert.ChangeType(Math.Floor(denominator), typeof(T)),
+				(T)Convert.ChangeType(numerator, typeof(T)),
+				(T)Convert.ChangeType(denominator, typeof(T)),
 				true);
+		}
+
+		private static void EnsurePrecision()
+		{
+			if (Rational<T>.Precision.HasValue)
+			{
+				return;
+			}
+
+			FieldInfo maxValue = typeof(T).GetField("MaxValue", BindingFlags.Static|BindingFlags.Public);
+			if (maxValue == null)
+			{
+				throw new InvalidOperationException("Underlying Rational type T must implement public static field MaxValue in order to approximate Rational<T>.");
+			}
+
+			decimal max;
+			try
+			{
+				max = Convert.ToDecimal(maxValue.GetValue(null));
+			}
+			catch (OverflowException)
+			{
+				max = Decimal.MaxValue;
+			}
+			int i = 0;
+			while (Math.Floor(max) > 0)
+			{
+				max /= 10m;
+				i++;
+			}
+
+			Rational<T>.Precision = i-1;
 		}
 
 		/// <summary>
