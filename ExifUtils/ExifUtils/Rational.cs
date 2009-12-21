@@ -65,9 +65,7 @@ namespace ExifUtils
 		private T denominator;
 		private static ParseDelegate Parser;
 		private static TryParseDelegate TryParser;
-		private static int Precision;
 		private static decimal MaxValue;
-		private static decimal MinValue;
 
 		#endregion Fields
 
@@ -128,107 +126,80 @@ namespace ExifUtils
 		#region Parse Methods
 
 		/// <summary>
-		/// Ctor
+		/// Approximate the decimal value accurate to a precision of 0.000001m
 		/// </summary>
-		/// <param name="raw">raw decimal value to approximate</param>
-		/// <returns>an approximation of the raw value</returns>
+		/// <param name="value">decimal value to approximate</param>
+		/// <returns>an approximation of the value as a rational number</returns>
+		/// <remarks>
+		/// http://stackoverflow.com/questions/95727
+		/// </remarks>
 		public static Rational<T> Approximate(decimal value)
 		{
-			Rational<T>.EnsurePrecision();
+			return Rational<T>.Approximate(value, 0.000001m);
+		}
 
-			decimal numerator = Math.Round(value, Rational<T>.Precision);
-			decimal denominator = Decimal.One;
-			bool isNeg = value < Decimal.Zero;
+		/// <summary>
+		/// Approximate the decimal value accurate to a certain precision
+		/// </summary>
+		/// <param name="value">decimal value to approximate</param>
+		/// <param name="epsilon">maximum precision to converge</param>
+		/// <returns>an approximation of the value as a rational number</returns>
+		/// <remarks>
+		/// http://stackoverflow.com/questions/95727
+		/// </remarks>
+		public static Rational<T> Approximate(decimal value, decimal epsilon)
+		{
+			decimal maxValue = Rational<T>.EnsureMaxValue();
 
-			if (isNeg && Rational<T>.MinValue >= Decimal.Zero)
+			decimal numerator = 1m;
+			decimal denominator = 1m;
+			decimal fraction = 1m;
+
+			while (Math.Abs(fraction-value) > epsilon && (denominator < maxValue))
 			{
-				numerator = Decimal.Zero;
-			}
-
-			// convert to ratio of integers
-			while (Decimal.Remainder(numerator, Decimal.One) > Decimal.Zero)
-			{
-				numerator *= 10m;
-				denominator *= 10m;
-			}
-
-			if (isNeg)
-			{
-				while (numerator < Rational<T>.MinValue || denominator < Rational<T>.MinValue)
+				if (fraction < value)
 				{
-					numerator /= 10m;
-					denominator /= 10m;
+					numerator++;
+				}
+				else
+				{
+					denominator++;
+					numerator = Math.Round(Decimal.Multiply(value, denominator));
+				}
+
+				fraction = Decimal.Divide(numerator, denominator);
+			}
+
+			return new Rational<T>(
+				(T)Convert.ChangeType(numerator, typeof(T)),
+				(T)Convert.ChangeType(denominator, typeof(T)));
+		}
+
+		private static decimal EnsureMaxValue()
+		{
+			if (Rational<T>.MaxValue != 0)
+			{
+				return Rational<T>.MaxValue;
+			}
+
+			FieldInfo maxValue = typeof(T).GetField("MaxValue", BindingFlags.Static|BindingFlags.Public);
+			if (maxValue != null)
+			{
+				try
+				{
+					Rational<T>.MaxValue = Convert.ToDecimal(maxValue.GetValue(null));
+				}
+				catch (OverflowException)
+				{
+					Rational<T>.MaxValue = Decimal.MaxValue;
 				}
 			}
 			else
 			{
-				while (numerator > Rational<T>.MaxValue || denominator > Rational<T>.MaxValue)
-				{
-					numerator /= 10m;
-					denominator /= 10m;
-				}
-			}
-
-			return new Rational<T>(
-				(T)Convert.ChangeType(Math.Round(numerator), typeof(T)),
-				(T)Convert.ChangeType(Math.Round(denominator), typeof(T)),
-				true);
-		}
-
-		private static void EnsurePrecision()
-		{
-			if (Rational<T>.Precision != 0)
-			{
-				return;
-			}
-
-			#region MinValue
-
-			FieldInfo minValue = typeof(T).GetField("MinValue", BindingFlags.Static|BindingFlags.Public);
-			if (minValue == null)
-			{
-				throw new InvalidOperationException("Underlying Rational type T must implement public static field MinValue in order to approximate Rational<T>.");
-			}
-
-			try
-			{
-				Rational<T>.MinValue = Convert.ToDecimal(minValue.GetValue(null));
-			}
-			catch (OverflowException)
-			{
-				Rational<T>.MinValue = Decimal.MaxValue;
-			}
-
-			#endregion MinValue
-
-			#region MaxValue
-
-			FieldInfo maxValue = typeof(T).GetField("MaxValue", BindingFlags.Static|BindingFlags.Public);
-			if (maxValue == null)
-			{
-				throw new InvalidOperationException("Underlying Rational type T must implement public static field MaxValue in order to approximate Rational<T>.");
-			}
-
-			try
-			{
-				Rational<T>.MaxValue = Convert.ToDecimal(maxValue.GetValue(null));
-			}
-			catch (OverflowException)
-			{
 				Rational<T>.MaxValue = Decimal.MaxValue;
 			}
 
-			#endregion MaxValue
-
-			decimal max = Rational<T>.MaxValue;
-			int i = 0;
-			while (Math.Floor(max) > Decimal.Zero)
-			{
-				max /= 10m;
-				i++;
-			}
-
-			Rational<T>.Precision = Math.Max(1, i-1);
+			return Rational<T>.MaxValue;
 		}
 
 		/// <summary>
