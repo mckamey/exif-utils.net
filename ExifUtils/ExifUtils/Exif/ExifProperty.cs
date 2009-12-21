@@ -286,19 +286,22 @@ namespace ExifUtils.Exif
 				case ExifTag.Aperture:
 				case ExifTag.MaxAperture:
 				{
-					// f/x.x
+					// The actual aperture value of lens when the image was taken.
+					// To convert this value to ordinary F-number(F-stop),
+					// calculate this value's power of root 2 (=1.4142).
+					// For example, if value is '5', F-number is 1.4142^5 = F5.6.
 					double fStop = Math.Pow(2.0, Convert.ToDouble(rawValue)/2.0);
 					return String.Format("f/{0:#0.0}", fStop);
 				}
 				case ExifTag.FNumber:
 				{
-					// f/x.x
+					// The actual F-number (F-stop) of lens when the image was taken.
 					return String.Format("f/{0:#0.0}", Convert.ToDecimal(rawValue));
 				}
 				case ExifTag.FocalLength:
 				case ExifTag.FocalLengthIn35mmFilm:
 				{
-					return String.Format("{0:#0.0} mm", Convert.ToDecimal(rawValue));
+					return String.Format("{0:#0.#} mm", Convert.ToDecimal(rawValue));
 				}
 				case ExifTag.ShutterSpeed:
 				{
@@ -307,7 +310,11 @@ namespace ExifUtils.Exif
 						goto default;
 					}
 
+					// To convert this value to ordinary 'Shutter Speed';
+					// calculate this value's power of 2, then reciprocal.
+					// For example, if value is '4', shutter speed is 1/(2^4)=1/16 second.
 					Rational<int> shutter = (Rational<int>)rawValue;
+
 					if (shutter.Numerator > 0)
 					{
 						double speed = Math.Pow(2.0, Convert.ToDouble(shutter));
@@ -316,7 +323,7 @@ namespace ExifUtils.Exif
 					else
 					{
 						double speed = Math.Pow(2.0, -Convert.ToDouble(shutter));
-						return String.Format("{0:####0.0#} sec", speed);
+						return String.Format("{0:####0.##} sec", speed);
 					}
 				}
 				case ExifTag.ExposureTime:
@@ -326,18 +333,17 @@ namespace ExifUtils.Exif
 						goto default;
 					}
 
+					// Exposure time (reciprocal of shutter speed). Unit is second.
 					Rational<uint> exposure = (Rational<uint>)rawValue;
-					if (exposure.Numerator == exposure.Denominator)
-					{
-						return String.Format("{0} sec", Convert.ToInt32(rawValue));
-					}
+
 					if (exposure.Numerator < exposure.Denominator)
 					{
-						return String.Format("1/{0:####0} sec", 1m/Convert.ToDecimal(rawValue));
+						exposure.Reduce();
+						return String.Format("{0} sec", exposure);
 					}
 					else
 					{
-						return String.Format("{0:####0.0#} sec", Convert.ToDecimal(rawValue));
+						return String.Format("{0:####0.##} sec", Convert.ToDecimal(rawValue));
 					}
 				}
 				case ExifTag.XResolution:
@@ -360,7 +366,7 @@ namespace ExifUtils.Exif
 				}
 				case ExifTag.SubjectDistance:
 				{
-					return String.Format("{0:###0.0} m", Convert.ToDecimal(rawValue));
+					return String.Format("{0:###0.#} m", Convert.ToDecimal(rawValue));
 				}
 				case ExifTag.ExposureBias:
 				case ExifTag.Brightness:
