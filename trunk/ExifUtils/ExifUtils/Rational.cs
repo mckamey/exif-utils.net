@@ -65,7 +65,9 @@ namespace ExifUtils
 		private T denominator;
 		private static ParseDelegate Parser;
 		private static TryParseDelegate TryParser;
-		private static int? Precision;
+		private static int Precision;
+		private static decimal MaxValue;
+		private static decimal MinValue;
 
 		#endregion Fields
 
@@ -134,34 +136,72 @@ namespace ExifUtils
 		{
 			Rational<T>.EnsurePrecision();
 
-			char[] Delims = new char[] { 'e' };
-			string[] parts = value.ToString("e"+Rational<T>.Precision.ToString(), CultureInfo.InvariantCulture).Split(Delims, 2, StringSplitOptions.RemoveEmptyEntries);
+			decimal numerator = Math.Round(value, Rational<T>.Precision);
+			decimal denominator = Decimal.One;
+			bool isNeg = value < Decimal.Zero;
 
-			int exponent = Int32.Parse(parts[1], CultureInfo.InvariantCulture);
-			decimal numerator = Decimal.Parse(parts[0], CultureInfo.InvariantCulture);
-
-			// convert to integers
-			while ((Rational<T>.Precision > -exponent) &&
-				(Decimal.Remainder(numerator, Decimal.One) > Decimal.Zero))
+			if (isNeg && Rational<T>.MinValue >= Decimal.Zero)
 			{
-				numerator *= 10m;
-				exponent--;
+				numerator = Decimal.Zero;
 			}
 
-			decimal denominator = (decimal)Math.Pow(10.0, (double)-exponent);
+			// convert to ratio of integers
+			while (Decimal.Remainder(numerator, Decimal.One) > Decimal.Zero)
+			{
+				numerator *= 10m;
+				denominator *= 10m;
+			}
+
+			if (isNeg)
+			{
+				while (numerator < Rational<T>.MinValue || denominator < Rational<T>.MinValue)
+				{
+					numerator /= 10m;
+					denominator /= 10m;
+				}
+			}
+			else
+			{
+				while (numerator > Rational<T>.MaxValue || denominator > Rational<T>.MaxValue)
+				{
+					numerator /= 10m;
+					denominator /= 10m;
+				}
+			}
 
 			return new Rational<T>(
-				(T)Convert.ChangeType(numerator, typeof(T)),
-				(T)Convert.ChangeType(denominator, typeof(T)),
+				(T)Convert.ChangeType(Math.Round(numerator), typeof(T)),
+				(T)Convert.ChangeType(Math.Round(denominator), typeof(T)),
 				true);
 		}
 
 		private static void EnsurePrecision()
 		{
-			if (Rational<T>.Precision.HasValue)
+			if (Rational<T>.Precision != 0)
 			{
 				return;
 			}
+
+			#region MinValue
+
+			FieldInfo minValue = typeof(T).GetField("MinValue", BindingFlags.Static|BindingFlags.Public);
+			if (minValue == null)
+			{
+				throw new InvalidOperationException("Underlying Rational type T must implement public static field MinValue in order to approximate Rational<T>.");
+			}
+
+			try
+			{
+				Rational<T>.MinValue = Convert.ToDecimal(minValue.GetValue(null));
+			}
+			catch (OverflowException)
+			{
+				Rational<T>.MinValue = Decimal.MaxValue;
+			}
+
+			#endregion MinValue
+
+			#region MaxValue
 
 			FieldInfo maxValue = typeof(T).GetField("MaxValue", BindingFlags.Static|BindingFlags.Public);
 			if (maxValue == null)
@@ -169,23 +209,26 @@ namespace ExifUtils
 				throw new InvalidOperationException("Underlying Rational type T must implement public static field MaxValue in order to approximate Rational<T>.");
 			}
 
-			decimal max;
 			try
 			{
-				max = Convert.ToDecimal(maxValue.GetValue(null));
+				Rational<T>.MaxValue = Convert.ToDecimal(maxValue.GetValue(null));
 			}
 			catch (OverflowException)
 			{
-				max = Decimal.MaxValue;
+				Rational<T>.MaxValue = Decimal.MaxValue;
 			}
+
+			#endregion MaxValue
+
+			decimal max = Rational<T>.MaxValue;
 			int i = 0;
-			while (Math.Floor(max) > 0)
+			while (Math.Floor(max) > Decimal.Zero)
 			{
 				max /= 10m;
 				i++;
 			}
 
-			Rational<T>.Precision = i-1;
+			Rational<T>.Precision = Math.Max(1, i-1);
 		}
 
 		/// <summary>
