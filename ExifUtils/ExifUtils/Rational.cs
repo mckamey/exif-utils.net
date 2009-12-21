@@ -470,12 +470,22 @@ namespace ExifUtils
 		{
 			try
 			{
-				return this.Numerator.ToDecimal(provider)/this.Denominator.ToDecimal(provider);
+				decimal denominator = this.Denominator.ToDecimal(provider);
+				if (denominator == Decimal.Zero)
+				{
+					return Decimal.Zero;
+				}
+				return this.Numerator.ToDecimal(provider) / denominator;
 			}
 			catch (InvalidCastException)
 			{
+				long denominator = this.Denominator.ToInt64(provider);
+				if (denominator == 0L)
+				{
+					return 0L;
+				}
 				return ((IConvertible)this.Numerator.ToInt64(provider)).ToDecimal(provider) /
-					((IConvertible)this.Denominator.ToInt64(provider)).ToDecimal(provider);
+					((IConvertible)denominator).ToDecimal(provider);
 			}
 		}
 
@@ -486,7 +496,12 @@ namespace ExifUtils
 		/// <returns></returns>
 		public double ToDouble(IFormatProvider provider)
 		{
-			return this.Numerator.ToDouble(provider)/this.Denominator.ToDouble(provider);
+			double denominator = this.Denominator.ToDouble(provider);
+			if (denominator == 0.0)
+			{
+				return 0.0;
+			}
+			return this.Numerator.ToDouble(provider) / denominator;
 		}
 
 		/// <summary>
@@ -496,7 +511,12 @@ namespace ExifUtils
 		/// <returns></returns>
 		public float ToSingle(IFormatProvider provider)
 		{
-			return this.Numerator.ToSingle(provider)/this.Denominator.ToSingle(provider);
+			float denominator = this.Denominator.ToSingle(provider);
+			if (denominator == 0.0f)
+			{
+				return 0.0f;
+			}
+			return this.Numerator.ToSingle(provider) / denominator;
 		}
 
 		bool IConvertible.ToBoolean(IFormatProvider provider)
@@ -575,6 +595,31 @@ namespace ExifUtils
 		/// <returns></returns>
 		public int CompareTo(object that)
 		{
+			if (that is Rational<T>)
+			{
+				// differentiate between a real zero and a divide by zero
+				// work around divide by zero value to get meaningful comparisons
+				Rational<T> other = (Rational<T>)that;
+				if (Convert.ToDecimal(this.Denominator) == Decimal.Zero)
+				{
+					if (Convert.ToDecimal(other.Denominator) == Decimal.Zero)
+					{
+						return Convert.ToDecimal(this.Numerator).CompareTo(Convert.ToDecimal(other.Numerator));
+					}
+					else if (Convert.ToDecimal(other.Numerator) == Decimal.Zero)
+					{
+						return Convert.ToDecimal(this.Denominator).CompareTo(Convert.ToDecimal(other.Denominator));
+					}
+				}
+				else if (Convert.ToDecimal(other.Denominator) == Decimal.Zero)
+				{
+					if (Convert.ToDecimal(this.Numerator) == Decimal.Zero)
+					{
+						return Convert.ToDecimal(this.Denominator).CompareTo(Convert.ToDecimal(other.Denominator));
+					}
+				}
+			}
+
 			return Convert.ToDecimal(this).CompareTo(Convert.ToDecimal(that));
 		}
 
@@ -615,22 +660,22 @@ namespace ExifUtils
 		/// <returns></returns>
 		public static Rational<T> operator+(Rational<T> r1, Rational<T> r2)
 		{
-			decimal r1n = Convert.ToDecimal(r1.numerator);
-			decimal r1d = Convert.ToDecimal(r1.denominator);
-			decimal r2n = Convert.ToDecimal(r2.numerator);
-			decimal r2d = Convert.ToDecimal(r2.denominator);
+			decimal n1 = Convert.ToDecimal(r1.numerator);
+			decimal d1 = Convert.ToDecimal(r1.denominator);
+			decimal n2 = Convert.ToDecimal(r2.numerator);
+			decimal d2 = Convert.ToDecimal(r2.denominator);
 
-			decimal denominator = Rational<T>.LCD(r1d, r2d);
-			if (denominator > r1d)
+			decimal denominator = Rational<T>.LCD(d1, d2);
+			if (denominator > d1)
 			{
-				r1n *= (denominator/r1d);
+				n1 *= (denominator/d1);
 			}
-			if (denominator > r2d)
+			if (denominator > d2)
 			{
-				r2n *= (denominator/r2d);
+				n2 *= (denominator/d2);
 			}
 
-			decimal numerator = r1n + r2n;
+			decimal numerator = n1 + n2;
 
 			return new Rational<T>((T)Convert.ChangeType(numerator, typeof(T)), (T)Convert.ChangeType(denominator, typeof(T)));
 		}
