@@ -129,20 +129,20 @@ namespace ExifUtils
 		/// Ctor
 		/// </summary>
 		/// <param name="raw">raw decimal value to approximate</param>
-		/// <param name="numerator">an approximate numerator</param>
-		/// <param name="denominator">an approximate numerator</param>
-		public static Rational<T> Approximate(decimal raw)
+		/// <returns>an approximation of the raw value</returns>
+		public static Rational<T> Approximate(decimal value)
 		{
 			Rational<T>.EnsurePrecision();
 
 			char[] Delims = new char[] { 'e' };
-			string[] parts = raw.ToString("e"+Rational<T>.Precision.ToString(), CultureInfo.InvariantCulture).Split(Delims, 2, StringSplitOptions.RemoveEmptyEntries);
+			string[] parts = value.ToString("e"+Rational<T>.Precision.ToString(), CultureInfo.InvariantCulture).Split(Delims, 2, StringSplitOptions.RemoveEmptyEntries);
 
 			int exponent = Int32.Parse(parts[1], CultureInfo.InvariantCulture);
 			decimal numerator = Decimal.Parse(parts[0], CultureInfo.InvariantCulture);
 
 			// convert to integers
-			while (Decimal.Remainder(numerator, 1) > Decimal.Zero && Rational<T>.Precision > -exponent)
+			while ((Rational<T>.Precision > -exponent) &&
+				(Decimal.Remainder(numerator, Decimal.One) > Decimal.Zero))
 			{
 				numerator *= 10m;
 				exponent--;
