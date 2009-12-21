@@ -65,7 +65,7 @@ namespace ExifUtils
 		private T denominator;
 		private static ParseDelegate Parser;
 		private static TryParseDelegate TryParser;
-		private static decimal MaxValue;
+		private static decimal maxValue;
 
 		#endregion Fields
 
@@ -121,6 +121,37 @@ namespace ExifUtils
 			set { this.denominator = value; }
 		}
 
+		/// <summary>
+		/// Gets the MaxValue for the given <typeparam name="T" />
+		/// </summary>
+		private static decimal MaxValue
+		{
+			get
+			{
+				if (Rational<T>.maxValue == default(decimal))
+				{
+					FieldInfo maxValue = typeof(T).GetField("MaxValue", BindingFlags.Static|BindingFlags.Public);
+					if (maxValue != null)
+					{
+						try
+						{
+							Rational<T>.maxValue = Convert.ToDecimal(maxValue.GetValue(null));
+						}
+						catch (OverflowException)
+						{
+							Rational<T>.maxValue = Decimal.MaxValue;
+						}
+					}
+					else
+					{
+						Rational<T>.maxValue = Int32.MaxValue;
+					}
+				}
+
+				return Rational<T>.maxValue;
+			}
+		}
+
 		#endregion Properties
 
 		#region Parse Methods
@@ -149,13 +180,12 @@ namespace ExifUtils
 		/// </remarks>
 		public static Rational<T> Approximate(decimal value, decimal epsilon)
 		{
-			decimal maxValue = Rational<T>.EnsureMaxValue();
-
 			decimal numerator = 1m;
 			decimal denominator = 1m;
 			decimal fraction = 1m;
+			decimal maxValue = Rational<T>.MaxValue;
 
-			while (Math.Abs(fraction-value) > epsilon && (denominator < maxValue))
+			while (Math.Abs(fraction-value) > epsilon && (denominator < maxValue) && (numerator < maxValue))
 			{
 				if (fraction < value)
 				{
@@ -164,7 +194,15 @@ namespace ExifUtils
 				else
 				{
 					denominator++;
-					numerator = Math.Round(Decimal.Multiply(value, denominator));
+
+					decimal temp = Math.Round(Decimal.Multiply(value, denominator));
+					if (temp > maxValue)
+					{
+						denominator--;
+						break;
+					}
+
+					numerator = temp;
 				}
 
 				fraction = Decimal.Divide(numerator, denominator);
@@ -173,33 +211,6 @@ namespace ExifUtils
 			return new Rational<T>(
 				(T)Convert.ChangeType(numerator, typeof(T)),
 				(T)Convert.ChangeType(denominator, typeof(T)));
-		}
-
-		private static decimal EnsureMaxValue()
-		{
-			if (Rational<T>.MaxValue != 0)
-			{
-				return Rational<T>.MaxValue;
-			}
-
-			FieldInfo maxValue = typeof(T).GetField("MaxValue", BindingFlags.Static|BindingFlags.Public);
-			if (maxValue != null)
-			{
-				try
-				{
-					Rational<T>.MaxValue = Convert.ToDecimal(maxValue.GetValue(null));
-				}
-				catch (OverflowException)
-				{
-					Rational<T>.MaxValue = Decimal.MaxValue;
-				}
-			}
-			else
-			{
-				Rational<T>.MaxValue = Decimal.MaxValue;
-			}
-
-			return Rational<T>.MaxValue;
 		}
 
 		/// <summary>
