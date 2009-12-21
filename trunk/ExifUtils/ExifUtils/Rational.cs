@@ -30,6 +30,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Reflection;
 
 namespace ExifUtils
@@ -70,7 +71,7 @@ namespace ExifUtils
 		#region Init
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Rational&lt;T&gt;"/> class.
+		/// Ctor
 		/// </summary>
 		/// <param name="numerator">The numerator of the rational number.</param>
 		/// <param name="denominator">The denominator of the rational number.</param>
@@ -81,7 +82,7 @@ namespace ExifUtils
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Rational&lt;T&gt;"/> class.
+		/// Ctor
 		/// </summary>
 		/// <param name="numerator">The numerator of the rational number.</param>
 		/// <param name="denominator">The denominator of the rational number.</param>
@@ -122,6 +123,35 @@ namespace ExifUtils
 		#endregion Properties
 
 		#region Parse Methods
+
+		/// <summary>
+		/// Ctor
+		/// </summary>
+		/// <param name="raw">raw decimal value to approximate</param>
+		/// <param name="numerator">an approximate numerator</param>
+		/// <param name="denominator">an approximate numerator</param>
+		public static Rational<T> Approximate(decimal raw, int precision)
+		{
+			char[] Delims = new char[] { 'e' };
+			string[] parts = raw.ToString("e"+precision.ToString(), CultureInfo.InvariantCulture).Split(Delims, 2, StringSplitOptions.RemoveEmptyEntries);
+
+			int exponent = Int32.Parse(parts[1], CultureInfo.InvariantCulture);
+			decimal numerator = Decimal.Parse(parts[0], CultureInfo.InvariantCulture);
+
+			// convert to integers
+			while (Decimal.Remainder(numerator, 1) > Decimal.Zero)
+			{
+				numerator *= 10m;
+				exponent--;
+			}
+
+			decimal denominator = (decimal)Math.Pow(10.0, (double)-exponent);
+
+			return new Rational<T>(
+				(T)Convert.ChangeType(Math.Floor(numerator), typeof(T)),
+				(T)Convert.ChangeType(Math.Floor(denominator), typeof(T)),
+				true);
+		}
 
 		/// <summary>
 		/// Converts the string representation of a number to its <see cref="Rational&lt;T&gt;"/> equivalent.
@@ -265,7 +295,7 @@ namespace ExifUtils
 		/// <summary>
 		/// Finds the greatest common divisor and reduces the fraction by this amount.
 		/// </summary>
-		/// <returns>true if <see cref="Rations&lt;T&gt;" /> was reduced</returns>
+		/// <returns>true if <see cref="Rational&lt;T&gt;" /> was reduced</returns>
 		public bool Reduce()
 		{
 			bool reduced = false;
@@ -493,7 +523,7 @@ namespace ExifUtils
 		#region IComparable<T> Members
 
 		/// <summary>
-		/// Compares this instance to another <see cref="T"/> instance.
+		/// Compares this instance to another <typeparamref name="T"/> instance.
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
