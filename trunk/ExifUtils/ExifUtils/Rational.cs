@@ -61,11 +61,14 @@ namespace ExifUtils
 
 		#region Fields
 
-		private T numerator;
-		private T denominator;
+		public static readonly Rational<T> Empty = new Rational<T>();
+
 		private static ParseDelegate Parser;
 		private static TryParseDelegate TryParser;
 		private static decimal maxValue;
+
+		private readonly T numerator;
+		private readonly T denominator;
 
 		#endregion Fields
 
@@ -95,7 +98,7 @@ namespace ExifUtils
 
 			if (reduce)
 			{
-				this.Reduce();
+				Rational<T>.Reduce(ref this.numerator, ref this.denominator);
 			}
 		}
 
@@ -109,7 +112,6 @@ namespace ExifUtils
 		public T Numerator
 		{
 			get { return this.numerator; }
-			set { this.numerator = value; }
 		}
 
 		/// <summary>
@@ -118,7 +120,6 @@ namespace ExifUtils
 		public T Denominator
 		{
 			get { return this.denominator; }
-			set { this.denominator = value; }
 		}
 
 		/// <summary>
@@ -220,11 +221,9 @@ namespace ExifUtils
 		/// <returns></returns>
 		public static Rational<T> Parse(string value)
 		{
-			Rational<T> rational = new Rational<T>();
-
 			if (String.IsNullOrEmpty(value))
 			{
-				return rational;
+				return Rational<T>.Empty;
 			}
 
 			if (Rational<T>.Parser == null)
@@ -233,13 +232,18 @@ namespace ExifUtils
 			}
 
 			string[] parts = value.Split(Rational<T>.DelimSet, 2, StringSplitOptions.RemoveEmptyEntries);
-			rational.numerator = Rational<T>.Parser(parts[0]);
+			T numerator = Rational<T>.Parser(parts[0]);
+			T denominator;
 			if (parts.Length > 1)
 			{
-				rational.denominator = Rational<T>.Parser(parts[1]);
+				denominator = Rational<T>.Parser(parts[1]);
+			}
+			else
+			{
+				denominator = default(T);
 			}
 
-			return rational;
+			return new Rational<T>(numerator, denominator);
 		}
 
 		/// <summary>
@@ -251,10 +255,9 @@ namespace ExifUtils
 		/// <returns></returns>
 		public static bool TryParse(string value, out Rational<T> rational)
 		{
-			rational = new Rational<T>();
-
 			if (String.IsNullOrEmpty(value))
 			{
+				rational = Rational<T>.Empty;
 				return false;
 			}
 
@@ -263,19 +266,27 @@ namespace ExifUtils
 				Rational<T>.TryParser = Rational<T>.BuildTryParser();
 			}
 
+			T numerator, denominator;
 			string[] parts = value.Split(Rational<T>.DelimSet, 2, StringSplitOptions.RemoveEmptyEntries);
-			if (!Rational<T>.TryParser(parts[0], out rational.numerator))
+			if (!Rational<T>.TryParser(parts[0], out numerator))
 			{
+				rational = Rational<T>.Empty;
 				return false;
 			}
 			if (parts.Length > 1)
 			{
-				if (!Rational<T>.TryParser(parts[1], out rational.denominator))
+				if (!Rational<T>.TryParser(parts[1], out denominator))
 				{
+					rational = Rational<T>.Empty;
 					return false;
 				}
 			}
+			else
+			{
+				denominator = default(T);
+			}
 
+			rational = new Rational<T>(numerator, denominator);
 			return (parts.Length == 2);
 		}
 
@@ -355,10 +366,25 @@ namespace ExifUtils
 		/// <summary>
 		/// Finds the greatest common divisor and reduces the fraction by this amount.
 		/// </summary>
-		/// <returns>true if <see cref="Rational&lt;T&gt;" /> was reduced</returns>
-		public bool Reduce()
+		/// <returns>the reduced rational</returns>
+		public Rational<T> Reduce()
+		{
+			T numerator = this.numerator;
+			T denominator = this.denominator;
+
+			Rational<T>.Reduce(ref numerator, ref denominator);
+
+			return new Rational<T>(numerator, denominator);
+		}
+
+		/// <summary>
+		/// Finds the greatest common divisor and reduces the fraction by this amount.
+		/// </summary>
+		/// <returns>the reduced rational</returns>
+		private static void Reduce(ref T numerator, ref T denominator)
 		{
 			bool reduced = false;
+
 			decimal n = Convert.ToDecimal(numerator);
 			decimal d = Convert.ToDecimal(denominator);
 
@@ -381,11 +407,9 @@ namespace ExifUtils
 
 			if (reduced)
 			{
-				this.numerator = (T)Convert.ChangeType(n, typeof(T));
-				this.denominator = (T)Convert.ChangeType(d, typeof(T));
+				numerator = (T)Convert.ChangeType(n, typeof(T));
+				denominator = (T)Convert.ChangeType(d, typeof(T));
 			}
-
-			return reduced;
 		}
 
 		/// <summary>
@@ -456,9 +480,9 @@ namespace ExifUtils
 		public string ToString(IFormatProvider provider)
 		{
 			return String.Concat(
-				this.Numerator.ToString(provider),
+				this.numerator.ToString(provider),
 				Rational<T>.Delim,
-				this.Denominator.ToString(provider));
+				this.denominator.ToString(provider));
 		}
 
 		/// <summary>
@@ -470,21 +494,21 @@ namespace ExifUtils
 		{
 			try
 			{
-				decimal denominator = this.Denominator.ToDecimal(provider);
+				decimal denominator = this.denominator.ToDecimal(provider);
 				if (denominator == Decimal.Zero)
 				{
 					return Decimal.Zero;
 				}
-				return this.Numerator.ToDecimal(provider) / denominator;
+				return this.numerator.ToDecimal(provider) / denominator;
 			}
 			catch (InvalidCastException)
 			{
-				long denominator = this.Denominator.ToInt64(provider);
+				long denominator = this.denominator.ToInt64(provider);
 				if (denominator == 0L)
 				{
 					return 0L;
 				}
-				return ((IConvertible)this.Numerator.ToInt64(provider)).ToDecimal(provider) /
+				return ((IConvertible)this.numerator.ToInt64(provider)).ToDecimal(provider) /
 					((IConvertible)denominator).ToDecimal(provider);
 			}
 		}
@@ -496,12 +520,12 @@ namespace ExifUtils
 		/// <returns></returns>
 		public double ToDouble(IFormatProvider provider)
 		{
-			double denominator = this.Denominator.ToDouble(provider);
+			double denominator = this.denominator.ToDouble(provider);
 			if (denominator == 0.0)
 			{
 				return 0.0;
 			}
-			return this.Numerator.ToDouble(provider) / denominator;
+			return this.numerator.ToDouble(provider) / denominator;
 		}
 
 		/// <summary>
@@ -511,12 +535,12 @@ namespace ExifUtils
 		/// <returns></returns>
 		public float ToSingle(IFormatProvider provider)
 		{
-			float denominator = this.Denominator.ToSingle(provider);
+			float denominator = this.denominator.ToSingle(provider);
 			if (denominator == 0.0f)
 			{
 				return 0.0f;
 			}
-			return this.Numerator.ToSingle(provider) / denominator;
+			return this.numerator.ToSingle(provider) / denominator;
 		}
 
 		bool IConvertible.ToBoolean(IFormatProvider provider)
@@ -576,7 +600,7 @@ namespace ExifUtils
 
 		TypeCode IConvertible.GetTypeCode()
 		{
-			return this.Numerator.GetTypeCode();
+			return this.numerator.GetTypeCode();
 		}
 
 		object IConvertible.ToType(Type conversionType, IFormatProvider provider)
@@ -600,22 +624,22 @@ namespace ExifUtils
 				// differentiate between a real zero and a divide by zero
 				// work around divide by zero value to get meaningful comparisons
 				Rational<T> other = (Rational<T>)that;
-				if (Convert.ToDecimal(this.Denominator) == Decimal.Zero)
+				if (Convert.ToDecimal(this.denominator) == Decimal.Zero)
 				{
-					if (Convert.ToDecimal(other.Denominator) == Decimal.Zero)
+					if (Convert.ToDecimal(other.denominator) == Decimal.Zero)
 					{
-						return Convert.ToDecimal(this.Numerator).CompareTo(Convert.ToDecimal(other.Numerator));
+						return Convert.ToDecimal(this.numerator).CompareTo(Convert.ToDecimal(other.numerator));
 					}
-					else if (Convert.ToDecimal(other.Numerator) == Decimal.Zero)
+					else if (Convert.ToDecimal(other.numerator) == Decimal.Zero)
 					{
-						return Convert.ToDecimal(this.Denominator).CompareTo(Convert.ToDecimal(other.Denominator));
+						return Convert.ToDecimal(this.denominator).CompareTo(Convert.ToDecimal(other.denominator));
 					}
 				}
-				else if (Convert.ToDecimal(other.Denominator) == Decimal.Zero)
+				else if (Convert.ToDecimal(other.denominator) == Decimal.Zero)
 				{
-					if (Convert.ToDecimal(this.Numerator) == Decimal.Zero)
+					if (Convert.ToDecimal(this.numerator) == Decimal.Zero)
 					{
-						return Convert.ToDecimal(this.Denominator).CompareTo(Convert.ToDecimal(other.Denominator));
+						return Convert.ToDecimal(this.denominator).CompareTo(Convert.ToDecimal(other.denominator));
 					}
 				}
 			}
@@ -800,8 +824,8 @@ namespace ExifUtils
 		{
 			// adapted from Anonymous Type: { uint Numerator, uint Denominator }
 			int num = 0x1fb8d67d;
-			num = (-1521134295 * num) + EqualityComparer<T>.Default.GetHashCode(this.Numerator);
-			return ((-1521134295 * num) + EqualityComparer<T>.Default.GetHashCode(this.Denominator));
+			num = (-1521134295 * num) + EqualityComparer<T>.Default.GetHashCode(this.numerator);
+			return ((-1521134295 * num) + EqualityComparer<T>.Default.GetHashCode(this.denominator));
 		}
 
 		#endregion Object Overrides
