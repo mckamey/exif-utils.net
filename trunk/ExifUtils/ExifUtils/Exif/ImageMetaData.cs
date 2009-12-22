@@ -294,11 +294,15 @@ namespace ExifUtils.Exif
 
 			#endregion GpsAltitude
 
+			bool isNeg;
+
 			#region GpsLatitude
 
+			isNeg = StringComparer.OrdinalIgnoreCase.Equals(Convert.ToString(properties[ExifTag.GpsLatitudeRef].Value), "S");
 			rawValue = properties[ExifTag.GpsLatitude].Value;
 			if (!(rawValue is Array))
 			{
+				isNeg = StringComparer.OrdinalIgnoreCase.Equals(Convert.ToString(properties[ExifTag.GpsDestLatitudeRef].Value), "S");
 				rawValue = properties[ExifTag.GpsDestLatitude].Value;
 			}
 			if (rawValue is Array)
@@ -307,6 +311,10 @@ namespace ExifUtils.Exif
 				if (array.Length == 3)
 				{
 					this.GpsLatitude = Convert.ToDecimal(array.GetValue(0))+ Decimal.Divide(Convert.ToDecimal(array.GetValue(1)), 60m) + Decimal.Divide(Convert.ToDecimal(array.GetValue(2)), 3600m);
+					if (isNeg)
+					{
+						this.GpsLatitude = -this.GpsLatitude;
+					}
 				}
 			}
 
@@ -314,9 +322,11 @@ namespace ExifUtils.Exif
 
 			#region GpsLongitude
 
+			isNeg = StringComparer.OrdinalIgnoreCase.Equals(Convert.ToString(properties[ExifTag.GpsLongitudeRef].Value), "W");
 			rawValue = properties[ExifTag.GpsLongitude].Value;
 			if (!(rawValue is Array))
 			{
+				isNeg = StringComparer.OrdinalIgnoreCase.Equals(Convert.ToString(properties[ExifTag.GpsDestLongitudeRef].Value), "W");
 				rawValue = properties[ExifTag.GpsDestLongitude].Value;
 			}
 			if (rawValue is Array)
@@ -325,6 +335,10 @@ namespace ExifUtils.Exif
 				if (array.Length == 3)
 				{
 					this.GpsLongitude = Convert.ToDecimal(array.GetValue(0))+ Decimal.Divide(Convert.ToDecimal(array.GetValue(1)), 60m) + Decimal.Divide(Convert.ToDecimal(array.GetValue(2)), 3600m);
+					if (isNeg)
+					{
+						this.GpsLongitude = -this.GpsLongitude;
+					}
 				}
 			}
 
