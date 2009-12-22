@@ -98,6 +98,11 @@ namespace ExifUtils.Exif.IO
 		/// <returns></returns>
 		public static ExifPropertyCollection GetExifData(Image image, ICollection<ExifTag> exifTags)
 		{
+			if (image == null)
+			{
+				throw new NullReferenceException("image");
+			}
+
 			return new ExifPropertyCollection(image.PropertyItems, exifTags);
 		}
 

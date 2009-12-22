@@ -122,7 +122,7 @@ namespace ExifUtils
 		}
 
 		/// <summary>
-		/// Gets the MaxValue for the given <typeparam name="T" />
+		/// Gets the MaxValue
 		/// </summary>
 		private static decimal MaxValue
 		{
