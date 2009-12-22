@@ -76,7 +76,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <PreBuildEvent>IF EXIST "$(SolutionDir)\External\AutoVersioning\AutoVersioning.exe" "$(SolutionDir)External\AutoVersioning\AutoVersioning.exe" "$(ProjectDir)Properties\AssemblyVersion.cs" 1 0</PreBuildEvent>
-  </PropertyGroup>
 </Project>
