@@ -39,7 +39,7 @@ namespace XmpUtils.Xmp.Schemas
 	/// Tagged Image File Format Rev 6.0 Schema
 	/// </summary>
 	[XmpNamespace("http://ns.adobe.com/tiff/1.0/", "tiff")]
-	public enum ExifTiffSchema
+	public enum ExifTiffSchema : ushort
 	{
 		#region Image Data Structure
 
