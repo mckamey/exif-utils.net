@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmpUtils", "XmpUtils\XmpUtils.csproj", "{3E97F235-7333-4A25-AB08-F7DFB9DE94EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmpDemo", "XmpDemo\XmpDemo.csproj", "{13AC2550-C056-437B-BEDE-FBCC62F13DE1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3E97F235-7333-4A25-AB08-F7DFB9DE94EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E97F235-7333-4A25-AB08-F7DFB9DE94EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E97F235-7333-4A25-AB08-F7DFB9DE94EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E97F235-7333-4A25-AB08-F7DFB9DE94EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13AC2550-C056-437B-BEDE-FBCC62F13DE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13AC2550-C056-437B-BEDE-FBCC62F13DE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13AC2550-C056-437B-BEDE-FBCC62F13DE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13AC2550-C056-437B-BEDE-FBCC62F13DE1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
