@@ -11,13 +11,13 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.XPath, XmpQuantity.Bag)]
 		Advisory,
 
-		[XmpBasicProperty(XmpBasicType.URL)]
+		[XmpBasicProperty(XmpBasicType.URL, Category=XmpCategory.Internal)]
 		BaseURL,
 
-		[XmpBasicProperty(XmpBasicType.Date)]
+		[XmpBasicProperty(XmpBasicType.Date, Category=XmpCategory.Internal)]
 		CreateDate,
 
-		[XmpMediaManagementProperty(XmpMediaManagementType.AgentName)]
+		[XmpMediaManagementProperty(XmpMediaManagementType.AgentName, Category=XmpCategory.Internal)]
 		CreatorTool,
 
 		[XmpBasicProperty(XmpBasicType.Text, XmpQuantity.Bag)]
@@ -26,10 +26,10 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.Text)]
 		Label,
 
-		[XmpBasicProperty(XmpBasicType.Date)]
+		[XmpBasicProperty(XmpBasicType.Date, Category=XmpCategory.Internal)]
 		MetadataDate,
 
-		[XmpBasicProperty(XmpBasicType.Date)]
+		[XmpBasicProperty(XmpBasicType.Date, Category=XmpCategory.Internal)]
 		ModifyDate,
 
 		[XmpBasicProperty(XmpBasicType.Text)]
@@ -38,7 +38,7 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.Integer)]
 		Rating,
 
-		[XmpBasicProperty(XmpBasicType.Thumbnail, XmpQuantity.Alt)]
+		[XmpBasicProperty(XmpBasicType.Thumbnail, XmpQuantity.Alt, Category=XmpCategory.Internal)]
 		Thumbnails
 	}
 }
