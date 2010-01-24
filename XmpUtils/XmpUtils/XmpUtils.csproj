@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Xmp\AttributeUtility.cs" />
     <Compile Include="Xmp\RdfUtility.cs" />
+    <Compile Include="Xmp\Schemas\LightroomSchema.cs" />
     <Compile Include="Xmp\ValueTypes\XmpMediaManagementPropertyAttribute.cs" />
     <Compile Include="Xmp\ValueTypes\XmpBasicPropertyAttribute.cs" />
     <Compile Include="Xmp\ValueTypes\XmpBasicType.cs" />

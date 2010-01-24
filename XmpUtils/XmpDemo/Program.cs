@@ -43,10 +43,10 @@ namespace XmpDemo
 			{
 				case "xmpbag":
 				case "xmpseq":
-				case "xmpalt":
 				{
 					return ProcessXmpArray(metadata, depth+1);
 				}
+				case "xmpalt":
 				case "xmpstruct":
 				{
 					return ProcessXmpStruct(metadata, depth+1);
