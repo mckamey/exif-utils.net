@@ -36,7 +36,7 @@ using XmpUtils.Xmp.ValueTypes;
 namespace XmpUtils.Xmp.Schemas
 {
 	[XmpNamespace("http://ns.adobe.com/exif/1.0/", "exif")]
-	public enum ExifSchema
+	public enum ExifSchema : ushort
 	{
 		#region EXIF IFD
 
