@@ -16,7 +16,7 @@ namespace XmpDemo
 		{
 			Console.Write("Enter filename: ");
 
-			string filename = "_MG_5242.jpg";//Console.ReadLine();
+			string filename = Console.ReadLine();
 
 			object value;
 			using (Stream stream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
@@ -109,17 +109,6 @@ namespace XmpDemo
 				Console.Write(new String('\t', depth));
 				Console.WriteLine("{0} => {1}: {2}", name, value.GetType(), Convert.ToString(value));
 
-				Enum schema = ParseSchema(enumType, name);
-				if (schema == null)
-				{
-					continue;
-				}
-
-				XmpProperty property = new XmpProperty
-				{
-					Schema = schema
-				};
-
 				if (value is BitmapMetadata)
 				{
 					value = ProcessMetadata((BitmapMetadata)value, name, depth);
@@ -146,6 +135,24 @@ namespace XmpDemo
 				{
 					continue;
 				}
+
+				IEnumerable<XmpProperty> valueProps = value as IEnumerable<XmpProperty>;
+				if (valueProps != null)
+				{
+					properties.AddRange(valueProps);
+					continue;
+				}
+
+				Enum schema = ParseSchema(enumType, name);
+				if (schema == null)
+				{
+					continue;
+				}
+
+				XmpProperty property = new XmpProperty
+				{
+					Schema = schema
+				};
 
 				property.Value = value;
 				properties.Add(property);
