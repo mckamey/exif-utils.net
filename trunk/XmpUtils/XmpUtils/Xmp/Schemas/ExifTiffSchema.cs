@@ -43,81 +43,88 @@ namespace XmpUtils.Xmp.Schemas
 	{
 		#region Image Data Structure
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		ImageWidth=0x0100,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		ImageLength=0x0101,
 
-		[XmpBasicProperty(XmpBasicType.Integer, XmpQuantity.Bag)]
+		[XmpBasicProperty(XmpBasicType.Integer, XmpQuantity.Bag, Category=XmpCategory.Internal)]
 		BitsPerSample=0x0102,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		// TODO: enum
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		Compression=0x0103,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		// TODO: enum
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		PhotometricInterpretation=0x0106,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		// TODO: enum
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		Orientation=0x0112,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		SamplesPerPixel=0x0115,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		// TODO: enum
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		PlanarConfiguration=0x011C,
 
-		[XmpBasicProperty(XmpBasicType.Integer, XmpQuantity.Seq)]
+		// TODO: enum
+		[XmpBasicProperty(XmpBasicType.Integer, XmpQuantity.Seq, Category=XmpCategory.Internal)]
 		YCbCrSubSampling=0x0212,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		// TODO: enum
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		YCbCrPositioning=0x0213,
 
-		[ExifProperty(ExifType.Rational)]
+		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		XResolution=0x011A,
 
-		[ExifProperty(ExifType.Rational)]
+		// TODO: enum
+		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		YResolution=0x011B,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		ResolutionUnit=0x0128,
 
 		#endregion Image Data Structure
 
 		#region Image Data Characteristics
 
-		[XmpBasicProperty(XmpBasicType.Integer, XmpQuantity.Seq)]
+		[XmpBasicProperty(XmpBasicType.Integer, XmpQuantity.Seq, Category=XmpCategory.Internal)]
 		TransferFunction=0x012D,
 
-		[ExifProperty(ExifType.Rational, XmpQuantity.Seq)]
+		[ExifProperty(ExifType.Rational, XmpQuantity.Seq, Category=XmpCategory.Internal)]
 		WhitePoint=0x013E,
 
-		[ExifProperty(ExifType.Rational, XmpQuantity.Seq)]
+		[ExifProperty(ExifType.Rational, XmpQuantity.Seq, Category=XmpCategory.Internal)]
 		PrimaryChromaticities=0x013F,
 
-		[ExifProperty(ExifType.Rational, XmpQuantity.Seq)]
+		[ExifProperty(ExifType.Rational, XmpQuantity.Seq, Category=XmpCategory.Internal)]
 		YCbCrCoefficients=0x0211,
 
-		[ExifProperty(ExifType.Rational, XmpQuantity.Seq)]
+		[ExifProperty(ExifType.Rational, XmpQuantity.Seq, Category=XmpCategory.Internal)]
 		ReferenceBlackWhite=0x0214,
 
 		#endregion Image Data Characteristics
 
 		#region Other
 
-		[XmpBasicProperty(XmpBasicType.Date)]
+		[XmpBasicProperty(XmpBasicType.Date, Category=XmpCategory.Internal)]
 		DateTime=0x0132,
 
 		[XmpBasicProperty(XmpBasicType.LangAlt, XmpQuantity.Alt)]
 		ImageDescription=0x010E,
 
-		[XmpBasicProperty(XmpBasicType.ProperName)]
+		[XmpBasicProperty(XmpBasicType.ProperName, Category=XmpCategory.Internal)]
 		Make=0x010F,
 
-		[XmpBasicProperty(XmpBasicType.ProperName)]
+		[XmpBasicProperty(XmpBasicType.ProperName, Category=XmpCategory.Internal)]
 		Model=0x0110,
 
-		[XmpMediaManagementProperty(XmpMediaManagementType.AgentName)]
+		[XmpMediaManagementProperty(XmpMediaManagementType.AgentName, Category=XmpCategory.Internal)]
 		Software=0x0131,
 
 		[XmpBasicProperty(XmpBasicType.ProperName)]
@@ -126,11 +133,11 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.LangAlt, XmpQuantity.Alt)]
 		Copyright=0x8298,
 
-		InteroperabilityIndex=0x5041,
-
 		#endregion Other
 
 		#region Recording Offset
+
+		InteroperabilityIndex=0x5041,
 
 		StripOffsets=0x0111,
 

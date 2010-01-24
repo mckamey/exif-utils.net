@@ -65,33 +65,35 @@ namespace XmpUtils.Xmp.Schemas
 
 		#region Version
 
-		[XmpBasicProperty(XmpBasicType.Text)]
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		ExifVersion=0x9000,
 
-		[XmpBasicProperty(XmpBasicType.Text)]
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		FlashpixVersion=0xA000,
 
 		#endregion Version
 
 		#region Image Data Characteristics
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		// TODO: enum
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		ColorSpace=0xA001,
 
 		#endregion Image Data Characteristics
 
 		#region Image Configuration
 
-		[XmpBasicProperty(XmpBasicType.Integer, XmpQuantity.Seq)]
+		// TODO: enum
+		[XmpBasicProperty(XmpBasicType.Integer, XmpQuantity.Seq, Category=XmpCategory.Internal)]
 		ComponentsConfiguration=0x9101,
 
-		[ExifProperty(ExifType.Rational)]
+		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		CompressedBitsPerPixel=0x9102,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		PixelXDimension=0xA002,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		PixelYDimension=0xA003,
 
 		#endregion Image Configuration
@@ -107,17 +109,17 @@ namespace XmpUtils.Xmp.Schemas
 
 		#region Related File Information
 
-		[XmpBasicProperty(XmpBasicType.Text)]
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		RelatedSoundFile=0xA004,
 
 		#endregion Related File Information
 
 		#region Date and Time
 
-		[XmpBasicProperty(XmpBasicType.Date)]
+		[XmpBasicProperty(XmpBasicType.Date, Category=XmpCategory.Internal)]
 		DateTimeOriginal=0x9003,
 
-		[XmpBasicProperty(XmpBasicType.Date)]
+		[XmpBasicProperty(XmpBasicType.Date, Category=XmpCategory.Internal)]
 		DateTimeDigitized=0x9004,
 
 		SubSecTime=0x9290,
@@ -130,131 +132,133 @@ namespace XmpUtils.Xmp.Schemas
 
 		#region Picture Taking Conditions
 
-		[ExifProperty(ExifType.Rational)]
+		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		ExposureTime=0x829A,
 
-		[ExifProperty(ExifType.Rational)]
+		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		FNumber=0x829D,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		// TODO: enum
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		ExposureProgram=0x8822,
 
-		[XmpBasicProperty(XmpBasicType.Text)]
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		SpectralSensitivity=0x8824,
 
-		[XmpBasicProperty(XmpBasicType.Integer, XmpQuantity.Seq)]
+		[XmpBasicProperty(XmpBasicType.Integer, XmpQuantity.Seq, Category=XmpCategory.Internal)]
 		ISOSpeedRatings=0x8827,
 
-		[ExifProperty(ExifType.OECF_SFR)]
+		[ExifProperty(ExifType.OECF_SFR, Category=XmpCategory.Internal)]
 		OECF=0x8828,
 
-		[ExifProperty(ExifType.Rational)]
+		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		ShutterSpeedValue=0x9201,
 
-		[ExifProperty(ExifType.Rational)]
+		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		ApertureValue=0x9202,
 
-		[ExifProperty(ExifType.Rational)]
+		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		BrightnessValue=0x9203,
 
-		[ExifProperty(ExifType.Rational)]
+		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		ExposureBiasValue=0x9204,
 
-		[ExifProperty(ExifType.Rational)]
+		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		MaxApertureValue=0x9205,
 
-		[ExifProperty(ExifType.Rational)]
+		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		SubjectDistance=0x9206,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		// TODO: enum
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		MeteringMode=0x9207,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		LightSource=0x9208,
 
-		[ExifProperty(ExifType.Flash, XmpQuantity.Struct)]
+		[ExifProperty(ExifType.Flash, XmpQuantity.Struct, Category=XmpCategory.Internal)]
 		Flash=0x9209,
 
-		[ExifProperty(ExifType.Rational)]
+		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		FocalLength=0x920A,
 
-		[XmpBasicProperty(XmpBasicType.Integer, XmpQuantity.Seq)]
+		[XmpBasicProperty(XmpBasicType.Integer, XmpQuantity.Seq, Category=XmpCategory.Internal)]
 		SubjectArea=0x9214,
 
-		[ExifProperty(ExifType.Rational)]
+		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		FlashEnergy=0xA20B,
 
-		[ExifProperty(ExifType.OECF_SFR)]
+		[ExifProperty(ExifType.OECF_SFR, Category=XmpCategory.Internal)]
 		SpatialFreqencyResponse=0xA20C,
 
-		[ExifProperty(ExifType.Rational)]
+		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		FocalPlaneXResolution=0xA20E,
 
-		[ExifProperty(ExifType.Rational)]
+		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		FocalPlaneYResolution=0xA20F,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		FocalPlaneResolutionUnit=0xA210,
 
-		[XmpBasicProperty(XmpBasicType.Integer, XmpQuantity.Seq)]
+		[XmpBasicProperty(XmpBasicType.Integer, XmpQuantity.Seq, Category=XmpCategory.Internal)]
 		SubjectLocation=0xA214,
 
-		[ExifProperty(ExifType.Rational)]
+		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		ExposureIndex=0xA215,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		SensingMethod=0xA217,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		FileSource=0xA300,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		SceneType=0xA301,
 
-		[ExifProperty(ExifType.CFAPattern)]
+		[ExifProperty(ExifType.CFAPattern, Category=XmpCategory.Internal)]
 		CFAPattern=0xA302,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		CustomRendered=0xA401,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		ExposureMode=0xA402,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		WhiteBalance=0xA403,
 
-		[ExifProperty(ExifType.Rational)]
+		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		DigitalZoomRatio=0xA404,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		FocalLengthIn35mmFilm=0xA405,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		SceneCaptureType=0xA406,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		GainControl=0xA407,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		Contrast=0xA408,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		Saturation=0xA409,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		Sharpness=0xA40A,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		DeviceSettingDescription=0xA40B,
 
-		[XmpBasicProperty(XmpBasicType.Integer)]
+		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		SubjectDistanceRange=0xA40C,
 
 		#endregion Picture Taking Conditions
 
 		#region Other
 
-		[XmpBasicProperty(XmpBasicType.Text)]
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		ImageUniqueID=0xA420,
 
 		#endregion Other
@@ -263,94 +267,94 @@ namespace XmpUtils.Xmp.Schemas
 
 		#region Global Positioning System (GPS)
 
-		[XmpBasicProperty(XmpBasicType.Text)]
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		GPSVersionID=0x0000,
 
 		GPSLatitudeRef=0x0001,
 
-		[ExifProperty(ExifType.GPSCoordinate)]
+		[ExifProperty(ExifType.GPSCoordinate, Category=XmpCategory.Internal)]
 		GPSLatitude=0x0002,
 
 		GPSLongitudeRef=0x0003,
 
-		[ExifProperty(ExifType.GPSCoordinate)]
+		[ExifProperty(ExifType.GPSCoordinate, Category=XmpCategory.Internal)]
 		GPSLongitude=0x0004,
 
 		GPSAltitudeRef=0x0005,
 
-		[ExifProperty(ExifType.Rational)]
+		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		GPSAltitude=0x0006,
 
-		[XmpBasicProperty(XmpBasicType.Date)]
+		[XmpBasicProperty(XmpBasicType.Date, Category=XmpCategory.Internal)]
 		GPSTimeStamp=0x0007,
 
-		[XmpBasicProperty(XmpBasicType.Text)]
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		GPSSatellites=0x0008,
 
-		[XmpBasicProperty(XmpBasicType.Text)]
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		GPSStatus=0x0009,
 
-		[XmpBasicProperty(XmpBasicType.Text)]
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		GPSMeasureMode=0x000A,
 
-		[ExifProperty(ExifType.Rational)]
+		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		GPSDOP=0x000B,
 
-		[XmpBasicProperty(XmpBasicType.Text)]
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		GPSSpeedRef=0x000C,
 
-		[ExifProperty(ExifType.Rational)]
+		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		GPSSpeed=0x000D,
 
-		[XmpBasicProperty(XmpBasicType.Text)]
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		GPSTrackRef=0x000E,
 
-		[ExifProperty(ExifType.Rational)]
+		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		GPSTrack=0x000F,
 
-		[XmpBasicProperty(XmpBasicType.Text)]
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		GPSImgDirectionRef=0x0010,
 
-		[ExifProperty(ExifType.Rational)]
+		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		GPSImgDirection=0x0011,
 
-		[XmpBasicProperty(XmpBasicType.Text)]
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		GPSMapDatum=0x0012,
 
-		[XmpBasicProperty(XmpBasicType.Text)]
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		GPSDestLatitudeRef=0x0013,
 
-		[ExifProperty(ExifType.GPSCoordinate)]
+		[ExifProperty(ExifType.GPSCoordinate, Category=XmpCategory.Internal)]
 		GPSDestLatitude=0x0014,
 
-		[XmpBasicProperty(XmpBasicType.Text)]
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		GPSDestLongitudeRef=0x0015,
 
-		[ExifProperty(ExifType.GPSCoordinate)]
+		[ExifProperty(ExifType.GPSCoordinate, Category=XmpCategory.Internal)]
 		GPSDestLongitude=0x0016,
 
-		[XmpBasicProperty(XmpBasicType.Text)]
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		GPSDestBearingRef=0x0017,
 
-		[ExifProperty(ExifType.Rational)]
+		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		GPSDestBearing=0x0018,
 
-		[XmpBasicProperty(XmpBasicType.Text)]
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		GPSDestDistanceRef=0x0019,
 
-		[ExifProperty(ExifType.Rational)]
+		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		GPSDestDistance=0x001A,
 
-		[XmpBasicProperty(XmpBasicType.Text)]
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		GPSProcessingMethod=0x001B,
 
-		[XmpBasicProperty(XmpBasicType.Text)]
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		GPSAreaInformation=0x001C,
 
-		[XmpBasicProperty(XmpBasicType.Date)]
+		[XmpBasicProperty(XmpBasicType.Date, Category=XmpCategory.Internal)]
 		GPSDateStamp=0x001D,
 
-		[XmpBasicProperty(XmpBasicType.Text)]
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		GPSDifferential=0x001E,
 
 		#endregion Global Positioning System (GPS)

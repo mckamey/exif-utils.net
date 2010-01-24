@@ -38,25 +38,25 @@ namespace XmpUtils.Xmp.Schemas
 	[XmpNamespace("http://ns.adobe.com/exif/1.0/aux/", "aux")]
 	public enum ExifAuxSchema
 	{
-		[XmpBasicProperty(XmpBasicType.Text)]
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		SerialNumber,
 
-		[XmpBasicProperty(XmpBasicType.Text)]
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		LensInfo,
 
-		[XmpBasicProperty(XmpBasicType.Text)]
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		Lens,
 
-		[XmpBasicProperty(XmpBasicType.Text)]
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		ImageNumber,
 
-		[XmpBasicProperty(XmpBasicType.Text)]
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		FlashCompensation,
 
 		[XmpBasicProperty(XmpBasicType.Text)]
 		OwnerName,
 
-		[XmpBasicProperty(XmpBasicType.Text)]
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		Firmware
 	}
 }
