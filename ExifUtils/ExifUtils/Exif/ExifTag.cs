@@ -175,8 +175,11 @@ namespace ExifUtils.Exif
 		[ExifDataType(ExifType.Ascii)]
 		[Description("Image Description")]
 		ImageDescription = 0x010E,
+
 		Make = 0x010F,
+
 		Model = 0x0110,
+
 		Software = 0x0131,
 
 		[ExifDataType(ExifType.Ascii)]
