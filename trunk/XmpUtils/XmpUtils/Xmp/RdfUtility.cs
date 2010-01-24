@@ -75,7 +75,7 @@ namespace XmpUtils.Xmp
 
 				bool needsPrefix = true;
 
-				foreach (XmpProperty property in group)
+				foreach (XmpProperty property in group.OrderBy(g => g.Schema))
 				{
 					if (needsPrefix)
 					{
@@ -117,7 +117,6 @@ namespace XmpUtils.Xmp
 			{
 				case XmpQuantity.Bag:
 				case XmpQuantity.Seq:
-				case XmpQuantity.Alt:
 				{
 					XElement list = new XElement(XName.Get(property.Quantity.ToString(), RdfNamespace));
 					elem.Add(list);
@@ -131,12 +130,28 @@ namespace XmpUtils.Xmp
 
 					foreach (object item in array)
 					{
-						XElement li = new XElement(XName.Get("li", RdfNamespace), item);
-						if (property.Quantity == XmpQuantity.Alt)
-						{
-							//li.Add(new XAttribute());
-						}
-						list.Add(li);
+						list.Add(new XElement(XName.Get("li", RdfNamespace), item));
+					}
+					break;
+				}
+				case XmpQuantity.Alt:
+				{
+					XElement list = new XElement(XName.Get(property.Quantity.ToString(), RdfNamespace));
+					elem.Add(list);
+
+					IDictionary<string, object> dictionary = property.Value as IDictionary<string, object>;
+					if (dictionary == null)
+					{
+						list.Add(new XComment("Unexpected value: "+Convert.ToString(property.Value)));
+						break;
+					}
+
+					foreach (KeyValuePair<string, object> item in dictionary)
+					{
+						list.Add(new XElement(
+							XName.Get("li", RdfNamespace),
+							new XAttribute(XNamespace.Xml+"lang", item.Key),
+							item.Value));
 					}
 					break;
 				}

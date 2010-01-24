@@ -39,9 +39,24 @@ namespace XmpUtils.Xmp.Schemas
 	public enum ExifAuxSchema
 	{
 		[XmpBasicProperty(XmpBasicType.Text)]
+		SerialNumber,
+
+		[XmpBasicProperty(XmpBasicType.Text)]
+		LensInfo,
+
+		[XmpBasicProperty(XmpBasicType.Text)]
 		Lens,
 
 		[XmpBasicProperty(XmpBasicType.Text)]
-		SerialNumber
+		ImageNumber,
+
+		[XmpBasicProperty(XmpBasicType.Text)]
+		FlashCompensation,
+
+		[XmpBasicProperty(XmpBasicType.Text)]
+		OwnerName,
+
+		[XmpBasicProperty(XmpBasicType.Text)]
+		Firmware
 	}
 }
