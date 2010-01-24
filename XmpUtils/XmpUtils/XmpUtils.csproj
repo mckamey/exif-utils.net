@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3E97F235-7333-4A25-AB08-F7DFB9DE94EB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>XmpUtils</RootNamespace>
+    <AssemblyName>XmpUtils</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Xmp\AttributeUtility.cs" />
+    <Compile Include="Xmp\RdfUtility.cs" />
+    <Compile Include="Xmp\ValueTypes\XmpMediaManagementPropertyAttribute.cs" />
+    <Compile Include="Xmp\ValueTypes\XmpBasicPropertyAttribute.cs" />
+    <Compile Include="Xmp\ValueTypes\XmpBasicType.cs" />
+    <Compile Include="Xmp\ValueTypes\XmpMediaManagementType.cs" />
+    <Compile Include="Xmp\ValueTypes\XmpBasicJobWorkflowType.cs" />
+    <Compile Include="Xmp\ValueTypes\ExifType.cs" />
+    <Compile Include="Xmp\ValueTypes\ExifPropertyAttribute.cs" />
+    <Compile Include="Xmp\ValueTypes\XmpVideoMediaValueType.cs" />
+    <Compile Include="Xmp\XmpNamespaceUtility.cs" />
+    <Compile Include="Xmp\XmpValueTypeAttribute.cs" />
+    <Compile Include="Xmp\Schemas\XmpIdentifierSchema.cs" />
+    <Compile Include="Xmp\XmpCategory.cs" />
+    <Compile Include="Xmp\XmpProperty.cs" />
+    <Compile Include="Xmp\XmpQuantity.cs" />
+    <Compile Include="Xmp\XmpPropertyAttribute.cs" />
+    <Compile Include="Xmp\Schemas\AdobePdfSchema.cs" />
+    <Compile Include="Xmp\Schemas\CameraRawSchema.cs" />
+    <Compile Include="Xmp\Schemas\ExifAuxSchema.cs" />
+    <Compile Include="Xmp\Schemas\ExifSchema.cs" />
+    <Compile Include="Xmp\Schemas\PhotoshopSchema.cs" />
+    <Compile Include="Xmp\Schemas\XmpDynamicMediaSchema.cs" />
+    <Compile Include="Xmp\Schemas\XmpPagedTextSchema.cs" />
+    <Compile Include="Xmp\Schemas\XmpBasicJobTicketSchema.cs" />
+    <Compile Include="Xmp\Schemas\XmpMediaManagementSchema.cs" />
+    <Compile Include="Xmp\Schemas\XmpRightsManagementSchema.cs" />
+    <Compile Include="Xmp\Schemas\XmpBasicSchema.cs" />
+    <Compile Include="Xmp\Schemas\DublinCoreSchema.cs" />
+    <Compile Include="Xmp\Schemas\ExifTiffSchema.cs" />
+    <Compile Include="Xmp\XmpNamespaceAttribute.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
