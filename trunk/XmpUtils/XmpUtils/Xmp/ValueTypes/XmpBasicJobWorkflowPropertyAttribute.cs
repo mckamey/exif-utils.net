@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 /*---------------------------------------------------------------------------------*\
 
 	Distributed under the terms of an MIT-style license:
@@ -30,12 +30,42 @@
 
 using System;
 
-using XmpUtils.Xmp;
-
-namespace XmpUtils.Xmp.Schemas
+namespace XmpUtils.Xmp.ValueTypes
 {
-	[XmpNamespace("http://ns.adobe.com/camera-raw-settings/1.0/", "crs")]
-	public enum CameraRawSchema
+	/// <summary>
+	/// Attribute which provides mapping for XMP property value types
+	/// </summary>
+	[AttributeUsage(AttributeTargets.Class|AttributeTargets.Struct|AttributeTargets.Enum|AttributeTargets.Field, AllowMultiple=false)]
+	public sealed class XmpBasicJobWorkflowPropertyAttribute : XmpPropertyAttribute
 	{
+		#region Init
+
+		/// <summary>
+		/// Ctor
+		/// </summary>
+		public XmpBasicJobWorkflowPropertyAttribute()
+		{
+		}
+
+		/// <summary>
+		/// Ctor
+		/// </summary>
+		/// <param name="ns">fully qualified XMP namespace URI</param>
+		public XmpBasicJobWorkflowPropertyAttribute(XmpBasicJobWorkflowType valueType)
+		{
+			this.ValueType = valueType;
+		}
+
+		/// <summary>
+		/// Ctor
+		/// </summary>
+		/// <param name="ns">fully qualified XMP namespace URI</param>
+		public XmpBasicJobWorkflowPropertyAttribute(XmpBasicJobWorkflowType valueType, XmpQuantity quantity)
+		{
+			this.ValueType = valueType;
+			this.Quantity = quantity;
+		}
+
+		#endregion Init
 	}
 }

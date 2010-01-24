@@ -5,7 +5,7 @@
 
 	The MIT License
 
-	Copyright (c) 2005-2009 Stephen M. McKamey
+	Copyright (c) 2005-2010 Stephen M. McKamey
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ using System;
 
 namespace XmpUtils.Xmp.ValueTypes
 {
-	public enum XmpVideoMediaValueType
+	public enum XmpVideoMediaType
 	{
 		Unknown,
 

@@ -5,7 +5,7 @@
 
 	The MIT License
 
-	Copyright (c) 2005-2009 Stephen M. McKamey
+	Copyright (c) 2005-2010 Stephen M. McKamey
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -53,13 +53,13 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.LangAlt, XmpQuantity.Alt, Name="description")]
 		Description,
 
-		[XmpBasicProperty(XmpBasicType.MIMEType, Name="format")]
+		[XmpBasicProperty(XmpBasicType.MIMEType, Category=XmpCategory.Internal, Name="format")]
 		Format,
 
 		[XmpBasicProperty(XmpBasicType.Text, Name="identifier")]
 		Identifier,
 
-		[XmpBasicProperty(XmpBasicType.Locale, XmpQuantity.Bag, Name="language")]
+		[XmpBasicProperty(XmpBasicType.Locale, XmpQuantity.Bag, Category=XmpCategory.Internal, Name="language")]
 		Language,
 
 		[XmpBasicProperty(XmpBasicType.ProperName, XmpQuantity.Bag, Name="publisher")]
