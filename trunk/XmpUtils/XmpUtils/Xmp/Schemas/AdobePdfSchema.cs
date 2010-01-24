@@ -30,12 +30,20 @@
 
 using System;
 
-using XmpUtils.Xmp;
+using XmpUtils.Xmp.ValueTypes;
 
 namespace XmpUtils.Xmp.Schemas
 {
 	[XmpNamespace("http://ns.adobe.com/pdf/1.3/", "pdf")]
 	public enum AdobePdfSchema
 	{
+		[XmpBasicProperty(XmpBasicType.Text)]
+		Keywords,
+
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
+		PDFVersion,
+
+		[XmpMediaManagementProperty(XmpMediaManagementType.AgentName, Category=XmpCategory.Internal)]
+		Producer
 	}
 }
