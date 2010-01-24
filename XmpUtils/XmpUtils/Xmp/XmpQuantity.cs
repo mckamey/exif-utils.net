@@ -12,7 +12,7 @@ namespace XmpUtils.Xmp
 		/// <summary>
 		/// A property consists of one or more named fields.
 		/// </summary>
-		Structure,
+		Struct,
 
 		/// <summary>
 		/// An unordered array

@@ -29,6 +29,7 @@
 #endregion License
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
@@ -118,12 +119,40 @@ namespace XmpUtils.Xmp
 				case XmpQuantity.Seq:
 				case XmpQuantity.Alt:
 				{
-					// TODO: serialize array
+					XElement list = new XElement(XName.Get(property.Quantity.ToString(), RdfNamespace));
+					elem.Add(list);
+
+					IEnumerable array = property.Value as IEnumerable;
+					if (array == null)
+					{
+						list.Add(new XComment("Unexpected value: "+Convert.ToString(property.Value)));
+						break;
+					}
+
+					foreach (object item in array)
+					{
+						XElement li = new XElement(XName.Get("li", RdfNamespace), item);
+						if (property.Quantity == XmpQuantity.Alt)
+						{
+							//li.Add(new XAttribute());
+						}
+						list.Add(li);
+					}
 					break;
 				}
-				case XmpQuantity.Structure:
+				case XmpQuantity.Struct:
 				{
-					// TODO: serialize structure
+					IDictionary<string, object> dictionary = property.Value as IDictionary<string, object>;
+					if (dictionary == null)
+					{
+						elem.Add(new XComment("Unexpected value: "+Convert.ToString(property.Value)));
+						break;
+					}
+
+					foreach (KeyValuePair<string, object> item in dictionary)
+					{
+						elem.Add(new XElement(XName.Get(item.Key, property.Namespace), item.Value));
+					}
 					break;
 				}
 				default:
