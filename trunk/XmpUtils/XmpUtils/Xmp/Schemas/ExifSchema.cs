@@ -172,7 +172,7 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.Integer)]
 		LightSource=0x9208,
 
-		[ExifProperty(ExifType.Flash)]
+		[ExifProperty(ExifType.Flash, XmpQuantity.Struct)]
 		Flash=0x9209,
 
 		[ExifProperty(ExifType.Rational)]
