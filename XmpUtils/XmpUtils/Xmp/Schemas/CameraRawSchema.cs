@@ -30,12 +30,138 @@
 
 using System;
 
-using XmpUtils.Xmp;
+using XmpUtils.Xmp.ValueTypes;
 
 namespace XmpUtils.Xmp.Schemas
 {
 	[XmpNamespace("http://ns.adobe.com/camera-raw-settings/1.0/", "crs")]
 	public enum CameraRawSchema
 	{
+		[XmpBasicProperty(XmpBasicType.Boolean)]
+		AutoBrightness,
+
+		[XmpBasicProperty(XmpBasicType.Boolean)]
+		AutoContrast,
+
+		[XmpBasicProperty(XmpBasicType.Boolean)]
+		AutoExposure,
+
+		[XmpBasicProperty(XmpBasicType.Boolean)]
+		AutoShadows,
+
+		[XmpBasicProperty(XmpBasicType.Integer)]
+		BlueHue,
+
+		[XmpBasicProperty(XmpBasicType.Integer)]
+		BlueSaturation,
+
+		[XmpBasicProperty(XmpBasicType.Integer)]
+		Brightness,
+
+		[XmpBasicProperty(XmpBasicType.Text)]
+		CameraProfile,
+
+		[XmpBasicProperty(XmpBasicType.Integer)]
+		ChromaticAberrationB,
+
+		[XmpBasicProperty(XmpBasicType.Integer)]
+		ChromaticAberrationR,
+
+		[XmpBasicProperty(XmpBasicType.Integer)]
+		ColorNoiseReduction,
+
+		[XmpBasicProperty(XmpBasicType.Integer)]
+		Contrast,
+
+		[XmpBasicProperty(XmpBasicType.Real)]
+		CropTop,
+
+		[XmpBasicProperty(XmpBasicType.Real)]
+		CropLeft,
+
+		[XmpBasicProperty(XmpBasicType.Real)]
+		CropBottom,
+
+		[XmpBasicProperty(XmpBasicType.Real)]
+		CropRight,
+
+		[XmpBasicProperty(XmpBasicType.Real)]
+		CropAngle,
+
+		[XmpBasicProperty(XmpBasicType.Real)]
+		CropWidth,
+
+		[XmpBasicProperty(XmpBasicType.Real)]
+		CropHeight,
+
+		// TODO: replace with enum
+		[XmpBasicProperty(XmpBasicType.Integer)]
+		CropUnits,
+
+		[XmpBasicProperty(XmpBasicType.Real)]
+		Exposure,
+
+		[XmpBasicProperty(XmpBasicType.Integer)]
+		GreenHue,
+
+		[XmpBasicProperty(XmpBasicType.Integer)]
+		GreenSaturation,
+
+		[XmpBasicProperty(XmpBasicType.Boolean)]
+		HasCrop,
+
+		[XmpBasicProperty(XmpBasicType.Boolean)]
+		HasSettings,
+
+		[XmpBasicProperty(XmpBasicType.Integer)]
+		LuminanceSmoothing,
+
+		[XmpBasicProperty(XmpBasicType.Text)]
+		RawFileName,
+
+		[XmpBasicProperty(XmpBasicType.Integer)]
+		RedHue,
+
+		[XmpBasicProperty(XmpBasicType.Integer)]
+		RedSaturation,
+
+		[XmpBasicProperty(XmpBasicType.Integer)]
+		Saturation,
+
+		[XmpBasicProperty(XmpBasicType.Integer)]
+		Shadows,
+
+		[XmpBasicProperty(XmpBasicType.Integer)]
+		ShadowTint,
+
+		[XmpBasicProperty(XmpBasicType.Integer)]
+		Sharpness,
+
+		[XmpBasicProperty(XmpBasicType.Integer)]
+		Temperature,
+
+		[XmpBasicProperty(XmpBasicType.Integer)]
+		Tint,
+
+		// TODO: Point = {Integer, Integer}
+		[XmpBasicProperty(XmpBasicType.Integer, XmpQuantity.Seq)]
+		ToneCurve,
+
+		// TODO: enum
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
+		ToneCurveName,
+
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
+		Version,
+
+		[XmpBasicProperty(XmpBasicType.Integer)]
+		VignetteAmount,
+
+		[XmpBasicProperty(XmpBasicType.Integer)]
+		VignetteMidpoint,
+
+		// TODO: enum
+		[XmpBasicProperty(XmpBasicType.Text)]
+		WhiteBalance
 	}
 }
