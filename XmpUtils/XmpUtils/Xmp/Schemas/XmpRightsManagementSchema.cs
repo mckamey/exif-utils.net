@@ -46,7 +46,7 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.ProperName, XmpQuantity.Bag)]
 		Owner,
 
-		[XmpBasicProperty(XmpBasicType.LangAlt, XmpQuantity.Alt)]
+		[XmpBasicProperty(XmpBasicType.LangAlt)]
 		UsageTerms,
 
 		[XmpBasicProperty(XmpBasicType.URL)]

@@ -34,6 +34,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
+using XmpUtils.Xmp.ValueTypes;
+
 namespace XmpUtils.Xmp
 {
 	public class RdfUtility
@@ -75,7 +77,7 @@ namespace XmpUtils.Xmp
 
 				bool needsPrefix = true;
 
-				foreach (XmpProperty property in group.OrderBy(g => g.Schema))
+				foreach (XmpProperty property in group.OrderBy(g => g.Schema).ThenByDescending(g => g.Priority))
 				{
 					if (needsPrefix)
 					{
@@ -136,44 +138,51 @@ namespace XmpUtils.Xmp
 				}
 				case XmpQuantity.Alt:
 				{
-					XElement list = new XElement(XName.Get(property.Quantity.ToString(), RdfNamespace));
-					elem.Add(list);
-
-					IDictionary<string, object> dictionary = property.Value as IDictionary<string, object>;
-					if (dictionary == null)
-					{
-						list.Add(new XComment("Unexpected value: "+Convert.ToString(property.Value)));
-						break;
-					}
-
-					foreach (KeyValuePair<string, object> item in dictionary)
-					{
-						list.Add(new XElement(
-							XName.Get("li", RdfNamespace),
-							new XAttribute(XNamespace.Xml+"lang", item.Key),
-							item.Value));
-					}
-					break;
-				}
-				case XmpQuantity.Struct:
-				{
-					IDictionary<string, object> dictionary = property.Value as IDictionary<string, object>;
-					if (dictionary == null)
-					{
-						elem.Add(new XComment("Unexpected value: "+Convert.ToString(property.Value)));
-						break;
-					}
-
-					foreach (KeyValuePair<string, object> item in dictionary)
-					{
-						elem.Add(new XElement(XName.Get(item.Key, property.Namespace), item.Value));
-					}
+					elem.Add(new XComment("Alt value: "+Convert.ToString(property.Value)));
 					break;
 				}
 				default:
 				case XmpQuantity.Simple:
 				{
-					elem.Add(property.Value);
+					if (property.ValueType is XmpBasicType &&
+						((XmpBasicType)property.ValueType) == XmpBasicType.LangAlt)
+					{
+						XElement list = new XElement(XName.Get(property.Quantity.ToString(), RdfNamespace));
+						elem.Add(list);
+
+						IDictionary<string, object> dictionary = property.Value as IDictionary<string, object>;
+						if (dictionary == null)
+						{
+							list.Add(new XComment("Unexpected value: "+Convert.ToString(property.Value)));
+							break;
+						}
+
+						foreach (KeyValuePair<string, object> item in dictionary)
+						{
+							list.Add(new XElement(
+								XName.Get("li", RdfNamespace),
+								new XAttribute(XNamespace.Xml+"lang", item.Key),
+								item.Value));
+						}
+					}
+					else if (property.DataType == typeof(string))
+					{
+						elem.Add(property.Value);
+					}
+					else
+					{
+						IDictionary<string, object> dictionary = property.Value as IDictionary<string, object>;
+						if (dictionary == null)
+						{
+							elem.Add(new XComment("Unexpected value: "+Convert.ToString(property.Value)));
+							break;
+						}
+
+						foreach (KeyValuePair<string, object> item in dictionary)
+						{
+							elem.Add(new XElement(XName.Get(item.Key, property.Namespace), item.Value));
+						}
+					}
 					break;
 				}
 			}

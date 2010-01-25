@@ -5,14 +5,14 @@ namespace XmpUtils.Xmp
 	public enum XmpQuantity
 	{
 		/// <summary>
-		/// A single literal value
+		/// A single value
 		/// </summary>
 		Simple,
 
-		/// <summary>
-		/// A property consists of one or more named fields.
-		/// </summary>
-		Struct,
+		///// <summary>
+		///// A property consists of one or more named fields.
+		///// </summary>
+		//Struct,
 
 		/// <summary>
 		/// An unordered array

@@ -89,6 +89,18 @@ namespace XmpUtils.Xmp
 			}
 		}
 
+		/// <summary>
+		/// Gets and sets an internal measure of the priority of the source
+		/// </summary>
+		/// <remarks>
+		/// XMP is highest priority with EXIF/TIFF next, etc.
+		/// </remarks>
+		public decimal Priority
+		{
+			get;
+			set;
+		}
+
 		#endregion Mutable Properties
 
 		#region Reflective Properties

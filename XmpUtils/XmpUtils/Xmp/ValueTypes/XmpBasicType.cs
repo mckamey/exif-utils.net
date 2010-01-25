@@ -44,12 +44,14 @@ namespace XmpUtils.Xmp.ValueTypes
 
 		Date,
 
+		[XmpValueType(typeof(object))]
 		Dimensions,
 
 		Font,
 
 		Integer,
 
+		[XmpValueType(typeof(object))]
 		LangAlt,
 
 		Locale,

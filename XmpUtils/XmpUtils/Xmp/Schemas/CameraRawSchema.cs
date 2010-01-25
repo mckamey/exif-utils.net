@@ -94,7 +94,7 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.Real)]
 		CropHeight,
 
-		// TODO: replace with enum
+		// TODO: enum
 		[XmpBasicProperty(XmpBasicType.Integer)]
 		CropUnits,
 

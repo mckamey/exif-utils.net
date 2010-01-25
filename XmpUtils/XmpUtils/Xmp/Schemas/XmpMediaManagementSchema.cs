@@ -70,7 +70,7 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.URI, Category=XmpCategory.Internal)]
 		OriginalDocumentID,
 
-		// TODO: this is a bag struct
+		// TODO: bag struct
 		[XmpBasicProperty(XmpBasicType.Unknown, Quantity=XmpQuantity.Bag, Category=XmpCategory.Internal)]
 		Pantry,
 
