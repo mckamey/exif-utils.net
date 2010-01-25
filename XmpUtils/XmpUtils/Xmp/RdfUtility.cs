@@ -142,7 +142,7 @@ namespace XmpUtils.Xmp
 					break;
 				}
 				default:
-				case XmpQuantity.Simple:
+				case XmpQuantity.Single:
 				{
 					if (property.ValueType is XmpBasicType &&
 						((XmpBasicType)property.ValueType) == XmpBasicType.LangAlt)

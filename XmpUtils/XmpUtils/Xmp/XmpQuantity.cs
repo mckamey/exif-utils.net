@@ -7,12 +7,7 @@ namespace XmpUtils.Xmp
 		/// <summary>
 		/// A single value
 		/// </summary>
-		Simple,
-
-		///// <summary>
-		///// A property consists of one or more named fields.
-		///// </summary>
-		//Struct,
+		Single,
 
 		/// <summary>
 		/// An unordered array

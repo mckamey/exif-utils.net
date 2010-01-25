@@ -192,7 +192,7 @@ namespace XmpUtils.Xmp
 				this.Description = null;
 				this.Name = null;
 				this.Namespace = null;
-				this.Quantity = XmpQuantity.Simple;
+				this.Quantity = XmpQuantity.Single;
 				this.ValueType = XmpBasicType.Unknown;
 				return;
 			}
@@ -210,7 +210,7 @@ namespace XmpUtils.Xmp
 			{
 				this.Category = XmpCategory.External;
 				this.Name = name;
-				this.Quantity = XmpQuantity.Simple;
+				this.Quantity = XmpQuantity.Single;
 				this.ValueType = XmpBasicType.Unknown;
 			}
 			else

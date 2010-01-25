@@ -62,6 +62,9 @@ namespace XmpUtils.Xmp.ValueTypes
 
 		Real,
 
+		[XmpValueType(typeof(object))]
+		Struct,
+
 		Text,
 
 		Thumbnail,
