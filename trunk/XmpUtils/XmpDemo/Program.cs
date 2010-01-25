@@ -151,7 +151,8 @@ namespace XmpDemo
 
 				XmpProperty property = new XmpProperty
 				{
-					Schema = schema
+					Schema = schema,
+					Priority = 0.5m
 				};
 
 				property.Value = value;
@@ -186,7 +187,8 @@ namespace XmpDemo
 
 				XmpProperty property = new XmpProperty
 				{
-					Schema = schema
+					Schema = schema,
+					Priority = 1.0m
 				};
 
 				if (value is BitmapMetadata)

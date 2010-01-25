@@ -50,7 +50,7 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.Date, XmpQuantity.Seq, Name="date")]
 		Date,
 
-		[XmpBasicProperty(XmpBasicType.LangAlt, XmpQuantity.Alt, Name="description")]
+		[XmpBasicProperty(XmpBasicType.LangAlt, Name="description")]
 		Description,
 
 		[XmpBasicProperty(XmpBasicType.MIMEType, Category=XmpCategory.Internal, Name="format")]
@@ -68,7 +68,7 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.Text, XmpQuantity.Bag, Name="relation")]
 		Relation,
 
-		[XmpBasicProperty(XmpBasicType.LangAlt, XmpQuantity.Alt, Name="rights")]
+		[XmpBasicProperty(XmpBasicType.LangAlt, Name="rights")]
 		Rights,
 
 		[XmpBasicProperty(XmpBasicType.Text, Name="source")]
@@ -77,7 +77,7 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.Text, XmpQuantity.Bag, Name="subject")]
 		Subject,
 
-		[XmpBasicProperty(XmpBasicType.LangAlt, XmpQuantity.Alt, Name="title")]
+		[XmpBasicProperty(XmpBasicType.LangAlt, Name="title")]
 		Title,
 
 		[XmpBasicProperty(XmpBasicType.Choice, XmpQuantity.Bag, Name="type")]

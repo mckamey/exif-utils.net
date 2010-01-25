@@ -102,7 +102,7 @@ namespace XmpUtils.Xmp.Schemas
 
 		MakerNote=0x927C,
 
-		[XmpBasicProperty(XmpBasicType.LangAlt, XmpQuantity.Alt)]
+		[XmpBasicProperty(XmpBasicType.LangAlt)]
 		UserComment=0x9286,
 
 		#endregion User Information
@@ -176,7 +176,7 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		LightSource=0x9208,
 
-		[ExifProperty(ExifType.Flash, XmpQuantity.Struct, Category=XmpCategory.Internal)]
+		[ExifProperty(ExifType.Flash, Category=XmpCategory.Internal)]
 		Flash=0x9209,
 
 		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]

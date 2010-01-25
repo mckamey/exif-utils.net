@@ -97,7 +97,7 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpVideoMediaProperty(XmpVideoMediaType.Time, Category=XmpCategory.Internal, Name="introTime")]
 		IntroTime,
 
-		// TODO: closed choice of text
+		// TODO: enum
 		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal, Name="key")]
 		Key,
 
@@ -122,7 +122,7 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpVideoMediaProperty(XmpVideoMediaType.ProjectLink, Category=XmpCategory.Internal, Name="projectRef")]
 		ProjectRef,
 
-		// TODO: closed choice of text
+		// TODO: enum
 		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal, Name="pullDown")]
 		PullDown,
 
@@ -138,7 +138,7 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpVideoMediaProperty(XmpVideoMediaType.ResampleStretch, Category=XmpCategory.Internal, Name="resampleParams")]
 		ResampleParams,
 
-		// TODO: closed choice of text
+		// TODO: enum
 		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal, Name="scaleType")]
 		ScaleType,
 
@@ -160,7 +160,7 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpVideoMediaProperty(XmpVideoMediaType.Timecode, Category=XmpCategory.Internal, Name="startTimecode")]
 		StartTimecode,
 
-		// TODO: closed choice of text
+		// TODO: enum
 		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal, Name="stretchMode")]
 		StretchMode,
 
@@ -173,7 +173,7 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpVideoMediaProperty(XmpVideoMediaType.Timecode, Category=XmpCategory.Internal, Name="timeScaleParams")]
 		TimeScaleParams,
 
-		// TODO: closed choice of text
+		// TODO: enum
 		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal, Name="timeSignature")]
 		TimeSignature,
 
@@ -183,7 +183,7 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpVideoMediaProperty(XmpVideoMediaType.Track, XmpQuantity.Bag, Category=XmpCategory.Internal, Name="Tracks")]
 		Tracks,
 
-		// TODO: closed choice of text
+		// TODO: enum
 		[XmpBasicProperty(XmpBasicType.Text, Name="videoAlphaMode")]
 		VideoAlphaMode,
 
@@ -193,18 +193,18 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.Boolean, Category=XmpCategory.Internal, Name="videoAlphaUnityIsTransparent")]
 		VideoAlphaUnityIsTransparent,
 
-		// TODO: closed choice of text
+		// TODO: enum
 		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal, Name="videoColorSpace")]
 		VideoColorSpace,
 
 		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal, Name="videoCompressor")]
 		VideoCompressor,
 
-		// TODO: closed choice of text
+		// TODO: enum
 		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal, Name="videoFieldOrder")]
 		VideoFieldOrder,
 
-		// TODO: closed choice of text
+		// TODO: enum
 		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal, Name="videoFrameRate")]
 		VideoFrameRate,
 
@@ -214,11 +214,11 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.Date, Category=XmpCategory.Internal, Name="videoModDate")]
 		VideoModDate,
 
-		// TODO: closed choice of text
+		// TODO: enum
 		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal, Name="videoPixelDepth")]
 		VideoPixelDepth,
 
-		// TODO: closed choice of text
+		// TODO: enum
 		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal, Name="videoPixelAspectRatio")]
 		VideoPixelAspectRatio
 	}
