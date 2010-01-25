@@ -70,8 +70,7 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.URI, Category=XmpCategory.Internal)]
 		OriginalDocumentID,
 
-		// TODO: bag struct
-		[XmpBasicProperty(XmpBasicType.Unknown, Quantity=XmpQuantity.Bag, Category=XmpCategory.Internal)]
+		[XmpBasicProperty(XmpBasicType.Struct, Quantity=XmpQuantity.Bag, Category=XmpCategory.Internal)]
 		Pantry,
 
 		[XmpMediaManagementProperty(XmpMediaManagementType.RenditionClass, Category=XmpCategory.Internal)]

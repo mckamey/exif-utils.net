@@ -143,8 +143,8 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.Integer)]
 		Tint,
 
-		// TODO: Point = {Integer, Integer}
-		[XmpBasicProperty(XmpBasicType.Integer, XmpQuantity.Seq)]
+		// TODO: Seq of Points = "Integer, Integer", "Integer, Integer"
+		[XmpBasicProperty(XmpBasicType.Text, XmpQuantity.Seq)]
 		ToneCurve,
 
 		// TODO: enum
