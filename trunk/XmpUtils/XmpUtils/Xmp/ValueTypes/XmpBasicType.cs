@@ -42,6 +42,7 @@ namespace XmpUtils.Xmp.ValueTypes
 
 		Colorant,
 
+		[XmpValueType(typeof(DateTime))]
 		Date,
 
 		[XmpValueType(typeof(object))]
