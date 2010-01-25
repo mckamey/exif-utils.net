@@ -40,6 +40,48 @@ namespace XmpUtils.Xmp
 {
 	public class RdfUtility
 	{
+		#region EqualityComparer<TObj, TVal>
+
+		/// <summary>
+		/// Wrapper which projects an object before comparison
+		/// </summary>
+		/// <typeparam name="TObj">type of objects to be compared</typeparam>
+		/// <typeparam name="TVal">type of values in the comparison</typeparam>
+		private class EqualityComparer<TObj, TVal> :
+			IEqualityComparer<TObj>
+		{
+			#region Fields
+
+			private readonly Func<TObj, TVal> Projection;
+
+			#endregion Fields
+
+			#region Init
+
+			public EqualityComparer(Func<TObj, TVal> projection)
+			{
+				this.Projection = projection;
+			}
+
+			#endregion Init
+
+			#region IEqualityComparer<TObj> Members
+
+			public bool Equals(TObj x, TObj y)
+			{
+				return EqualityComparer<TVal>.Default.Equals(this.Projection(x), this.Projection(y));
+			}
+
+			public int GetHashCode(TObj obj)
+			{
+				return EqualityComparer<TVal>.Default.GetHashCode(this.Projection(obj));
+			}
+
+			#endregion IEqualityComparer<TObj> Members
+		}
+
+		#endregion EqualityComparer<TObj, TVal>
+
 		#region Constants
 
 		private const string XmpMetaPrefix = "x";
@@ -49,6 +91,8 @@ namespace XmpUtils.Xmp
 		private const string RdfNamespace = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
 		private const string RdfAboutValue = "";
+
+		private static readonly EqualityComparer<XmpProperty, Enum> DistinctFilter = new EqualityComparer<XmpProperty, Enum>(x => x.Schema);
 
 		#endregion Constants
 
@@ -65,19 +109,26 @@ namespace XmpUtils.Xmp
 				XName.Get("RDF", RdfNamespace),
 				new XAttribute(XNamespace.Xmlns + RdfPrefix, RdfNamespace));
 
+			// group into each schema namespace (as per XMP recommendation)
 			var groups =
 				from xmp in properties
 				group xmp by xmp.Namespace;
 
-			foreach (var group in groups)
+			foreach (var g in groups)
 			{
 				XElement description = new XElement(
 					XName.Get("Description", RdfNamespace),
 					new XAttribute(XName.Get("about", RdfNamespace), RdfAboutValue));
 
+				// sort and de-dup, XMP wins over EXIF/TIFF
+				var props =
+					(from p in g
+					 orderby p.Schema, p.Priority descending
+					 select p).Distinct(RdfUtility.DistinctFilter);
+
 				bool needsPrefix = true;
 
-				foreach (XmpProperty property in group.OrderBy(g => g.Schema).ThenByDescending(g => g.Priority))
+				foreach (XmpProperty property in props)
 				{
 					if (needsPrefix)
 					{
