@@ -115,7 +115,7 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.Date, Category=XmpCategory.Internal)]
 		DateTime=0x0132,
 
-		[XmpBasicProperty(XmpBasicType.LangAlt)]
+		[XmpBasicProperty(XmpBasicType.LangAlt, XmpQuantity.Alt)]
 		ImageDescription=0x010E,
 
 		[XmpBasicProperty(XmpBasicType.ProperName, Category=XmpCategory.Internal)]
@@ -130,7 +130,7 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.ProperName)]
 		Artist=0x013B,
 
-		[XmpBasicProperty(XmpBasicType.LangAlt)]
+		[XmpBasicProperty(XmpBasicType.LangAlt, XmpQuantity.Alt)]
 		Copyright=0x8298,
 
 		#endregion Other

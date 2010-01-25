@@ -189,12 +189,6 @@ namespace XmpUtils.Xmp
 				}
 				case XmpQuantity.Alt:
 				{
-					elem.Add(new XComment("Alt value: "+Convert.ToString(property.Value)));
-					break;
-				}
-				default:
-				case XmpQuantity.Single:
-				{
 					if (property.ValueType is XmpBasicType &&
 						((XmpBasicType)property.ValueType) == XmpBasicType.LangAlt)
 					{
@@ -216,7 +210,17 @@ namespace XmpUtils.Xmp
 								item.Value));
 						}
 					}
-					else if (property.DataType == typeof(string))
+					else
+					{
+						elem.Add(new XComment("Alt value: "+Convert.ToString(property.Value)));
+					}
+					break;
+				}
+				default:
+				case XmpQuantity.Single:
+				{
+					if (property.DataType == typeof(string) ||
+						property.DataType == typeof(DateTime))
 					{
 						elem.Add(property.Value);
 					}

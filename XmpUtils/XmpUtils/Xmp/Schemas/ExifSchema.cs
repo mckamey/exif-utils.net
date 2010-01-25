@@ -102,7 +102,7 @@ namespace XmpUtils.Xmp.Schemas
 
 		MakerNote=0x927C,
 
-		[XmpBasicProperty(XmpBasicType.LangAlt)]
+		[XmpBasicProperty(XmpBasicType.LangAlt, XmpQuantity.Alt)]
 		UserComment=0x9286,
 
 		#endregion User Information

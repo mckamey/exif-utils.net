@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Media.Imaging;
 
 using XmpUtils.Xmp;
 using XmpUtils.Xmp.Schemas;
+using XmpUtils.Xmp.ValueTypes;
 
 namespace XmpDemo
 {
@@ -152,14 +154,67 @@ namespace XmpDemo
 				XmpProperty property = new XmpProperty
 				{
 					Schema = schema,
-					Priority = 0.5m
+					Priority = 0.25m
 				};
 
-				property.Value = value;
+				property.Value = ProcessValue(property, value);
+
 				properties.Add(property);
 			}
 
 			return properties;
+		}
+
+		private static object ProcessValue(XmpProperty property, object value)
+		{
+			switch (Type.GetTypeCode(property.DataType))
+			{
+				case TypeCode.String:
+				{
+					if (property.Quantity != XmpQuantity.Single)
+					{
+						value = new object[] { value };
+					}
+					break;
+				}
+				case TypeCode.DateTime:
+				{
+					DateTime date;
+					if (DateTime.TryParseExact(
+							Convert.ToString(value),
+							"yyyy':'MM':'dd HH':'mm':'ss",
+							DateTimeFormatInfo.InvariantInfo,
+							DateTimeStyles.RoundtripKind,
+							out date))
+					{
+						// clean up to ISO-8601
+						value = date.ToString("yyyy'-'MM'-'ddTHH':'mm':'ss");
+					}
+					break;
+				}
+				case TypeCode.Object:
+				{
+					if (property.ValueType is XmpBasicType &&
+						((XmpBasicType)property.ValueType) == XmpBasicType.LangAlt)
+					{
+						value = new Dictionary<string, object>
+						{
+							{ "x-default", Convert.ToString(value) }
+						};
+					}
+					else
+					{
+						// TODO
+					}
+					break;
+				}
+				default:
+				{
+					break;
+				}
+			}
+
+			return value;
 		}
 
 		private static IEnumerable<XmpProperty> ProcessXmp(BitmapMetadata metadata, int depth)
@@ -188,7 +243,7 @@ namespace XmpDemo
 				XmpProperty property = new XmpProperty
 				{
 					Schema = schema,
-					Priority = 1.0m
+					Priority = 0.75m
 				};
 
 				if (value is BitmapMetadata)
