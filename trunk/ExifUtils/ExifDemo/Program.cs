@@ -1,3 +1,4 @@
+//#define TEST
 #region License
 /*---------------------------------------------------------------------------------*\
 
@@ -74,7 +75,7 @@ namespace ExifDemo
 			Console.WriteLine();
 
 			//----------------------------------------------
-
+#if TEST
 			string outputPath = imagePath.Substring(0, lastDot)+"_COPYRIGHT_LOREM_IPSUM"+imagePath.Substring(lastDot);
 			Console.WriteLine("Adding dummy copyright to image and saving to:\r\n\t"+outputPath);
 
@@ -105,6 +106,7 @@ namespace ExifDemo
 
 				Console.WriteLine();
 			}
+#endif
 		}
 
 		private static string GetPropertyTypeName(object value)

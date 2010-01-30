@@ -411,8 +411,35 @@ namespace ExifUtils.Exif
 						goto default;
 					}
 
-					decimal value = Convert.ToDecimal(array.GetValue(0))+ Decimal.Divide(Convert.ToDecimal(array.GetValue(1)), 60m) + Decimal.Divide(Convert.ToDecimal(array.GetValue(2)), 3600m);
-					return value.ToString("0.0######");
+					// attempt to use the GPSCoordinate XMP formatting guidelines
+					GpsCoordinate gps = new GpsCoordinate();
+
+					if (array.GetValue(0) is Rational<uint>)
+					{
+						gps.Degrees = (Rational<uint>)array.GetValue(0);
+					}
+					else
+					{
+						gps.SetDegrees(Convert.ToDecimal(array.GetValue(0)));
+					}
+					if (array.GetValue(1) is Rational<uint>)
+					{
+						gps.Minutes = (Rational<uint>)array.GetValue(1);
+					}
+					else
+					{
+						gps.SetMinutes(Convert.ToDecimal(array.GetValue(1)));
+					}
+					if (array.GetValue(2) is Rational<uint>)
+					{
+						gps.Seconds = (Rational<uint>)array.GetValue(2);
+					}
+					else
+					{
+						gps.SetSeconds(Convert.ToDecimal(array.GetValue(2)));
+					}
+
+					return gps.ToString();
 				}
 				case ExifTag.GpsTimeStamp:
 				{

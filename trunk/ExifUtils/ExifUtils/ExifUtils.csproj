@@ -49,6 +49,7 @@
     <Compile Include="Exif\ExifTag.cs" />
     <Compile Include="Exif\ExifType.cs" />
     <Compile Include="Exif\ExifTypeAttribute.cs" />
+    <Compile Include="Exif\GpsCoordinate.cs" />
     <Compile Include="Exif\IO\ExifDecoder.cs" />
     <Compile Include="Exif\IO\ExifEncoder.cs" />
     <Compile Include="Exif\IO\ExifReader.cs" />
