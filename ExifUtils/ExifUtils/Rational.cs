@@ -123,6 +123,14 @@ namespace ExifUtils
 		}
 
 		/// <summary>
+		/// Gets a value indicating if this is an empty instance
+		/// </summary>
+		public bool IsEmpty
+		{
+			get { return this.Equals(Rational<T>.Empty); }
+		}
+
+		/// <summary>
 		/// Gets the MaxValue
 		/// </summary>
 		private static decimal MaxValue
@@ -181,9 +189,9 @@ namespace ExifUtils
 		/// </remarks>
 		public static Rational<T> Approximate(decimal value, decimal epsilon)
 		{
-			decimal numerator = 1m;
-			decimal denominator = 1m;
-			decimal fraction = 1m;
+			decimal numerator = Decimal.Truncate(value);
+			decimal denominator = Decimal.One;
+			decimal fraction = Decimal.Divide(numerator, denominator);
 			decimal maxValue = Rational<T>.MaxValue;
 
 			while (Math.Abs(fraction-value) > epsilon && (denominator < maxValue) && (numerator < maxValue))

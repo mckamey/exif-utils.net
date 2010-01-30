@@ -103,8 +103,8 @@ namespace ExifUtils.Exif
 		private ExifTagFlash flash;
 		private decimal focalLength;
 		private decimal gpsAltitude;
-		private decimal gpsLatitude;
-		private decimal gpsLongitude;
+		private GpsCoordinate gpsLatitude;
+		private GpsCoordinate gpsLongitude;
 		private string imageDescription;
 		private int imageHeight;
 		private string imageTitle;
@@ -294,52 +294,36 @@ namespace ExifUtils.Exif
 
 			#endregion GpsAltitude
 
-			bool isNeg;
+			string gpsDir;
 
 			#region GpsLatitude
 
-			isNeg = StringComparer.OrdinalIgnoreCase.Equals(Convert.ToString(properties[ExifTag.GpsLatitudeRef].Value), "S");
+			gpsDir = Convert.ToString(properties[ExifTag.GpsLatitudeRef].Value);
 			rawValue = properties[ExifTag.GpsLatitude].Value;
 			if (!(rawValue is Array))
 			{
-				isNeg = StringComparer.OrdinalIgnoreCase.Equals(Convert.ToString(properties[ExifTag.GpsDestLatitudeRef].Value), "S");
+				gpsDir = Convert.ToString(properties[ExifTag.GpsDestLatitudeRef].Value);
 				rawValue = properties[ExifTag.GpsDestLatitude].Value;
 			}
 			if (rawValue is Array)
 			{
-				Array array = (Array)rawValue;
-				if (array.Length == 3)
-				{
-					this.GpsLatitude = Convert.ToDecimal(array.GetValue(0))+ Decimal.Divide(Convert.ToDecimal(array.GetValue(1)), 60m) + Decimal.Divide(Convert.ToDecimal(array.GetValue(2)), 3600m);
-					if (isNeg)
-					{
-						this.GpsLatitude = -this.GpsLatitude;
-					}
-				}
+				this.GpsLatitude = this.AsGps((Array)rawValue, gpsDir);
 			}
 
 			#endregion GpsLatitude
 
 			#region GpsLongitude
 
-			isNeg = StringComparer.OrdinalIgnoreCase.Equals(Convert.ToString(properties[ExifTag.GpsLongitudeRef].Value), "W");
+			gpsDir = Convert.ToString(properties[ExifTag.GpsLongitudeRef].Value);
 			rawValue = properties[ExifTag.GpsLongitude].Value;
 			if (!(rawValue is Array))
 			{
-				isNeg = StringComparer.OrdinalIgnoreCase.Equals(Convert.ToString(properties[ExifTag.GpsDestLongitudeRef].Value), "W");
+				gpsDir = Convert.ToString(properties[ExifTag.GpsDestLongitudeRef].Value);
 				rawValue = properties[ExifTag.GpsDestLongitude].Value;
 			}
 			if (rawValue is Array)
 			{
-				Array array = (Array)rawValue;
-				if (array.Length == 3)
-				{
-					this.GpsLongitude = Convert.ToDecimal(array.GetValue(0))+ Decimal.Divide(Convert.ToDecimal(array.GetValue(1)), 60m) + Decimal.Divide(Convert.ToDecimal(array.GetValue(2)), 3600m);
-					if (isNeg)
-					{
-						this.GpsLongitude = -this.GpsLongitude;
-					}
-				}
+				this.GpsLongitude = this.AsGps((Array)rawValue, gpsDir);
 			}
 
 			#endregion GpsLongitude
@@ -460,6 +444,51 @@ namespace ExifUtils.Exif
 			#endregion WhiteBalance
 		}
 
+		private GpsCoordinate AsGps(Array array, string gpsDir)
+		{
+			if (array.Length != 3)
+			{
+				return null;
+			}
+
+			GpsCoordinate gps = new GpsCoordinate();
+
+			if (array.GetValue(0) is Rational<uint>)
+			{
+				gps.Degrees = (Rational<uint>)array.GetValue(0);
+			}
+			else
+			{
+				gps.SetDegrees(Convert.ToDecimal(array.GetValue(0)));
+			}
+
+			if (array.GetValue(1) is Rational<uint>)
+			{
+				gps.Minutes = (Rational<uint>)array.GetValue(1);
+			}
+			else
+			{
+				gps.SetMinutes(Convert.ToDecimal(array.GetValue(1)));
+			}
+
+			if (array.GetValue(2) is Rational<uint>)
+			{
+				gps.Seconds = (Rational<uint>)array.GetValue(2);
+			}
+			else
+			{
+				gps.SetSeconds(Convert.ToDecimal(array.GetValue(2)));
+			}
+
+			try
+			{
+				gps.Direction = gpsDir;
+			}
+			catch { }
+
+			return gps;
+		}
+
 		#endregion Init
 
 		#region Properties
@@ -566,7 +595,7 @@ namespace ExifUtils.Exif
 		/// <summary>
 		/// Gets and sets the GPS latitude
 		/// </summary>
-		public decimal GpsLatitude
+		public GpsCoordinate GpsLatitude
 		{
 			get { return this.gpsLatitude; }
 			set { this.gpsLatitude = value; }
@@ -575,7 +604,7 @@ namespace ExifUtils.Exif
 		/// <summary>
 		/// Gets and sets the GPS longitude
 		/// </summary>
-		public decimal GpsLongitude
+		public GpsCoordinate GpsLongitude
 		{
 			get { return this.gpsLongitude; }
 			set { this.gpsLongitude = value; }
