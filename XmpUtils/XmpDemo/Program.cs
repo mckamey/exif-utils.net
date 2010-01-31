@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows.Media.Imaging;
 
 using XmpUtils;
@@ -91,10 +92,10 @@ namespace XmpDemo
 				{
 					return ProcessBlock(metadata, typeof(ExifTiffSchema), 0.4m, depth+1);
 				}
-				case "iptc":
-				{
-					return ProcessBlock(metadata, typeof(ExifTiffSchema), 0.6m, depth+1);
-				}
+				//case "iptc":
+				//{
+				//    return ProcessBlock(metadata, typeof(IptcSchema), 0.6m, depth+1);
+				//}
 				case "thumb":
 				case "chrominance":
 				case "luminance":
@@ -172,7 +173,10 @@ namespace XmpDemo
 
 				property.Value = ProcessValue(property, value);
 
-				properties.Add(property);
+				if (property.Value != null)
+				{
+					properties.Add(property);
+				}
 			}
 
 			return properties;
@@ -184,9 +188,18 @@ namespace XmpDemo
 			{
 				case TypeCode.String:
 				{
-					if (property.Quantity != XmpQuantity.Single)
+					if (property.Quantity != XmpQuantity.Single &&
+						!(value is Array))
 					{
 						value = new object[] { value };
+					}
+
+					if (property.Quantity == XmpQuantity.Single &&
+						value is byte[] &&
+						property.ValueType is XmpBasicType &&
+						((XmpBasicType)property.ValueType) == XmpBasicType.Text)
+					{
+						value = new String(Encoding.UTF8.GetChars((byte[])value));
 					}
 
 					if (property.ValueType is ExifType)
@@ -198,11 +211,15 @@ namespace XmpDemo
 								Array array = value as Array;
 								if (array != null && array.Length == 3)
 								{
-									GpsCoordinate gps = new GpsCoordinate();
-									gps.Degrees = (Rational<uint>)ProcessRational(property, array.GetValue(0));
-									gps.Minutes = (Rational<uint>)ProcessRational(property, array.GetValue(1));
-									gps.Seconds = (Rational<uint>)ProcessRational(property, array.GetValue(2));
-									value = gps.ToString("X");
+									try
+									{
+										GpsCoordinate gps = new GpsCoordinate();
+										gps.Degrees = (Rational<uint>)ProcessRational(property, array.GetValue(0));
+										gps.Minutes = (Rational<uint>)ProcessRational(property, array.GetValue(1));
+										gps.Seconds = (Rational<uint>)ProcessRational(property, array.GetValue(2));
+										value = gps.ToString("X");
+									}
+									catch { }
 								}
 								break;
 							}
@@ -247,10 +264,33 @@ namespace XmpDemo
 					if (property.ValueType is XmpBasicType &&
 						((XmpBasicType)property.ValueType) == XmpBasicType.LangAlt)
 					{
-						value = new Dictionary<string, object>
+						string str;
+						if (value is byte[])
 						{
-							{ "x-default", Convert.ToString(value) }
-						};
+							str = new String(Encoding.UTF8.GetChars((byte[])value));
+							int end = str.IndexOf('\0');
+							if (end >= 0)
+							{
+								str = str.Substring(0, end);
+							}
+							value = str;
+						}
+						else
+						{
+							str = Convert.ToString(value);
+						}
+
+						if (String.IsNullOrEmpty(str))
+						{
+							value = null;
+						}
+						else
+						{
+							value = new Dictionary<string, object>
+							{
+								{ "x-default", str }
+							};
+						}
 					}
 					else
 					{
@@ -280,8 +320,48 @@ namespace XmpDemo
 				{
 					ulong rational = (ulong)value;
 					uint numerator = (uint)(rational & 0xFFFFFFFFL);
-					uint denominator = (uint)((rational & 0xFFFFFFFF00000000L) >> 32);
+					uint denominator = (uint)(rational >> 32);
 					value = new Rational<uint>(numerator, denominator, false);
+					break;
+				}
+				case TypeCode.Int64:
+				{
+					long rational = (long)value;
+					int numerator = (int)(rational & 0xFFFFFFFFL);
+					int denominator = (int)(rational >> 32);
+					value = new Rational<int>(numerator, denominator, false);
+					break;
+				}
+				case TypeCode.UInt32:
+				{
+					uint rational = (uint)value;
+					ushort numerator = (ushort)(rational & 0xFFFF);
+					ushort denominator = (ushort)(rational >> 16);
+					value = new Rational<ushort>(numerator, denominator, false);
+					break;
+				}
+				case TypeCode.Int32:
+				{
+					int rational = (int)value;
+					short numerator = (short)(rational & 0xFFFF);
+					short denominator = (short)(rational >> 16);
+					value = new Rational<short>(numerator, denominator, false);
+					break;
+				}
+				case TypeCode.UInt16:
+				{
+					ushort rational = (ushort)value;
+					byte numerator = (byte)(rational & 0xFF);
+					byte denominator = (byte)(rational >> 8);
+					value = new Rational<byte>(numerator, denominator, false);
+					break;
+				}
+				case TypeCode.Int16:
+				{
+					short rational = (short)value;
+					sbyte numerator = (sbyte)(rational & 0xFF);
+					sbyte denominator = (sbyte)(rational >> 8);
+					value = new Rational<sbyte>(numerator, denominator, false);
 					break;
 				}
 				default:
