@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ExifUtils.Exif
+namespace ExifUtils
 {
 	public class GpsCoordinate
 	{

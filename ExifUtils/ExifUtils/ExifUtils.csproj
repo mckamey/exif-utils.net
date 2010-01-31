@@ -49,7 +49,6 @@
     <Compile Include="Exif\ExifTag.cs" />
     <Compile Include="Exif\ExifType.cs" />
     <Compile Include="Exif\ExifTypeAttribute.cs" />
-    <Compile Include="Exif\GpsCoordinate.cs" />
     <Compile Include="Exif\IO\ExifDecoder.cs" />
     <Compile Include="Exif\IO\ExifEncoder.cs" />
     <Compile Include="Exif\IO\ExifReader.cs" />
@@ -59,6 +58,7 @@
     <Compile Include="Exif\TypeConverters\ExifCollectionConverter.cs" />
     <Compile Include="Exif\TypeConverters\ExifConverter.cs" />
     <Compile Include="Exif\ImageMetaData.cs" />
+    <Compile Include="GpsCoordinate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\AssemblyVersion.cs" />
     <Compile Include="Rational.cs" />
