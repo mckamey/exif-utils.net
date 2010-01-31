@@ -82,6 +82,7 @@ namespace XmpDemo
 					return ProcessXmp(metadata, depth+1);
 				}
 				case "exif":
+				case "gps":
 				{
 					return ProcessBlock(metadata, typeof(ExifSchema), depth+1);
 				}
@@ -184,11 +185,11 @@ namespace XmpDemo
 							Convert.ToString(value),
 							"yyyy':'MM':'dd HH':'mm':'ss",
 							DateTimeFormatInfo.InvariantInfo,
-							DateTimeStyles.RoundtripKind,
+							DateTimeStyles.AssumeLocal,
 							out date))
 					{
 						// clean up to ISO-8601
-						value = date.ToString("yyyy'-'MM'-'ddTHH':'mm':'ss");
+						value = date.ToString("yyyy'-'MM'-'ddTHH':'mm':'ssK");
 					}
 					break;
 				}
