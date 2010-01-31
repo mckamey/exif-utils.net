@@ -130,10 +130,13 @@ namespace XmpUtils.Xmp
 					return this.ProcessXmp(metadata, 0.8m, depth+1);
 				}
 				case "exif":
+				{
+					return this.ProcessBlock(metadata, typeof(ExifSchema), 0.2m, depth+1);
+				}
 				case "gps":
 				{
-					// TODO: aggregate GPS properties into composite propertes
-					return this.ProcessBlock(metadata, typeof(ExifSchema), 0.2m, depth+1);
+					IEnumerable<XmpProperty> gps = this.ProcessBlock(metadata, typeof(ExifSchema), 0.2m, depth+1);
+					return this.ProcessGps(gps, 0.2m);
 				}
 				case "ifd":
 				{
@@ -155,6 +158,155 @@ namespace XmpUtils.Xmp
 				{
 					return this.ProcessArray(metadata, depth+1);
 				}
+			}
+		}
+
+		private IEnumerable<XmpProperty> ProcessGps(IEnumerable<XmpProperty> gps, decimal priority)
+		{
+			GpsCoordinate latitude = null, longitude = null, destLatitude = null, destLongitude = null;
+			string latitudeRef = null, longitudeRef = null, destLatitudeRef = null, destLongitudeRef = null;
+
+			foreach (XmpProperty property in gps)
+			{
+				if (!(property.Schema is ExifSchema))
+				{
+					yield return property;
+					continue;
+				}
+
+				switch ((ExifSchema)property.Schema)
+				{
+					case ExifSchema.GPSLatitude:
+					{
+						GpsCoordinate.TryParse(Convert.ToString(property.Value), out latitude);
+						break;
+					}
+					case ExifSchema.GPSLatitudeRef:
+					{
+						latitudeRef = Convert.ToString(property.Value);
+						break;
+					}
+
+					case ExifSchema.GPSLongitude:
+					{
+						GpsCoordinate.TryParse(Convert.ToString(property.Value), out longitude);
+						break;
+					}
+					case ExifSchema.GPSLongitudeRef:
+					{
+						longitudeRef = Convert.ToString(property.Value);
+						break;
+					}
+
+					case ExifSchema.GPSDestLatitude:
+					{
+						GpsCoordinate.TryParse(Convert.ToString(property.Value), out destLatitude);
+						break;
+					}
+					case ExifSchema.GPSDestLatitudeRef:
+					{
+						destLatitudeRef = Convert.ToString(property.Value);
+						break;
+					}
+
+					case ExifSchema.GPSDestLongitude:
+					{
+						GpsCoordinate.TryParse(Convert.ToString(property.Value), out destLongitude);
+						break;
+					}
+					case ExifSchema.GPSDestLongitudeRef:
+					{
+						destLongitudeRef = Convert.ToString(property.Value);
+						break;
+					}
+
+					case ExifSchema.GPSDateStamp:
+					case ExifSchema.GPSTimeStamp:
+
+					case ExifSchema.GPSAltitude:
+					case ExifSchema.GPSAltitudeRef:
+
+					case ExifSchema.GPSDestBearing:
+					case ExifSchema.GPSDestBearingRef:
+
+					case ExifSchema.GPSDestDistance:
+					case ExifSchema.GPSDestDistanceRef:
+
+					case ExifSchema.GPSImgDirection:
+					case ExifSchema.GPSImgDirectionRef:
+
+					case ExifSchema.GPSSpeed:
+					case ExifSchema.GPSSpeedRef:
+
+					case ExifSchema.GPSTrack:
+					case ExifSchema.GPSTrackRef:
+					default:
+					{
+						// TODO: process other dual properties
+						yield return property;
+						break;
+					}
+				}
+			}
+
+			if (latitude != null)
+			{
+				if (!String.IsNullOrEmpty(latitudeRef))
+				{
+					latitude.Direction = latitudeRef;
+				}
+
+				yield return new XmpProperty
+				{
+					Schema = ExifSchema.GPSLatitude,
+					Value = latitude.ToString("X"),
+					Priority = priority
+				};
+			}
+
+			if (longitude != null)
+			{
+				if (!String.IsNullOrEmpty(longitudeRef))
+				{
+					longitude.Direction = longitudeRef;
+				}
+
+				yield return new XmpProperty
+				{
+					Schema = ExifSchema.GPSLongitude,
+					Value = longitude.ToString("X"),
+					Priority = priority
+				};
+			}
+
+			if (destLatitude != null)
+			{
+				if (!String.IsNullOrEmpty(destLatitudeRef))
+				{
+					destLatitude.Direction = destLatitudeRef;
+				}
+
+				yield return new XmpProperty
+				{
+					Schema = ExifSchema.GPSDestLatitude,
+					Value = destLatitude.ToString("X"),
+					Priority = priority
+				};
+			}
+
+			if (destLongitude != null)
+			{
+				if (!String.IsNullOrEmpty(destLongitudeRef))
+				{
+					destLongitude.Direction = destLongitudeRef;
+				}
+
+				yield return new XmpProperty
+				{
+					Schema = ExifSchema.GPSDestLongitude,
+					Value = destLongitude.ToString("X"),
+					Priority = priority
+				};
 			}
 		}
 
@@ -381,14 +533,13 @@ namespace XmpUtils.Xmp
 							break;
 						}
 
-						// TODO: process flash enum into dictionary
 						value = new Dictionary<string, object>
 						{
 							{ "Fired", Convert.ToString((flash & ExifTagFlash.FlashFired) == ExifTagFlash.FlashFired) },
-							{ "Function", Convert.ToString((flash & ExifTagFlash.NoFlashFunction) == ExifTagFlash.NoFlashFunction) },
+							{ "Return", (int)(flash & (ExifTagFlash.ReturnNotDetected|ExifTagFlash.ReturnDetected)) >> 1 },
 							{ "Mode", (int)(flash & (ExifTagFlash.ModeOn|ExifTagFlash.ModeOff|ExifTagFlash.ModeAuto)) >> 3 },
-							{ "RedEyeMode", Convert.ToString((flash & ExifTagFlash.RedEyeReduction) == ExifTagFlash.RedEyeReduction) },
-							{ "Return", (int)(flash & (ExifTagFlash.ReturnNotDetected|ExifTagFlash.ReturnDetected)) >> 1 }
+							{ "Function", Convert.ToString((flash & ExifTagFlash.NoFlashFunction) == ExifTagFlash.NoFlashFunction) },
+							{ "RedEyeMode", Convert.ToString((flash & ExifTagFlash.RedEyeReduction) == ExifTagFlash.RedEyeReduction) }
 						};
 					}
 					else
