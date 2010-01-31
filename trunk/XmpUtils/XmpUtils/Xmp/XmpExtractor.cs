@@ -85,6 +85,11 @@ namespace XmpUtils.Xmp
 				yield break;
 			}
 
+			if (value is IDictionary<string, object>)
+			{
+				value = ((IDictionary<string, object>)value).Values;
+			}
+
 			// filter out any values which are not enumerable
 			foreach (IEnumerable item in value.OfType<IEnumerable>())
 			{
@@ -115,37 +120,27 @@ namespace XmpUtils.Xmp
 
 			switch (metadata.Format)
 			{
-				case "xmpbag":
-				case "xmpseq":
-				{
-					return this.ProcessArray(metadata, depth+1);
-				}
-				case "xmpalt":
-				case "xmpstruct":
-				{
-					return this.ProcessXmpStruct(metadata, depth+1);
-				}
 				case "xmp":
 				{
 					return this.ProcessXmp(metadata, 0.8m, depth+1);
 				}
 				case "exif":
 				{
-					return this.ProcessBlock(metadata, typeof(ExifSchema), 0.2m, depth+1);
+					return this.ProcessAsXmp(metadata, typeof(ExifSchema), 0.2m, depth+1);
 				}
 				case "gps":
 				{
-					IEnumerable<XmpProperty> gps = this.ProcessBlock(metadata, typeof(ExifSchema), 0.2m, depth+1);
+					IEnumerable<XmpProperty> gps = this.ProcessAsXmp(metadata, typeof(ExifSchema), 0.2m, depth+1);
 					return this.ProcessGps(gps, 0.2m);
 				}
 				case "ifd":
 				{
-					return this.ProcessBlock(metadata, typeof(ExifTiffSchema), 0.4m, depth+1);
+					return this.ProcessAsXmp(metadata, typeof(ExifTiffSchema), 0.4m, depth+1);
 				}
 				// TODO: build out IPTC properties
 				//case "iptc":
 				//{
-				//    return ProcessBlock(metadata, typeof(IptcSchema), 0.6m, depth+1);
+				//    return this.ProcessAsXmp(metadata, typeof(IptcSchema), 0.6m, depth+1);
 				//}
 				case "thumb":
 				case "chrominance":
@@ -154,13 +149,386 @@ namespace XmpUtils.Xmp
 					// these are suppressed in XMP
 					return null;
 				}
-				default:
+				case "xmpbag":
+				case "xmpseq":
 				{
 					return this.ProcessArray(metadata, depth+1);
+				}
+				case "xmpalt":
+				case "xmpstruct":
+				default:
+				{
+					return this.ProcessBlock(metadata, depth+1);
 				}
 			}
 		}
 
+		private Dictionary<string, object> ProcessBlock(BitmapMetadata metadata, int depth)
+		{
+			Dictionary<string, object> dictionary = new Dictionary<string, object>();
+
+			foreach (string name in this.GetNamesSafely(metadata))
+			{
+				object value = metadata.GetQuery(name);
+
+#if DEBUG
+				Console.Write(new String('\t', depth));
+				Console.WriteLine("{0} => {1}: {2}", name, value != null ? value.GetType().Name : "null", Convert.ToString(value));
+#endif
+
+				if (value is BitmapMetadata)
+				{
+					value = this.ProcessMetadata((BitmapMetadata)value, name, depth);
+				}
+				else if (value is BitmapMetadataBlob)
+				{
+					value = ((BitmapMetadataBlob)value).GetBlobValue();
+				}
+
+				if (value == null)
+				{
+					continue;
+				}
+
+				string key = name.TrimStart('/');
+				key = key.Substring(key.LastIndexOf(':')+1);
+				dictionary[key] = value;
+			}
+
+			return dictionary;
+		}
+
+		private IEnumerable ProcessArray(BitmapMetadata metadata, int depth)
+		{
+			ArrayList array = new ArrayList();
+
+			foreach (string name in this.GetNamesSafely(metadata))
+			{
+				object value = metadata.GetQuery(name);
+
+#if DEBUG
+				Console.Write(new String('\t', depth));
+				Console.WriteLine("{0} => {1}: {2}", name, value != null ? value.GetType().Name : "null", Convert.ToString(value));
+#endif
+
+				if (value is BitmapMetadata)
+				{
+					value = this.ProcessMetadata((BitmapMetadata)value, name, depth);
+				}
+				else if (value is BitmapMetadataBlob)
+				{
+					value = ((BitmapMetadataBlob)value).GetBlobValue();
+				}
+
+				if (value == null)
+				{
+					continue;
+				}
+
+				array.Add(value);
+			}
+
+			return array;
+		}
+
+		private IEnumerable<XmpProperty> ProcessXmp(BitmapMetadata metadata, decimal priority, int depth)
+		{
+			foreach (string name in this.GetNamesSafely(metadata))
+			{
+				// http://msdn.microsoft.com/en-us/library/ee719796(VS.85).aspx
+				// http://search.cpan.org/
+				object value = metadata.GetQuery(name);
+
+#if DEBUG
+				Console.Write(new String('\t', depth));
+				Console.WriteLine("{0} => {1}: {2}", name, value != null ? value.GetType().Name : "null", Convert.ToString(value));
+#endif
+
+				if (value is BitmapMetadata)
+				{
+					value = this.ProcessMetadata((BitmapMetadata)value, name, depth);
+				}
+				else if (value is BitmapMetadataBlob)
+				{
+					value = ((BitmapMetadataBlob)value).GetBlobValue();
+				}
+
+				// TODO: evaluate if nested properties make sense here
+				IEnumerable<XmpProperty> valueProps = value as IEnumerable<XmpProperty>;
+				if (valueProps != null)
+				{
+					foreach (XmpProperty prop in valueProps)
+					{
+						yield return prop;
+					}
+					continue;
+				}
+
+				Enum schema = (Enum)XmpNamespaceUtility.Instance.Parse(name.TrimStart('/'));
+				if (schema == null)
+				{
+					continue;
+				}
+
+				if (value == null)
+				{
+					continue;
+				}
+
+				yield return new XmpProperty
+				{
+					Schema = schema,
+					Value = value,
+					Priority = priority
+				};
+			}
+		}
+
+		private IEnumerable<XmpProperty> ProcessAsXmp(BitmapMetadata metadata, Type enumType, decimal priority, int depth)
+		{
+			foreach (string name in this.GetNamesSafely(metadata))
+			{
+				object value = metadata.GetQuery(name);
+
+#if DEBUG
+				Console.Write(new String('\t', depth));
+				Console.WriteLine("{0} => {1}: {2}", name, value != null ? value.GetType().Name : "null", Convert.ToString(value));
+#endif
+
+				if (value is BitmapMetadata)
+				{
+					value = this.ProcessMetadata((BitmapMetadata)value, name, depth);
+				}
+				else if (value is BitmapMetadataBlob)
+				{
+					value = ((BitmapMetadataBlob)value).GetBlobValue();
+				}
+
+				IEnumerable<XmpProperty> valueProps = value as IEnumerable<XmpProperty>;
+				if (valueProps != null)
+				{
+					foreach (XmpProperty prop in valueProps)
+					{
+						yield return prop;
+					}
+					continue;
+				}
+
+				Enum schema = this.ParseSchema(enumType, name);
+				if (schema == null)
+				{
+					continue;
+				}
+
+				XmpProperty property = new XmpProperty
+				{
+					Schema = schema,
+					Priority = priority
+				};
+
+				property.Value = this.ProcessValue(property, value);
+
+				if (property.Value == null)
+				{
+					continue;
+				}
+
+				yield return property;
+			}
+		}
+
+		/// <summary>
+		/// Converts EXIF / TIFF values into XMP style
+		/// </summary>
+		/// <param name="property"></param>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		private object ProcessValue(XmpProperty property, object value)
+		{
+			if (value == null)
+			{
+				return value;
+			}
+
+			switch (Type.GetTypeCode(property.DataType))
+			{
+				case TypeCode.String:
+				{
+					if (property.ValueType is XmpBasicType &&
+						((XmpBasicType)property.ValueType) == XmpBasicType.LangAlt)
+					{
+						string str;
+						if (value is byte[])
+						{
+							str = new String(Encoding.UTF8.GetChars((byte[])value));
+							int end = str.IndexOf('\0');
+							if (end >= 0)
+							{
+								str = str.Substring(0, end);
+							}
+							value = str;
+						}
+						else
+						{
+							str = Convert.ToString(value);
+						}
+
+						if (String.IsNullOrEmpty(str))
+						{
+							value = null;
+						}
+						else
+						{
+							value = new Dictionary<string, object>
+							{
+								{ "x-default", str }
+							};
+						}
+					}
+
+					if (property.Quantity != XmpQuantity.Single &&
+						!(value is IEnumerable))
+					{
+						value = new object[] { value };
+					}
+
+					if (property.Quantity == XmpQuantity.Single &&
+						value is byte[] &&
+						property.ValueType is XmpBasicType &&
+						((XmpBasicType)property.ValueType) == XmpBasicType.Text)
+					{
+						value = new String(Encoding.UTF8.GetChars((byte[])value));
+					}
+
+					if (property.ValueType is ExifType)
+					{
+						switch ((ExifType)property.ValueType)
+						{
+							case ExifType.GpsCoordinate:
+							{
+								Array array = value as Array;
+								if (array != null && array.Length == 3)
+								{
+									try
+									{
+										GpsCoordinate gps = new GpsCoordinate();
+										gps.Degrees = (Rational<uint>)this.ProcessRational(property, array.GetValue(0));
+										gps.Minutes = (Rational<uint>)this.ProcessRational(property, array.GetValue(1));
+										gps.Seconds = (Rational<uint>)this.ProcessRational(property, array.GetValue(2));
+										value = gps.ToString("X");
+									}
+									catch { }
+								}
+								break;
+							}
+							case ExifType.Rational:
+							{
+								Array array = value as Array;
+								if (array == null)
+								{
+									value = Convert.ToString(this.ProcessRational(property, value));
+								}
+								else
+								{
+									for (int i=0; i<array.Length; i++)
+									{
+										array.SetValue(Convert.ToString(this.ProcessRational(property, array.GetValue(i))), i);
+									}
+									value = array;
+								}
+								break;
+							}
+						}
+					}
+					break;
+				}
+				case TypeCode.DateTime:
+				{
+					DateTime date;
+
+					Array array = value as Array;
+					if (array != null && array.Length == 3)
+					{
+						try
+						{
+							var seconds =
+								60m * (60m * Convert.ToDecimal(this.ProcessRational(property, array.GetValue(0))) +
+								Convert.ToDecimal(this.ProcessRational(property, array.GetValue(1)))) +
+								Convert.ToDecimal(this.ProcessRational(property, array.GetValue(2)));
+
+							date = DateTime.MinValue.AddSeconds(Convert.ToDouble(seconds));
+							value = date.ToString(XmpDateFormat);
+						}
+						catch { }
+					}
+					else if (DateTime.TryParseExact(
+							Convert.ToString(value),
+							ExifDateFormats,
+							DateTimeFormatInfo.InvariantInfo,
+							DateTimeStyles.AssumeLocal,
+							out date))
+					{
+						// clean up to ISO-8601
+						value = date.ToString(XmpDateFormat);
+					}
+					break;
+				}
+				case TypeCode.Object:
+				{
+					if (property.ValueType is ExifType &&
+						((ExifType)property.ValueType) == ExifType.Flash)
+					{
+						ExifTagFlash flash;
+						if (value is ushort)
+						{
+							flash = (ExifTagFlash)value;
+						}
+						else if (value is string)
+						{
+							try
+							{
+								flash = (ExifTagFlash)Enum.Parse(typeof(ExifTagFlash), Convert.ToString(value));
+							}
+							catch
+							{
+								break;
+							}
+						}
+						else
+						{
+							break;
+						}
+
+						value = new Dictionary<string, object>
+						{
+							{ "Fired", Convert.ToString((flash & ExifTagFlash.FlashFired) == ExifTagFlash.FlashFired) },
+							{ "Return", (int)(flash & (ExifTagFlash.ReturnNotDetected|ExifTagFlash.ReturnDetected)) >> 1 },
+							{ "Mode", (int)(flash & (ExifTagFlash.ModeOn|ExifTagFlash.ModeOff|ExifTagFlash.ModeAuto)) >> 3 },
+							{ "Function", Convert.ToString((flash & ExifTagFlash.NoFlashFunction) == ExifTagFlash.NoFlashFunction) },
+							{ "RedEyeMode", Convert.ToString((flash & ExifTagFlash.RedEyeReduction) == ExifTagFlash.RedEyeReduction) }
+						};
+					}
+					else
+					{
+						// TODO: process other object types
+					}
+					break;
+				}
+				default:
+				{
+					break;
+				}
+			}
+
+			return value;
+		}
+
+		/// <summary>
+		/// Consolidates EXIF GPS values into XMP style
+		/// </summary>
+		/// <param name="gps"></param>
+		/// <param name="priority"></param>
+		/// <returns></returns>
 		private IEnumerable<XmpProperty> ProcessGps(IEnumerable<XmpProperty> gps, decimal priority)
 		{
 			GpsCoordinate latitude = null, longitude = null, destLatitude = null, destLongitude = null;
@@ -310,253 +678,12 @@ namespace XmpUtils.Xmp
 			}
 		}
 
-		private IEnumerable<XmpProperty> ProcessBlock(BitmapMetadata metadata, Type enumType, decimal priority, int depth)
-		{
-			foreach (string name in this.GetNamesSafely(metadata))
-			{
-				object value = metadata.GetQuery(name);
-				if (value == null)
-				{
-					continue;
-				}
-
-#if DEBUG
-				Console.Write(new String('\t', depth));
-				Console.WriteLine("{0} => {1}: {2}", name, value.GetType(), Convert.ToString(value));
-#endif
-
-				if (value is BitmapMetadata)
-				{
-					value = this.ProcessMetadata((BitmapMetadata)value, name, depth);
-					IDictionary<string, object> dictionary = value as IDictionary<string, object>;
-					if (dictionary != null)
-					{
-						value =
-							(from key in dictionary.Keys
-							 let val = dictionary[key]
-							 select new
-							 {
-								 Key = key.Substring(key.LastIndexOf(':')+1),
-								 Value = val
-							 }).ToDictionary(item => item.Key, item => item.Value);
-					}
-				}
-
-				if (value is BitmapMetadataBlob)
-				{
-					value = ((BitmapMetadataBlob)value).GetBlobValue();
-				}
-
-				if (value == null)
-				{
-					continue;
-				}
-
-				IEnumerable<XmpProperty> valueProps = value as IEnumerable<XmpProperty>;
-				if (valueProps != null)
-				{
-					foreach (XmpProperty prop in valueProps)
-					{
-						yield return prop;
-					}
-					continue;
-				}
-
-				Enum schema = this.ParseSchema(enumType, name);
-				if (schema == null)
-				{
-					continue;
-				}
-
-				XmpProperty property = new XmpProperty
-				{
-					Schema = schema,
-					Priority = priority
-				};
-
-				property.Value = this.ProcessValue(property, value);
-
-				if (property.Value != null)
-				{
-					yield return property;
-				}
-			}
-		}
-
-		private object ProcessValue(XmpProperty property, object value)
-		{
-			switch (Type.GetTypeCode(property.DataType))
-			{
-				case TypeCode.String:
-				{
-					if (property.Quantity != XmpQuantity.Single &&
-						!(value is Array))
-					{
-						value = new object[] { value };
-					}
-
-					if (property.Quantity == XmpQuantity.Single &&
-						value is byte[] &&
-						property.ValueType is XmpBasicType &&
-						((XmpBasicType)property.ValueType) == XmpBasicType.Text)
-					{
-						value = new String(Encoding.UTF8.GetChars((byte[])value));
-					}
-
-					if (property.ValueType is ExifType)
-					{
-						switch ((ExifType)property.ValueType)
-						{
-							case ExifType.GpsCoordinate:
-							{
-								Array array = value as Array;
-								if (array != null && array.Length == 3)
-								{
-									try
-									{
-										GpsCoordinate gps = new GpsCoordinate();
-										gps.Degrees = (Rational<uint>)this.ProcessRational(property, array.GetValue(0));
-										gps.Minutes = (Rational<uint>)this.ProcessRational(property, array.GetValue(1));
-										gps.Seconds = (Rational<uint>)this.ProcessRational(property, array.GetValue(2));
-										value = gps.ToString("X");
-									}
-									catch { }
-								}
-								break;
-							}
-							case ExifType.Rational:
-							{
-								Array array = value as Array;
-								if (array == null)
-								{
-									value = Convert.ToString(this.ProcessRational(property, value));
-								}
-								else
-								{
-									for (int i=0; i<array.Length; i++)
-									{
-										array.SetValue(Convert.ToString(this.ProcessRational(property, array.GetValue(i))), i);
-									}
-									value = array;
-								}
-								break;
-							}
-						}
-					}
-					break;
-				}
-				case TypeCode.DateTime:
-				{
-					DateTime date;
-
-					Array array = value as Array;
-					if (array != null && array.Length == 3)
-					{
-						try
-						{
-							var seconds =
-								60m * (60m * Convert.ToDecimal(this.ProcessRational(property, array.GetValue(0))) +
-								Convert.ToDecimal(this.ProcessRational(property, array.GetValue(1)))) +
-								Convert.ToDecimal(this.ProcessRational(property, array.GetValue(2)));
-
-							date = DateTime.MinValue.AddSeconds(Convert.ToDouble(seconds));
-							value = date.ToString(XmpDateFormat);
-						}
-						catch { }
-					}
-					else if (DateTime.TryParseExact(
-							Convert.ToString(value),
-							ExifDateFormats,
-							DateTimeFormatInfo.InvariantInfo,
-							DateTimeStyles.AssumeLocal,
-							out date))
-					{
-						// clean up to ISO-8601
-						value = date.ToString(XmpDateFormat);
-					}
-					break;
-				}
-				case TypeCode.Object:
-				{
-					if (property.ValueType is XmpBasicType &&
-						((XmpBasicType)property.ValueType) == XmpBasicType.LangAlt)
-					{
-						string str;
-						if (value is byte[])
-						{
-							str = new String(Encoding.UTF8.GetChars((byte[])value));
-							int end = str.IndexOf('\0');
-							if (end >= 0)
-							{
-								str = str.Substring(0, end);
-							}
-							value = str;
-						}
-						else
-						{
-							str = Convert.ToString(value);
-						}
-
-						if (String.IsNullOrEmpty(str))
-						{
-							value = null;
-						}
-						else
-						{
-							value = new Dictionary<string, object>
-							{
-								{ "x-default", str }
-							};
-						}
-					}
-					else if (property.ValueType is ExifType &&
-						((ExifType)property.ValueType) == ExifType.Flash)
-					{
-						ExifTagFlash flash;
-						if (value is ushort)
-						{
-							flash = (ExifTagFlash)value;
-						}
-						else if (value is string)
-						{
-							try
-							{
-								flash = (ExifTagFlash)Enum.Parse(typeof(ExifTagFlash), Convert.ToString(value));
-							}
-							catch
-							{
-								break;
-							}
-						}
-						else
-						{
-							break;
-						}
-
-						value = new Dictionary<string, object>
-						{
-							{ "Fired", Convert.ToString((flash & ExifTagFlash.FlashFired) == ExifTagFlash.FlashFired) },
-							{ "Return", (int)(flash & (ExifTagFlash.ReturnNotDetected|ExifTagFlash.ReturnDetected)) >> 1 },
-							{ "Mode", (int)(flash & (ExifTagFlash.ModeOn|ExifTagFlash.ModeOff|ExifTagFlash.ModeAuto)) >> 3 },
-							{ "Function", Convert.ToString((flash & ExifTagFlash.NoFlashFunction) == ExifTagFlash.NoFlashFunction) },
-							{ "RedEyeMode", Convert.ToString((flash & ExifTagFlash.RedEyeReduction) == ExifTagFlash.RedEyeReduction) }
-						};
-					}
-					else
-					{
-						// TODO: process other object types
-					}
-					break;
-				}
-				default:
-				{
-					break;
-				}
-			}
-
-			return value;
-		}
-
+		/// <summary>
+		/// Converts EXIF Rationals into XMP style
+		/// </summary>
+		/// <param name="property"></param>
+		/// <param name="value"></param>
+		/// <returns></returns>
 		private object ProcessRational(XmpProperty property, object value)
 		{
 			if (value == null)
@@ -621,132 +748,6 @@ namespace XmpUtils.Xmp
 			}
 
 			return value;
-		}
-
-		private IEnumerable<XmpProperty> ProcessXmp(BitmapMetadata metadata, decimal priority, int depth)
-		{
-			foreach (string name in this.GetNamesSafely(metadata))
-			{
-				// http://msdn.microsoft.com/en-us/library/ee719796(VS.85).aspx
-				// http://search.cpan.org/
-				object value = metadata.GetQuery(name);
-				if (value == null)
-				{
-					continue;
-				}
-
-#if DEBUG
-				Console.Write(new String('\t', depth));
-				Console.WriteLine("{0} => {1}: {2}", name, value.GetType(), Convert.ToString(value));
-#endif
-
-				Enum schema = (Enum)XmpNamespaceUtility.Instance.Parse(name.TrimStart('/'));
-				if (schema == null)
-				{
-					continue;
-				}
-
-				XmpProperty property = new XmpProperty
-				{
-					Schema = schema,
-					Priority = priority
-				};
-
-				if (value is BitmapMetadata)
-				{
-					value = this.ProcessMetadata((BitmapMetadata)value, name, depth);
-					IDictionary<string, object> dictionary = value as IDictionary<string, object>;
-					if (dictionary != null)
-					{
-						value =
-							(from key in dictionary.Keys
-							 let val = dictionary[key]
-							 select new
-							 {
-								 Key = key.Substring(key.LastIndexOf(':')+1),
-								 Value = val
-							 }).ToDictionary(item => item.Key, item => item.Value);
-					}
-				}
-
-				if (value is BitmapMetadataBlob)
-				{
-					value = ((BitmapMetadataBlob)value).GetBlobValue();
-				}
-
-				if (value == null)
-				{
-					continue;
-				}
-
-				property.Value = value;
-				yield return property;
-			}
-		}
-
-		private Dictionary<string, object> ProcessXmpStruct(BitmapMetadata metadata, int depth)
-		{
-			Dictionary<string, object> dictionary = new Dictionary<string, object>();
-
-			foreach (string name in this.GetNamesSafely(metadata))
-			{
-				object value = metadata.GetQuery(name);
-				if (value == null)
-				{
-					continue;
-				}
-				if (value is BitmapMetadata)
-				{
-					value = this.ProcessMetadata((BitmapMetadata)value, name, depth);
-					continue;
-				}
-
-				if (value is BitmapMetadataBlob)
-				{
-					value = ((BitmapMetadataBlob)value).GetBlobValue();
-				}
-
-				dictionary[name.TrimStart('/')] = value;
-
-#if DEBUG
-				Console.Write(new String('\t', depth));
-				Console.WriteLine("{0} => {1}: {2}", name, value.GetType(), Convert.ToString(value));
-#endif
-			}
-
-			return dictionary;
-		}
-
-		private Array ProcessArray(BitmapMetadata metadata, int depth)
-		{
-			ArrayList array = new ArrayList();
-
-			foreach (string name in this.GetNamesSafely(metadata))
-			{
-				object value = metadata.GetQuery(name);
-				if (value == null)
-				{
-					continue;
-				}
-				if (value is BitmapMetadata)
-				{
-					value = this.ProcessMetadata((BitmapMetadata)value, name, depth);
-				}
-
-				if (value is BitmapMetadataBlob)
-				{
-					value = ((BitmapMetadataBlob)value).GetBlobValue();
-				}
-
-				array.Add(value);
-
-#if DEBUG
-				Console.Write(new String('\t', depth));
-				Console.WriteLine("{0} => {1}: {2}", name, value != null ? value.GetType().Name : "null", Convert.ToString(value));
-#endif
-			}
-
-			return array.ToArray();
 		}
 
 		private Enum ParseSchema(Type enumType, string name)

@@ -11,17 +11,31 @@ namespace XmpDemo
 	{
 		public static void Main()
 		{
-			Console.Write("Enter filename: ");
-
-			string filename = Console.ReadLine();
-
-			IEnumerable<XmpProperty> properties = new XmpExtractor().Extract(filename);
-
-			if (properties.Any())
+			// this will rip through all JPEGs in the current direction
+			foreach (string filename in Directory.GetFiles(".", "*.jpg", SearchOption.TopDirectoryOnly))
 			{
-				using (TextWriter writer = File.CreateText(filename + ".xmp"))
+				TextWriter console = Console.Out;
+				using (TextWriter output = File.CreateText(filename + ".txt"))
 				{
-					new RdfUtility().ToXml(properties).Save(writer);
+					console.WriteLine("Processing "+filename);
+
+					Console.SetOut(output);
+					try
+					{
+						IEnumerable<XmpProperty> properties = new XmpExtractor().Extract(filename);
+
+						if (properties.Any())
+						{
+							using (TextWriter writer = File.CreateText(filename + ".xmp"))
+							{
+								new RdfUtility().ToXml(properties).Save(writer);
+							}
+						}
+					}
+					finally
+					{
+						Console.SetOut(console);
+					}
 				}
 			}
 		}
