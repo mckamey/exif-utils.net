@@ -98,11 +98,6 @@ namespace XmpUtils.Xmp
 
 		#region Methods
 
-		public XDocument ToXml(params XmpProperty[] properties)
-		{
-			return this.ToXml((IEnumerable<XmpProperty>)properties);
-		}
-
 		public XDocument ToXml(IEnumerable<XmpProperty> properties)
 		{
 			XElement rdf = new XElement(
@@ -187,7 +182,11 @@ namespace XmpUtils.Xmp
 
 					foreach (object item in array)
 					{
-						list.Add(new XElement(XName.Get("li", RdfNamespace), item));
+						object child = item is XmpProperty ?
+							this.ToXml((XmpProperty)item) :
+							item;
+
+						list.Add(new XElement(XName.Get("li", RdfNamespace), child));
 					}
 					break;
 				}
@@ -208,10 +207,14 @@ namespace XmpUtils.Xmp
 
 						foreach (KeyValuePair<string, object> item in dictionary)
 						{
+							object child = item.Value is XmpProperty ?
+								this.ToXml((XmpProperty)item.Value) :
+								item.Value;
+
 							list.Add(new XElement(
 								XName.Get("li", RdfNamespace),
 								new XAttribute(XNamespace.Xml+"lang", item.Key),
-								item.Value));
+								child));
 						}
 					}
 					else
@@ -224,24 +227,29 @@ namespace XmpUtils.Xmp
 				default:
 				case XmpQuantity.Single:
 				{
-					if (property.DataType == typeof(string) ||
+					if (property.Value is XmpProperty)
+					{
+						elem.Add(this.ToXml((XmpProperty)property.Value));
+					}
+					else if (property.DataType == typeof(string) ||
 						property.DataType == typeof(DateTime))
 					{
 						elem.Add(property.Value);
 					}
+					else if (property.Value is IDictionary<string, object>)
+					{
+						foreach (KeyValuePair<string, object> item in (IDictionary<string, object>)property.Value)
+						{
+							object child = item.Value is XmpProperty ?
+								this.ToXml((XmpProperty)item.Value) :
+								item.Value;
+
+							elem.Add(new XElement(XName.Get(item.Key, property.Namespace), child));
+						}
+					}
 					else
 					{
-						IDictionary<string, object> dictionary = property.Value as IDictionary<string, object>;
-						if (dictionary == null)
-						{
-							elem.Add(new XComment("Unexpected value: "+Convert.ToString(property.Value)));
-							break;
-						}
-
-						foreach (KeyValuePair<string, object> item in dictionary)
-						{
-							elem.Add(new XElement(XName.Get(item.Key, property.Namespace), item.Value));
-						}
+						elem.Add(new XComment("Unexpected value: "+Convert.ToString(property.Value)));
 					}
 					break;
 				}
