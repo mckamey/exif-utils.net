@@ -172,7 +172,9 @@ namespace ExifUtils.Exif
 			for (; index < length; index++)
 			{
 				ch = value[index];
-				if (ch != ',' && ch != ' ')
+				if (ch != ',' &&
+					ch != '\u00B0' &&
+					ch != ' ')
 				{
 					break;
 				}
@@ -216,7 +218,9 @@ namespace ExifUtils.Exif
 			for (; index < length; index++)
 			{
 				ch = value[index];
-				if (ch != ',' && ch != ' ')
+				if (ch != ',' &&
+					ch != '\'' &&
+					ch != ' ')
 				{
 					break;
 				}
@@ -260,7 +264,9 @@ namespace ExifUtils.Exif
 			for (; index < length; index++)
 			{
 				ch = value[index];
-				if (ch != ',' && ch != ' ')
+				if (ch != ',' &&
+					ch != '"' &&
+					ch != ' ')
 				{
 					break;
 				}
@@ -294,29 +300,104 @@ namespace ExifUtils.Exif
 		/// <returns></returns>
 		public override string ToString()
 		{
+			return this.ToString(null);
+		}
+
+		/// <summary>
+		/// Formats the GPS coordinate as an XMP GPSCoordinate string
+		/// </summary>
+		/// <returns></returns>
+		/// <remarks>
+		/// Accepts "X", "x" for XMP style formatting, or "D", "d" for degree style formatting, or "N", "n" for numeric
+		/// </remarks>
+		public string ToString(string format)
+		{
+			if (String.IsNullOrEmpty(format))
+			{
+				format = "D";
+			}
+			else
+			{
+				switch(format)
+				{
+					case "X":
+					case "x":
+					case "D":
+					case "d":
+					{
+						format = format.ToUpperInvariant();
+						break;
+					}
+					case "N":
+					case "n":
+					{
+						return this.Value.ToString(GpsCoordinate.DecimalFormat);
+					}
+					default:
+					{
+						throw new ArgumentException("format");
+					}
+				}
+			}
+
 			StringBuilder gps = new StringBuilder();
 
 			if (this.Degrees.IsEmpty || this.Minutes.IsEmpty || this.Seconds.IsEmpty || this.Degrees.Denominator != 1)
 			{
 				// use full decimal formatting
-				gps.Append(this.Value.ToString(GpsCoordinate.DecimalFormat));
+				if (String.IsNullOrEmpty(this.Direction))
+				{
+					gps.Append(this.Value.ToString(GpsCoordinate.DecimalFormat));
+				}
+				else
+				{
+					gps.Append(Math.Abs(this.Value).ToString(GpsCoordinate.DecimalFormat));
+				}
+				if (format == "D")
+				{
+					gps.Append("\u00B0");
+				}
 				if (!String.IsNullOrEmpty(this.Direction))
 				{
+					if (format == "D")
+					{
+						gps.Append(' ');
+					}
 					gps.Append(this.Direction);
 				}
 				return gps.ToString();
 			}
 
 			gps.Append(this.Degrees.Numerator);
-			gps.Append(',');
+			switch(format)
+			{
+				case "D":
+				{
+					gps.Append("\u00B0 ");
+					break;
+				}
+				case "X":
+				{
+					gps.Append(',');
+					break;
+				}
+			}
 
 			// DD,MM.mmk
 			if (this.Minutes.Denominator != 1 || this.Seconds.Denominator != 1)
 			{
 				decimal MMmm = Convert.ToDecimal(this.Minutes) + Decimal.Divide(Convert.ToDecimal(this.Seconds), 60m);
-				gps.Append(MMmm.ToString());
+				gps.Append(MMmm.ToString(GpsCoordinate.DecimalFormat));
+				if (format == "D")
+				{
+					gps.Append('\'');
+				}
 				if (!String.IsNullOrEmpty(this.Direction))
 				{
+					if (format == "D")
+					{
+						gps.Append(' ');
+					}
 					gps.Append(this.Direction);
 				}
 				return gps.ToString();
@@ -324,12 +405,32 @@ namespace ExifUtils.Exif
 
 			// DD,MM,SSk
 			gps.Append(this.Minutes.Numerator);
-			gps.Append(',');
+			switch (format)
+			{
+				case "D":
+				{
+					gps.Append("' ");
+					break;
+				}
+				case "X":
+				{
+					gps.Append(',');
+					break;
+				}
+			}
 
 			gps.Append(this.Seconds.Numerator);
+			if (format == "D")
+			{
+				gps.Append('"');
+			}
 
 			if (!String.IsNullOrEmpty(this.Direction))
 			{
+				if (format == "D")
+				{
+					gps.Append(' ');
+				}
 				gps.Append(this.Direction);
 			}
 
