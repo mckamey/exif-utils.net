@@ -270,16 +270,19 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		GPSVersionID=0x0000,
 
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		GPSLatitudeRef=0x0001,
 
 		[ExifProperty(ExifType.GPSCoordinate, Category=XmpCategory.Internal)]
 		GPSLatitude=0x0002,
 
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		GPSLongitudeRef=0x0003,
 
 		[ExifProperty(ExifType.GPSCoordinate, Category=XmpCategory.Internal)]
 		GPSLongitude=0x0004,
 
+		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		GPSAltitudeRef=0x0005,
 
 		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
