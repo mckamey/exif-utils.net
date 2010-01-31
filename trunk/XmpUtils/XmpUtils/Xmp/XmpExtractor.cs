@@ -68,35 +68,31 @@ namespace XmpUtils.Xmp
 		{
 			BitmapMetadata metadata = this.LoadMetadata(stream);
 
-			object value = this.ProcessMetadata(metadata, "/", 0);
+			IEnumerable value = this.ProcessMetadata(metadata, "/", 0);
 
 			return this.AggregateProperties(value);
 		}
 
-		private IEnumerable<XmpProperty> AggregateProperties(object value)
+		private IEnumerable<XmpProperty> AggregateProperties(IEnumerable value)
 		{
-			IEnumerable list = value as IEnumerable;
-			if (list == null)
+			if (value == null)
 			{
 				yield break;
 			}
 
-			foreach (object item in list)
+			// filter out any values which are not enumerable
+			foreach (IEnumerable item in value.OfType<IEnumerable>())
 			{
-				IEnumerable<XmpProperty> properties = item as IEnumerable<XmpProperty>;
-				if (properties == null)
+				// each item is either a list of properties or a sequence holding a list of properties
+				IEnumerable<XmpProperty> properties =
+					(item is IEnumerable<XmpProperty>) ?
+					(IEnumerable<XmpProperty>)item :
+					this.AggregateProperties(item);
+
+				// aggregate into single sequence
+				foreach (XmpProperty property in properties)
 				{
-					foreach (XmpProperty property in this.AggregateProperties(item))
-					{
-						yield return property;
-					}
-				}
-				else
-				{
-					foreach (XmpProperty property in properties)
-					{
-						yield return property;
-					}
+					yield return property;
 				}
 			}
 		}
@@ -105,7 +101,7 @@ namespace XmpUtils.Xmp
 
 		#region Extraction Methods
 
-		private object ProcessMetadata(BitmapMetadata metadata, string objName, int depth)
+		private IEnumerable ProcessMetadata(BitmapMetadata metadata, string objName, int depth)
 		{
 #if DEBUG
 			Console.Write(new String('\t', depth));
