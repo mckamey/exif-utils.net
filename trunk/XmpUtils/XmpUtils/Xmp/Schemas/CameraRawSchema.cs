@@ -94,7 +94,7 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.Real)]
 		CropHeight,
 
-		// TODO: enum
+		// TODO: enum as Integer
 		[XmpBasicProperty(XmpBasicType.Integer)]
 		CropUnits,
 
@@ -143,11 +143,10 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.Integer)]
 		Tint,
 
-		// TODO: Seq of Points = "Integer, Integer", "Integer, Integer"
 		[XmpBasicProperty(XmpBasicType.Text, XmpQuantity.Seq)]
 		ToneCurve,
 
-		// TODO: enum
+		// TODO: enum as Text
 		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		ToneCurveName,
 
@@ -160,7 +159,7 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.Integer)]
 		VignetteMidpoint,
 
-		// TODO: enum
+		// TODO: enum as Text
 		[XmpBasicProperty(XmpBasicType.Text)]
 		WhiteBalance
 	}

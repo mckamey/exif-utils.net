@@ -75,7 +75,7 @@ namespace XmpUtils.Xmp.Schemas
 
 		#region Image Data Characteristics
 
-		// TODO: enum
+		// TODO: enum as Integer
 		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		ColorSpace=0xA001,
 
@@ -83,7 +83,7 @@ namespace XmpUtils.Xmp.Schemas
 
 		#region Image Configuration
 
-		// TODO: enum
+		// TODO: enum as Integer
 		[XmpBasicProperty(XmpBasicType.Integer, XmpQuantity.Seq, Category=XmpCategory.Internal)]
 		ComponentsConfiguration=0x9101,
 
@@ -139,7 +139,7 @@ namespace XmpUtils.Xmp.Schemas
 		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		FNumber=0x829D,
 
-		// TODO: enum
+		// TODO: enum as Integer
 		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		ExposureProgram=0x8822,
 
@@ -170,7 +170,7 @@ namespace XmpUtils.Xmp.Schemas
 		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		SubjectDistance=0x9206,
 
-		// TODO: enum
+		// TODO: enum as Integer
 		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		MeteringMode=0x9207,
 
