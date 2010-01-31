@@ -100,6 +100,7 @@ namespace XmpUtils.Xmp.Schemas
 
 		#region User Information
 
+		[XmpValueType(typeof(byte[]))]
 		MakerNote=0x927C,
 
 		[XmpBasicProperty(XmpBasicType.LangAlt, XmpQuantity.Alt)]
