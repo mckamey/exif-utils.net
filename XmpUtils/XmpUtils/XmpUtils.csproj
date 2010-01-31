@@ -66,6 +66,7 @@
     <Compile Include="Xmp\ValueTypes\ExifType.cs" />
     <Compile Include="Xmp\ValueTypes\ExifPropertyAttribute.cs" />
     <Compile Include="Xmp\ValueTypes\XmpVideoMediaType.cs" />
+    <Compile Include="Xmp\XmpExtractor.cs" />
     <Compile Include="Xmp\XmpNamespaceUtility.cs" />
     <Compile Include="Xmp\XmpValueTypeAttribute.cs" />
     <Compile Include="Xmp\Schemas\XmpIdentifierSchema.cs" />
