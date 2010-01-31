@@ -52,40 +52,40 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.Integer, XmpQuantity.Bag, Category=XmpCategory.Internal)]
 		BitsPerSample=0x0102,
 
-		// TODO: enum
+		// TODO: enum as Integer
 		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		Compression=0x0103,
 
-		// TODO: enum
+		// TODO: enum as Integer
 		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		PhotometricInterpretation=0x0106,
 
-		// TODO: enum
+		// TODO: enum as Integer
 		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		Orientation=0x0112,
 
 		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		SamplesPerPixel=0x0115,
 
-		// TODO: enum
+		// TODO: enum as Integer
 		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		PlanarConfiguration=0x011C,
 
-		// TODO: enum
+		// TODO: enum as Integer
 		[XmpBasicProperty(XmpBasicType.Integer, XmpQuantity.Seq, Category=XmpCategory.Internal)]
 		YCbCrSubSampling=0x0212,
 
-		// TODO: enum
+		// TODO: enum as Integer
 		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		YCbCrPositioning=0x0213,
 
 		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		XResolution=0x011A,
 
-		// TODO: enum
 		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		YResolution=0x011B,
 
+		// TODO: enum as Integer
 		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		ResolutionUnit=0x0128,
 
