@@ -75,7 +75,7 @@ namespace XmpUtils.Xmp
 
 			IEnumerable value = this.ProcessMetadata(metadata, "/", 0);
 
-			return this.AggregateProperties(value);
+			return this.AggregateProperties(value).ToList();
 		}
 
 		private IEnumerable<XmpProperty> AggregateProperties(IEnumerable value)
@@ -132,6 +132,7 @@ namespace XmpUtils.Xmp
 				case "exif":
 				case "gps":
 				{
+					// TODO: aggregate GPS properties into composite propertes
 					return this.ProcessBlock(metadata, typeof(ExifSchema), 0.2m, depth+1);
 				}
 				case "ifd":
@@ -159,8 +160,6 @@ namespace XmpUtils.Xmp
 
 		private IEnumerable<XmpProperty> ProcessBlock(BitmapMetadata metadata, Type enumType, decimal priority, int depth)
 		{
-			List<XmpProperty> properties = new List<XmpProperty>();
-
 			foreach (string name in metadata)
 			{
 				object value = metadata.GetQuery(name);
@@ -204,7 +203,10 @@ namespace XmpUtils.Xmp
 				IEnumerable<XmpProperty> valueProps = value as IEnumerable<XmpProperty>;
 				if (valueProps != null)
 				{
-					properties.AddRange(valueProps);
+					foreach (XmpProperty prop in valueProps)
+					{
+						yield return prop;
+					}
 					continue;
 				}
 
@@ -224,11 +226,9 @@ namespace XmpUtils.Xmp
 
 				if (property.Value != null)
 				{
-					properties.Add(property);
+					yield return property;
 				}
 			}
-
-			return properties;
 		}
 
 		private object ProcessValue(XmpProperty property, object value)
@@ -467,8 +467,6 @@ namespace XmpUtils.Xmp
 
 		private IEnumerable<XmpProperty> ProcessXmp(BitmapMetadata metadata, decimal priority, int depth)
 		{
-			List<XmpProperty> properties = new List<XmpProperty>();
-
 			foreach (string name in metadata)
 			{
 				// http://msdn.microsoft.com/en-us/library/ee719796(VS.85).aspx
@@ -524,10 +522,8 @@ namespace XmpUtils.Xmp
 				}
 
 				property.Value = value;
-				properties.Add(property);
+				yield return property;
 			}
-
-			return properties;
 		}
 
 		private Dictionary<string, object> ProcessXmpStruct(BitmapMetadata metadata, int depth)

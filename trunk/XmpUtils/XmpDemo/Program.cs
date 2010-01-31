@@ -15,9 +15,9 @@ namespace XmpDemo
 
 			string filename = Console.ReadLine();
 
-			List<XmpProperty> properties = new XmpExtractor().Extract(filename).ToList();
+			IEnumerable<XmpProperty> properties = new XmpExtractor().Extract(filename);
 
-			if (properties.Count > 0)
+			if (properties.Any())
 			{
 				using (TextWriter writer = File.CreateText(filename + ".xmp"))
 				{
