@@ -209,7 +209,7 @@ namespace XmpDemo
 					{
 						switch ((ExifType)property.ValueType)
 						{
-							case ExifType.GPSCoordinate:
+							case ExifType.GpsCoordinate:
 							{
 								Array array = value as Array;
 								if (array != null && array.Length == 3)

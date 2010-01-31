@@ -36,16 +36,16 @@ namespace XmpUtils.Xmp.ValueTypes
 	{
 		Unknown,
 
-		CFAPattern,
+		CfaPattern,
 
 		DeviceSettings,
 
 		[XmpValueType(typeof(object))]
 		Flash,
 
-		GPSCoordinate,
+		GpsCoordinate,
 
-		OECF_SFR,
+		OecfSfr,
 
 		Rational
 	}

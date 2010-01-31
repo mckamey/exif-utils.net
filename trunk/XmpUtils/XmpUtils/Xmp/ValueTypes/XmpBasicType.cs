@@ -57,7 +57,7 @@ namespace XmpUtils.Xmp.ValueTypes
 
 		Locale,
 
-		MIMEType,
+		MimeType,
 
 		ProperName,
 

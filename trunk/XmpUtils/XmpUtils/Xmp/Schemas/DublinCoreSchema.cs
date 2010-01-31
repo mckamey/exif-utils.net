@@ -53,7 +53,7 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.LangAlt, XmpQuantity.Alt, Name="description")]
 		Description,
 
-		[XmpBasicProperty(XmpBasicType.MIMEType, Category=XmpCategory.Internal, Name="format")]
+		[XmpBasicProperty(XmpBasicType.MimeType, Category=XmpCategory.Internal, Name="format")]
 		Format,
 
 		[XmpBasicProperty(XmpBasicType.Text, Name="identifier")]

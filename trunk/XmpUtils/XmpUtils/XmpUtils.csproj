@@ -54,6 +54,7 @@
     <Compile Include="Xmp\AttributeUtility.cs" />
     <Compile Include="Xmp\RdfUtility.cs" />
     <Compile Include="Xmp\Schemas\LightroomSchema.cs" />
+    <Compile Include="Xmp\Schemas\PdfSchema.cs" />
     <Compile Include="Xmp\ValueTypes\XmpVideoMediaPropertyAttribute.cs" />
     <Compile Include="Xmp\ValueTypes\XmpBasicJobWorkflowPropertyAttribute.cs" />
     <Compile Include="Xmp\ValueTypes\XmpMediaManagementPropertyAttribute.cs" />
@@ -71,7 +72,6 @@
     <Compile Include="Xmp\XmpProperty.cs" />
     <Compile Include="Xmp\XmpQuantity.cs" />
     <Compile Include="Xmp\XmpPropertyAttribute.cs" />
-    <Compile Include="Xmp\Schemas\AdobePdfSchema.cs" />
     <Compile Include="Xmp\Schemas\CameraRawSchema.cs" />
     <Compile Include="Xmp\Schemas\ExifAuxSchema.cs" />
     <Compile Include="Xmp\Schemas\ExifSchema.cs" />
