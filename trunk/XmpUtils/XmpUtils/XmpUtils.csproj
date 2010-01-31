@@ -49,6 +49,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GpsCoordinate.cs" />
+    <Compile Include="Rational.cs" />
     <Compile Include="Xmp\AttributeUtility.cs" />
     <Compile Include="Xmp\RdfUtility.cs" />
     <Compile Include="Xmp\Schemas\LightroomSchema.cs" />
@@ -83,6 +85,11 @@
     <Compile Include="Xmp\Schemas\DublinCoreSchema.cs" />
     <Compile Include="Xmp\Schemas\ExifTiffSchema.cs" />
     <Compile Include="Xmp\XmpNamespaceAttribute.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="License.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

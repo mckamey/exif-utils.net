@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Media.Imaging;
 
+using XmpUtils;
 using XmpUtils.Xmp;
 using XmpUtils.Xmp.Schemas;
 using XmpUtils.Xmp.ValueTypes;
@@ -79,16 +80,27 @@ namespace XmpDemo
 				}
 				case "xmp":
 				{
-					return ProcessXmp(metadata, depth+1);
+					return ProcessXmp(metadata, 0.8m, depth+1);
 				}
 				case "exif":
 				case "gps":
 				{
-					return ProcessBlock(metadata, typeof(ExifSchema), depth+1);
+					return ProcessBlock(metadata, typeof(ExifSchema), 0.2m, depth+1);
 				}
 				case "ifd":
 				{
-					return ProcessBlock(metadata, typeof(ExifTiffSchema), depth+1);
+					return ProcessBlock(metadata, typeof(ExifTiffSchema), 0.4m, depth+1);
+				}
+				case "iptc":
+				{
+					return ProcessBlock(metadata, typeof(ExifTiffSchema), 0.6m, depth+1);
+				}
+				case "thumb":
+				case "chrominance":
+				case "luminance":
+				{
+					// these are suppressed in XMP
+					return null;
 				}
 				default:
 				{
@@ -97,7 +109,7 @@ namespace XmpDemo
 			}
 		}
 
-		private static IEnumerable<XmpProperty> ProcessBlock(BitmapMetadata metadata, Type enumType, int depth)
+		private static IEnumerable<XmpProperty> ProcessBlock(BitmapMetadata metadata, Type enumType, decimal priority, int depth)
 		{
 			List<XmpProperty> properties = new List<XmpProperty>();
 
@@ -155,7 +167,7 @@ namespace XmpDemo
 				XmpProperty property = new XmpProperty
 				{
 					Schema = schema,
-					Priority = 0.25m
+					Priority = priority
 				};
 
 				property.Value = ProcessValue(property, value);
@@ -175,6 +187,43 @@ namespace XmpDemo
 					if (property.Quantity != XmpQuantity.Single)
 					{
 						value = new object[] { value };
+					}
+
+					if (property.ValueType is ExifType)
+					{
+						switch ((ExifType)property.ValueType)
+						{
+							case ExifType.GPSCoordinate:
+							{
+								Array array = value as Array;
+								if (array != null && array.Length == 3)
+								{
+									GpsCoordinate gps = new GpsCoordinate();
+									gps.Degrees = (Rational<uint>)ProcessRational(property, array.GetValue(0));
+									gps.Minutes = (Rational<uint>)ProcessRational(property, array.GetValue(1));
+									gps.Seconds = (Rational<uint>)ProcessRational(property, array.GetValue(2));
+									value = gps.ToString("X");
+								}
+								break;
+							}
+							case ExifType.Rational:
+							{
+								Array array = value as Array;
+								if (array == null)
+								{
+									value = Convert.ToString(ProcessRational(property, value));
+								}
+								else
+								{
+									for (int i=0; i<array.Length; i++)
+									{
+										array.SetValue(Convert.ToString(ProcessRational(property, array.GetValue(i))), i);
+									}
+									value = array;
+								}
+								break;
+							}
+						}
 					}
 					break;
 				}
@@ -218,7 +267,33 @@ namespace XmpDemo
 			return value;
 		}
 
-		private static IEnumerable<XmpProperty> ProcessXmp(BitmapMetadata metadata, int depth)
+		private static object ProcessRational(XmpProperty property, object value)
+		{
+			if (value == null)
+			{
+				return null;
+			}
+
+			switch (Type.GetTypeCode(value.GetType()))
+			{
+				case TypeCode.UInt64:
+				{
+					ulong rational = (ulong)value;
+					uint numerator = (uint)(rational & 0xFFFFFFFFL);
+					uint denominator = (uint)((rational & 0xFFFFFFFF00000000L) >> 32);
+					value = new Rational<uint>(numerator, denominator, false);
+					break;
+				}
+				default:
+				{
+					break;
+				}
+			}
+
+			return value;
+		}
+
+		private static IEnumerable<XmpProperty> ProcessXmp(BitmapMetadata metadata, decimal priority, int depth)
 		{
 			List<XmpProperty> properties = new List<XmpProperty>();
 
@@ -244,7 +319,7 @@ namespace XmpDemo
 				XmpProperty property = new XmpProperty
 				{
 					Schema = schema,
-					Priority = 0.75m
+					Priority = priority
 				};
 
 				if (value is BitmapMetadata)
@@ -336,7 +411,7 @@ namespace XmpDemo
 				array.Add(value);
 
 				Console.Write(new String('\t', depth));
-				Console.WriteLine("{0} => {1}: {2}", name, value.GetType(), Convert.ToString(value));
+				Console.WriteLine("{0} => {1}: {2}", name, value != null ? value.GetType().Name : "null", Convert.ToString(value));
 			}
 
 			return array.ToArray();
