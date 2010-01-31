@@ -161,6 +161,110 @@ namespace XmpUtils.Xmp.Schemas
 
 		// TODO: enum as Text
 		[XmpBasicProperty(XmpBasicType.Text)]
-		WhiteBalance
+		WhiteBalance,
+
+		#region additional CRS properties not listed in spec
+
+		FillLight, // 0
+
+		Vibrance, // +45
+
+		HighlightRecovery, // 0
+
+		Clarity, // +25
+
+		Defringe, // 0
+
+		HueAdjustmentRed, // 0
+
+		HueAdjustmentOrange, // 0
+
+		HueAdjustmentYellow, // 0
+
+		HueAdjustmentGreen, // 0
+
+		HueAdjustmentAqua, // 0
+
+		HueAdjustmentBlue, // 0
+
+		HueAdjustmentPurple, // 0
+
+		HueAdjustmentMagenta, // 0
+
+		SaturationAdjustmentRed, // 0
+
+		SaturationAdjustmentOrange, // 0
+
+		SaturationAdjustmentYellow, // 0
+
+		SaturationAdjustmentGreen, // 0
+
+		SaturationAdjustmentAqua, // 0
+
+		SaturationAdjustmentBlue, // 0
+
+		SaturationAdjustmentPurple, // 0
+
+		SaturationAdjustmentMagenta, // 0
+
+		LuminanceAdjustmentRed, // 0
+
+		LuminanceAdjustmentOrange, // 0
+
+		LuminanceAdjustmentYellow, // 0
+
+		LuminanceAdjustmentGreen, // 0
+
+		LuminanceAdjustmentAqua, // 0
+
+		LuminanceAdjustmentBlue, // 0
+
+		LuminanceAdjustmentPurple, // 0
+
+		LuminanceAdjustmentMagenta, // 0
+
+		SplitToningShadowHue, // 0
+
+		SplitToningShadowSaturation, // 0
+
+		SplitToningHighlightHue, // 0
+
+		SplitToningHighlightSaturation, // 0
+
+		SplitToningBalance, // 0
+
+		ParametricShadows, // 0
+
+		ParametricDarks, // 0
+
+		ParametricLights, // 0
+
+		ParametricHighlights, // 0
+
+		ParametricShadowSplit, // 25
+
+		ParametricMidtoneSplit, // 50
+
+		ParametricHighlightSplit, // 75
+
+		SharpenRadius, // +1.0
+
+		SharpenDetail, // 50
+
+		SharpenEdgeMasking, // 0
+
+		PostCropVignetteAmount, // 0
+
+		ConvertToGrayscale, // False
+
+		AlreadyApplied, // True
+
+		IncrementalTemperature, // 0
+
+		IncrementalTint, // 0
+
+		CropUnit // 0
+
+		#endregion additional CRS properties not listed in spec
 	}
 }
