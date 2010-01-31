@@ -77,6 +77,8 @@ namespace XmpUtils.Xmp.Schemas
 		TransmissionReference,
 
 		[XmpBasicProperty(XmpBasicType.Integer)]
-		Urgency
+		Urgency,
+
+		ColorMode
 	}
 }
