@@ -39,6 +39,7 @@ using System.Windows.Media.Imaging;
 
 using XmpUtils.Xmp.Schemas;
 using XmpUtils.Xmp.ValueTypes;
+using XmpUtils.Xmp.ValueTypes.ExifTagValues;
 
 namespace XmpUtils.Xmp
 {
@@ -50,7 +51,11 @@ namespace XmpUtils.Xmp
 		#region Constants
 
 		private const string XmpDateFormat = "yyyy'-'MM'-'ddTHH':'mm':'ss.FFFK";
-		private const string ExifDateFormat = "yyyy':'MM':'dd HH':'mm':'ss";
+		private static readonly string[] ExifDateFormats =
+		{
+			"yyyy':'MM':'dd HH':'mm':'ss",
+			"yyyy':'MM':'dd"
+		};
 
 		#endregion Constants
 
@@ -291,9 +296,25 @@ namespace XmpUtils.Xmp
 				case TypeCode.DateTime:
 				{
 					DateTime date;
-					if (DateTime.TryParseExact(
+
+					Array array = value as Array;
+					if (array != null && array.Length == 3)
+					{
+						try
+						{
+							var seconds =
+								60m * (60m * Convert.ToDecimal(this.ProcessRational(property, array.GetValue(0))) +
+								Convert.ToDecimal(this.ProcessRational(property, array.GetValue(1)))) +
+								Convert.ToDecimal(this.ProcessRational(property, array.GetValue(2)));
+
+							date = DateTime.MinValue.AddSeconds(Convert.ToDouble(seconds));
+							value = date.ToString(XmpDateFormat);
+						}
+						catch { }
+					}
+					else if (DateTime.TryParseExact(
 							Convert.ToString(value),
-							ExifDateFormat,
+							ExifDateFormats,
 							DateTimeFormatInfo.InvariantInfo,
 							DateTimeStyles.AssumeLocal,
 							out date))
@@ -336,9 +357,36 @@ namespace XmpUtils.Xmp
 							};
 						}
 					}
+					else if (property.ValueType is ExifType &&
+						((ExifType)property.ValueType) == ExifType.Flash)
+					{
+						ExifTagFlash flash;
+						if (value is ushort)
+						{
+							flash = (ExifTagFlash)value;
+						}
+						else if (value is string)
+						{
+							try
+							{
+								flash = (ExifTagFlash)Enum.Parse(typeof(ExifTagFlash), Convert.ToString(value));
+							}
+							catch
+							{
+								break;
+							}
+						}
+						else
+						{
+							break;
+						}
+
+						// TODO: process flash enum into dictionary
+						value = flash;
+					}
 					else
 					{
-						// TODO
+						// TODO: process other object types
 					}
 					break;
 				}
