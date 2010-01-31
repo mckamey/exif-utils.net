@@ -50,6 +50,8 @@ namespace XmpUtils.Xmp
 
 		#endregion Fields
 
+		// TODO: determine how to model property qualifiers
+
 		#region Mutable Properties
 
 		/// <summary>
@@ -68,25 +70,6 @@ namespace XmpUtils.Xmp
 		{
 			get;
 			set;
-		}
-
-		/// <summary>
-		/// Gets and sets any qualifiers for this property
-		/// </summary>
-		public IEnumerable<XmpProperty> Qualifiers
-		{
-			get { return this.qualifiers; }
-			set
-			{
-				if (value == null)
-				{
-					this.qualifiers = Enumerable.Empty<XmpProperty>();
-				}
-				else
-				{
-					this.qualifiers = value;
-				}
-			}
 		}
 
 		/// <summary>
