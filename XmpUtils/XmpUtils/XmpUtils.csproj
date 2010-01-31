@@ -55,6 +55,7 @@
     <Compile Include="Xmp\RdfUtility.cs" />
     <Compile Include="Xmp\Schemas\LightroomSchema.cs" />
     <Compile Include="Xmp\Schemas\PdfSchema.cs" />
+    <Compile Include="Xmp\ValueTypes\ExifTagValues.cs" />
     <Compile Include="Xmp\ValueTypes\XmpVideoMediaPropertyAttribute.cs" />
     <Compile Include="Xmp\ValueTypes\XmpBasicJobWorkflowPropertyAttribute.cs" />
     <Compile Include="Xmp\ValueTypes\XmpMediaManagementPropertyAttribute.cs" />
