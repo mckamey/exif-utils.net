@@ -160,7 +160,7 @@ namespace XmpUtils.Xmp
 
 		private IEnumerable<XmpProperty> ProcessBlock(BitmapMetadata metadata, Type enumType, decimal priority, int depth)
 		{
-			foreach (string name in metadata)
+			foreach (string name in this.GetNamesSafely(metadata))
 			{
 				object value = metadata.GetQuery(name);
 				if (value == null)
@@ -467,7 +467,7 @@ namespace XmpUtils.Xmp
 
 		private IEnumerable<XmpProperty> ProcessXmp(BitmapMetadata metadata, decimal priority, int depth)
 		{
-			foreach (string name in metadata)
+			foreach (string name in this.GetNamesSafely(metadata))
 			{
 				// http://msdn.microsoft.com/en-us/library/ee719796(VS.85).aspx
 				// http://search.cpan.org/
@@ -530,7 +530,7 @@ namespace XmpUtils.Xmp
 		{
 			Dictionary<string, object> dictionary = new Dictionary<string, object>();
 
-			foreach (string name in metadata)
+			foreach (string name in this.GetNamesSafely(metadata))
 			{
 				object value = metadata.GetQuery(name);
 				if (value == null)
@@ -563,7 +563,7 @@ namespace XmpUtils.Xmp
 		{
 			ArrayList array = new ArrayList();
 
-			foreach (string name in metadata)
+			foreach (string name in this.GetNamesSafely(metadata))
 			{
 				object value = metadata.GetQuery(name);
 				if (value == null)
@@ -645,6 +645,40 @@ namespace XmpUtils.Xmp
 			}
 
 			return null;
+		}
+
+		/// <summary>
+		/// Workaround for NullReferenceException in Metadata iteration
+		/// </summary>
+		/// <param name="metadata"></param>
+		/// <returns></returns>
+		private IEnumerable<string> GetNamesSafely(BitmapMetadata metadata)
+		{
+			IEnumerator<string> enumerator = ((IEnumerable<string>)metadata).GetEnumerator();
+
+			bool hasMore;
+			try
+			{
+				hasMore = enumerator.MoveNext();
+			}
+			catch
+			{
+				hasMore = false;
+			}
+
+			while (hasMore)
+			{
+				yield return enumerator.Current;
+
+				try
+				{
+					hasMore = enumerator.MoveNext();
+				}
+				catch
+				{
+					hasMore = false;
+				}
+			}
 		}
 
 		#endregion IO Methods
