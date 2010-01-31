@@ -255,7 +255,7 @@ namespace XmpDemo
 							out date))
 					{
 						// clean up to ISO-8601
-						value = date.ToString("yyyy'-'MM'-'ddTHH':'mm':'ssK");
+						value = date.ToString("yyyy'-'MM'-'ddTHH':'mm':'ss.ffK");
 					}
 					break;
 				}
