@@ -149,7 +149,7 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.Integer, XmpQuantity.Seq, Category=XmpCategory.Internal)]
 		ISOSpeedRatings=0x8827,
 
-		[ExifProperty(ExifType.OECF_SFR, Category=XmpCategory.Internal)]
+		[ExifProperty(ExifType.OecfSfr, Category=XmpCategory.Internal)]
 		OECF=0x8828,
 
 		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
@@ -189,7 +189,7 @@ namespace XmpUtils.Xmp.Schemas
 		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
 		FlashEnergy=0xA20B,
 
-		[ExifProperty(ExifType.OECF_SFR, Category=XmpCategory.Internal)]
+		[ExifProperty(ExifType.OecfSfr, Category=XmpCategory.Internal)]
 		SpatialFreqencyResponse=0xA20C,
 
 		[ExifProperty(ExifType.Rational, Category=XmpCategory.Internal)]
@@ -216,7 +216,7 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
 		SceneType=0xA301,
 
-		[ExifProperty(ExifType.CFAPattern, Category=XmpCategory.Internal)]
+		[ExifProperty(ExifType.CfaPattern, Category=XmpCategory.Internal)]
 		CFAPattern=0xA302,
 
 		[XmpBasicProperty(XmpBasicType.Integer, Category=XmpCategory.Internal)]
@@ -274,13 +274,13 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		GPSLatitudeRef=0x0001,
 
-		[ExifProperty(ExifType.GPSCoordinate, Category=XmpCategory.Internal)]
+		[ExifProperty(ExifType.GpsCoordinate, Category=XmpCategory.Internal)]
 		GPSLatitude=0x0002,
 
 		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		GPSLongitudeRef=0x0003,
 
-		[ExifProperty(ExifType.GPSCoordinate, Category=XmpCategory.Internal)]
+		[ExifProperty(ExifType.GpsCoordinate, Category=XmpCategory.Internal)]
 		GPSLongitude=0x0004,
 
 		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
@@ -328,13 +328,13 @@ namespace XmpUtils.Xmp.Schemas
 		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		GPSDestLatitudeRef=0x0013,
 
-		[ExifProperty(ExifType.GPSCoordinate, Category=XmpCategory.Internal)]
+		[ExifProperty(ExifType.GpsCoordinate, Category=XmpCategory.Internal)]
 		GPSDestLatitude=0x0014,
 
 		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
 		GPSDestLongitudeRef=0x0015,
 
-		[ExifProperty(ExifType.GPSCoordinate, Category=XmpCategory.Internal)]
+		[ExifProperty(ExifType.GpsCoordinate, Category=XmpCategory.Internal)]
 		GPSDestLongitude=0x0016,
 
 		[XmpBasicProperty(XmpBasicType.Text, Category=XmpCategory.Internal)]
