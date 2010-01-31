@@ -52,7 +52,6 @@ namespace XmpUtils.Xmp.ValueTypes
 
 		Integer,
 
-		[XmpValueType(typeof(object))]
 		LangAlt,
 
 		Locale,

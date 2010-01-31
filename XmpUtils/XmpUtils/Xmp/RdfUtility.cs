@@ -120,7 +120,7 @@ namespace XmpUtils.Xmp
 					XName.Get("Description", RdfNamespace),
 					new XAttribute(XName.Get("about", RdfNamespace), RdfAboutValue));
 
-				// sort and de-dup, XMP wins over EXIF/TIFF
+				// sort and de-dup by priority
 				var props =
 					(from p in g
 					 orderby p.Schema, p.Priority descending
@@ -180,6 +180,10 @@ namespace XmpUtils.Xmp
 						list.Add(new XComment("Unexpected value: "+Convert.ToString(property.Value)));
 						break;
 					}
+					if (array is IDictionary<string, object>)
+					{
+						array = ((IDictionary<string, object>)array).Values;
+					}
 
 					foreach (object item in array)
 					{
@@ -212,6 +216,7 @@ namespace XmpUtils.Xmp
 					}
 					else
 					{
+						// TODO: find how to process non-lang alts
 						elem.Add(new XComment("Alt value: "+Convert.ToString(property.Value)));
 					}
 					break;
