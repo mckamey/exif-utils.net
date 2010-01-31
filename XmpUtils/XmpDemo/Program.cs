@@ -16,6 +16,9 @@ namespace XmpDemo
 {
 	public class Program
 	{
+		private const string XmpDateFormat = "yyyy'-'MM'-'ddTHH':'mm':'ss.FFFK";
+		private const string ExifDateFormat = "yyyy':'MM':'dd HH':'mm':'ss";
+
 		public static void Main()
 		{
 			Console.Write("Enter filename: ");
@@ -249,13 +252,13 @@ namespace XmpDemo
 					DateTime date;
 					if (DateTime.TryParseExact(
 							Convert.ToString(value),
-							"yyyy':'MM':'dd HH':'mm':'ss",
+							ExifDateFormat,
 							DateTimeFormatInfo.InvariantInfo,
 							DateTimeStyles.AssumeLocal,
 							out date))
 					{
 						// clean up to ISO-8601
-						value = date.ToString("yyyy'-'MM'-'ddTHH':'mm':'ss.ffK");
+						value = date.ToString(XmpDateFormat);
 					}
 					break;
 				}
