@@ -158,7 +158,12 @@ namespace XmpUtils.Xmp
 		{
 			foreach (object schema in schemas)
 			{
-				yield return this.GetProperty(schema);
+				XmpProperty property = this.GetProperty(schema);
+				if (property == null)
+				{
+					continue;
+				}
+				yield return property;
 			}
 		}
 
