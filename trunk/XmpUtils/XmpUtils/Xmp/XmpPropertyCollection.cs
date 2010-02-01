@@ -31,6 +31,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -38,7 +39,12 @@ using XmpUtils.Xmp.ValueTypes;
 
 namespace XmpUtils.Xmp
 {
-	public class RdfUtility
+	/// <summary>
+	/// Collection of XMP properties which can serialize as XMP RDF
+	/// </summary>
+	public class XmpPropertyCollection :
+		ICollection<XmpProperty>,
+		ICollection
 	{
 		#region EqualityComparer<TObj, TVal>
 
@@ -107,7 +113,7 @@ namespace XmpUtils.Xmp
 		/// <summary>
 		/// Ctor
 		/// </summary>
-		public RdfUtility()
+		public XmpPropertyCollection()
 		{
 		}
 
@@ -115,7 +121,7 @@ namespace XmpUtils.Xmp
 		/// Ctor
 		/// </summary>
 		/// <param name="doc"></param>
-		public RdfUtility(XDocument doc)
+		public XmpPropertyCollection(XDocument doc)
 		{
 			this.XmpDocument = doc;
 		}
@@ -124,7 +130,7 @@ namespace XmpUtils.Xmp
 		/// Ctor
 		/// </summary>
 		/// <param name="properties"></param>
-		public RdfUtility(IEnumerable<XmpProperty> properties)
+		public XmpPropertyCollection(IEnumerable<XmpProperty> properties)
 		{
 			this.SetProperties(properties);
 		}
@@ -145,6 +151,7 @@ namespace XmpUtils.Xmp
 							new XElement(XName.Get("RDF", RdfNamespace),
 								new XAttribute(XNamespace.Xmlns + RdfPrefix, RdfNamespace))));
 				}
+
 				return this.document;
 			}
 			set
@@ -172,7 +179,7 @@ namespace XmpUtils.Xmp
 			}
 			set
 			{
-				this.SetProperty(new XmpProperty
+				this.Add(new XmpProperty
 				{
 					Schema=schema,
 					Value=value
@@ -210,6 +217,11 @@ namespace XmpUtils.Xmp
 				return null;
 			}
 
+			return this.GetProperty(property, elem);
+		}
+
+		private XmpProperty GetProperty(XmpProperty property, XElement elem)
+		{
 			switch (property.Quantity)
 			{
 				case XmpQuantity.Alt:
@@ -276,7 +288,7 @@ namespace XmpUtils.Xmp
 				}
 			}
 
-			return RdfUtility.ProcessValue(property);
+			return XmpPropertyCollection.ProcessValue(property);
 		}
 
 		internal static XmpProperty ProcessValue(XmpProperty property)
@@ -339,7 +351,7 @@ namespace XmpUtils.Xmp
 					case ExifType.Rational:
 					{
 						// TODO: how best to determine type of Rational<T>
-						RdfUtility.ProcessRational<long>(property);
+						XmpPropertyCollection.ProcessRational<long>(property);
 						break;
 					}
 				}
@@ -381,25 +393,25 @@ namespace XmpUtils.Xmp
 				var props =
 					(from p in g
 					 orderby p.Schema, p.Priority descending
-					 select p).Distinct(RdfUtility.DistinctFilter);
+					 select p).Distinct(XmpPropertyCollection.DistinctFilter);
 
 				XElement description = this.GetRdfSection(rdf, g.Key.Prefix, g.Key.Namespace);
 
 				foreach (XmpProperty property in props)
 				{
-					this.SetProperty(property, description);
+					this.Add(property, description);
 				}
 			}
 		}
 
-		public void SetProperty(XmpProperty property)
+		public void Add(XmpProperty property)
 		{
 			XElement description = this.GetRdfSection(this.GetRdfRoot(), property.Prefix, property.Namespace);
 
-			this.SetProperty(property, description);
+			this.Add(property, description);
 		}
 
-		private void SetProperty(XmpProperty property, XElement description)
+		private void Add(XmpProperty property, XElement description)
 		{
 			// clear all existing properties with same name
 			description.Elements(XName.Get(property.Name, property.Namespace)).Remove();
@@ -546,5 +558,167 @@ namespace XmpUtils.Xmp
 		}
 
 		#endregion XmpProperty Write Methods
+
+		#region Serialization Methods
+
+		/// <summary>
+		/// Loads XmpProperties from XML
+		/// </summary>
+		/// <param name="filename"></param>
+		/// <returns></returns>
+		public static XmpPropertyCollection LoadFromXml(string filename)
+		{
+			using (TextReader reader = File.OpenText(filename))
+			{
+				return XmpPropertyCollection.LoadFromXml(reader);
+			}
+		}
+
+		/// <summary>
+		/// Loads XmpProperties from XML
+		/// </summary>
+		/// <param name="reader"></param>
+		/// <returns></returns>
+		public static XmpPropertyCollection LoadFromXml(TextReader reader)
+		{
+			return new XmpPropertyCollection(XDocument.Load(reader));
+		}
+
+		public static XmpPropertyCollection LoadFromImage(Stream stream)
+		{
+			IEnumerable<XmpProperty> properties = new XmpExtractor().Extract(stream);
+
+			return new XmpPropertyCollection(properties);
+		}
+
+		public static XmpPropertyCollection LoadFromImage(string filename)
+		{
+			IEnumerable<XmpProperty> properties = new XmpExtractor().Extract(filename);
+
+			return new XmpPropertyCollection(properties);
+		}
+
+		/// <summary>
+		/// Saves XmpProperties to XML
+		/// </summary>
+		/// <param name="filename"></param>
+		public void SaveAsXml(string filename)
+		{
+			using (TextWriter writer = File.CreateText(filename))
+			{
+				this.SaveAsXml(writer);
+			}
+		}
+
+		/// <summary>
+		/// Saves XmpProperties to XML
+		/// </summary>
+		/// <param name="writer"></param>
+		public void SaveAsXml(TextWriter writer)
+		{
+			this.XmpDocument.Save(writer);
+		}
+
+		#endregion Serialization Methods
+
+		#region ICollection<XmpProperty> Members
+
+		public void Clear()
+		{
+			this.GetRdfRoot().Elements().Remove();
+		}
+
+		public bool Contains(XmpProperty property)
+		{
+			return this.XmpDocument.Descendants(XName.Get(property.Name, property.Namespace)).Any();
+		}
+
+		public void CopyTo(XmpProperty[] array, int index)
+		{
+			foreach(XmpProperty property in this)
+			{
+				array[index] = property;
+				index++;
+			}
+		}
+
+		public int Count
+		{
+			get { return this.Count(); }
+		}
+
+		public bool IsReadOnly
+		{
+			get { return false; }
+		}
+
+		public bool Remove(XmpProperty property)
+		{
+			IEnumerable<XElement> elems = this.XmpDocument.Descendants(XName.Get(property.Name, property.Namespace));
+			if (!elems.Any())
+			{
+				return false;
+			}
+			elems.Remove();
+			return true;
+		}
+
+		#endregion ICollection<XmpProperty> Members
+
+		#region IEnumerable<XmpProperty> Members
+
+		public IEnumerator<XmpProperty> GetEnumerator()
+		{
+			var elems = this.GetRdfRoot().Elements(XName.Get("Description", RdfNamespace)).Elements();
+			foreach (XElement elem in elems)
+			{
+				Enum schema = XmpNamespaceUtility.Instance.ParseNamespace(elem.Name) as Enum;
+				if (schema == null)
+				{
+					continue;
+				}
+
+				XmpProperty property = new XmpProperty
+				{
+					Schema = schema
+				};
+
+				yield return this.GetProperty(property, elem);
+			}
+		}
+
+		#endregion IEnumerable<XmpProperty> Members
+
+		#region IEnumerable Members
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return this.GetEnumerator();
+		}
+
+		#endregion IEnumerable Members
+
+		#region ICollection Members
+
+		void ICollection.CopyTo(Array array, int index)
+		{
+			foreach (XmpProperty property in this)
+			{
+				array.SetValue(property, index);
+				index++;
+			}
+		}
+
+		bool ICollection.IsSynchronized
+		{
+			get { return ((ICollection)this.XmpDocument).IsSynchronized; }
+		}
+
+		object ICollection.SyncRoot
+		{
+			get { return ((ICollection)this.XmpDocument).SyncRoot; }
+		}
+
+		#endregion ICollection Members
 	}
 }

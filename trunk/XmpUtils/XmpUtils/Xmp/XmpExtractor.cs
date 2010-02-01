@@ -46,7 +46,7 @@ namespace XmpUtils.Xmp
 	/// <summary>
 	/// Extracts XMP properties out of an image file
 	/// </summary>
-	public class XmpExtractor
+	internal class XmpExtractor
 	{
 		#region Constants
 
@@ -103,7 +103,7 @@ namespace XmpUtils.Xmp
 				// aggregate into single sequence
 				foreach (XmpProperty property in properties)
 				{
-					yield return RdfUtility.ProcessValue(property);
+					yield return XmpPropertyCollection.ProcessValue(property);
 				}
 			}
 		}
@@ -265,7 +265,7 @@ namespace XmpUtils.Xmp
 					continue;
 				}
 
-				Enum schema = (Enum)XmpNamespaceUtility.Instance.Parse(name.TrimStart('/'));
+				Enum schema = (Enum)XmpNamespaceUtility.Instance.ParsePrefix(name.TrimStart('/'));
 				if (schema == null)
 				{
 					continue;

@@ -32,10 +32,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Xml.Linq;
 
 namespace XmpUtils.Xmp
 {
-	public sealed class XmpNamespaceUtility
+	internal sealed class XmpNamespaceUtility
 	{
 		#region Constants
 
@@ -80,7 +81,7 @@ namespace XmpUtils.Xmp
 			}
 		}
 
-		public object Parse(string qualifiedName)
+		public object ParsePrefix(string qualifiedName)
 		{
 			if (String.IsNullOrEmpty(qualifiedName))
 			{
@@ -93,20 +94,35 @@ namespace XmpUtils.Xmp
 				return null;
 			}
 
-			return this.Parse(qualifiedName.Substring(0, index), qualifiedName.Substring(index+1));
+			return this.ParsePrefix(qualifiedName.Substring(0, index), qualifiedName.Substring(index+1));
 		}
 
-		public object Parse(string prefix, string localName)
+		public object ParsePrefix(string prefix, string localName)
 		{
-			if (String.IsNullOrEmpty(prefix))
+			return this.Parse(prefix, localName, this.PrefixLookup);
+		}
+
+		public object ParseNamespace(XName name)
+		{
+			return this.ParseNamespace(name.NamespaceName, name.LocalName);
+		}
+
+		public object ParseNamespace(string ns, string localName)
+		{
+			return this.Parse(ns, localName, this.NamespaceLookup);
+		}
+
+		private object Parse(string scope, string localName, IDictionary<string, Type> lookup)
+		{
+			if (String.IsNullOrEmpty(scope))
 			{
 				return null;
 			}
 
-			prefix = prefix.Replace("\\", "");
+			scope = scope.Replace("\\", "");
 
 			Type enumType;
-			if (!this.PrefixLookup.TryGetValue(prefix, out enumType))
+			if (!lookup.TryGetValue(scope, out enumType))
 			{
 				return null;
 			}

@@ -58,7 +58,6 @@
     <Compile Include="Properties\AssemblyVersion.cs" />
     <Compile Include="Rational.cs" />
     <Compile Include="Xmp\AttributeUtility.cs" />
-    <Compile Include="Xmp\RdfUtility.cs" />
     <Compile Include="Xmp\Schemas\LightroomSchema.cs" />
     <Compile Include="Xmp\Schemas\PdfSchema.cs" />
     <Compile Include="Xmp\ValueTypes\ExifTagValues.cs" />
@@ -74,6 +73,7 @@
     <Compile Include="Xmp\ValueTypes\XmpVideoMediaType.cs" />
     <Compile Include="Xmp\XmpExtractor.cs" />
     <Compile Include="Xmp\XmpNamespaceUtility.cs" />
+    <Compile Include="Xmp\XmpPropertyCollection.cs" />
     <Compile Include="Xmp\XmpValueTypeAttribute.cs" />
     <Compile Include="Xmp\Schemas\XmpIdentifierSchema.cs" />
     <Compile Include="Xmp\XmpCategory.cs" />
