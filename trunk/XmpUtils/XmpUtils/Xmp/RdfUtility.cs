@@ -96,62 +96,103 @@ namespace XmpUtils.Xmp
 
 		#endregion Constants
 
-		#region Methods
+		#region Fields
 
-		public XDocument ToXml(IEnumerable<XmpProperty> properties)
+		private XDocument document;
+
+		#endregion Fields
+
+		#region Document Methods
+
+		public XDocument Document
 		{
-			XElement rdf = new XElement(
-				XName.Get("RDF", RdfNamespace),
-				new XAttribute(XNamespace.Xmlns + RdfPrefix, RdfNamespace));
+			get
+			{
+				this.EnsureDocument();
+				return this.document;
+			}
+			set { this.document = value; }
+		}
+
+		private void EnsureDocument()
+		{
+			if (this.document != null)
+			{
+				return;
+			}
+
+			this.document = new XDocument(
+				new XElement(
+					XName.Get("xmpmeta", XmpMetaNamespace),
+					new XAttribute(XNamespace.Xmlns + XmpMetaPrefix, XmpMetaNamespace),
+					new XElement(
+						XName.Get("RDF", RdfNamespace),
+						new XAttribute(XNamespace.Xmlns + RdfPrefix, RdfNamespace))));
+		}
+
+		private XElement FindRdf()
+		{
+			this.EnsureDocument();
+
+			return this.document.Descendants(XName.Get("RDF", RdfNamespace)).First();
+		}
+
+		#endregion Document Methods
+
+		#region XmpProperty Methods
+
+		public void SetProperties(IEnumerable<XmpProperty> properties)
+		{
+			XElement rdf = this.FindRdf();
 
 			// group into each schema namespace (as per XMP recommendation)
 			var groups =
 				from xmp in properties
-				group xmp by xmp.Namespace;
+				group xmp by new
+				{
+					Prefix = xmp.Prefix,
+					Namespace = xmp.Namespace
+				};
 
 			foreach (var g in groups)
 			{
-				XElement description = new XElement(
-					XName.Get("Description", RdfNamespace),
-					new XAttribute(XName.Get("about", RdfNamespace), RdfAboutValue));
-
 				// sort and de-dup by priority
 				var props =
 					(from p in g
 					 orderby p.Schema, p.Priority descending
 					 select p).Distinct(RdfUtility.DistinctFilter);
 
-				bool needsPrefix = true;
+				XName prefix = XNamespace.Xmlns + g.Key.Prefix;
+				string ns = g.Key.Namespace;
+
+				XElement description =
+					rdf.Elements(XName.Get("Description", RdfNamespace))
+					.FirstOrDefault(d => d.Attributes(prefix).Any(a => a.Value == ns));
+
+				if (description == null)
+				{
+					description = new XElement(
+						XName.Get("Description", RdfNamespace),
+						new XAttribute(XName.Get("about", RdfNamespace), RdfAboutValue),
+						new XAttribute(prefix, ns));
+
+					rdf.Add(description);
+				}
 
 				foreach (XmpProperty property in props)
 				{
-					if (needsPrefix)
-					{
-						if (!String.IsNullOrEmpty(property.Prefix) || !String.IsNullOrEmpty(property.Namespace))
-						{
-							description.Add(new XAttribute(XNamespace.Xmlns + property.Prefix, property.Namespace));
-						}
-						needsPrefix = false;
-					}
+					description.Elements(XName.Get(property.Name, property.Namespace)).Remove();
 
-					XElement elem = this.ToXml(property);
+					XElement elem = this.CreateElement(property);
 					if (elem != null)
 					{
 						description.Add(elem);
 					}
 				}
-
-				rdf.Add(description);
 			}
-
-			return new XDocument(
-				new XElement(
-					XName.Get("xmpmeta", XmpMetaNamespace),
-					new XAttribute(XNamespace.Xmlns + XmpMetaPrefix, XmpMetaNamespace),
-					rdf));
 		}
 
-		public XElement ToXml(XmpProperty property)
+		private XElement CreateElement(XmpProperty property)
 		{
 			if (property.Value == null)
 			{
@@ -183,7 +224,7 @@ namespace XmpUtils.Xmp
 					foreach (object item in array)
 					{
 						object child = item is XmpProperty ?
-							this.ToXml((XmpProperty)item) :
+							this.CreateElement((XmpProperty)item) :
 							item;
 
 						list.Add(new XElement(XName.Get("li", RdfNamespace), child));
@@ -208,7 +249,7 @@ namespace XmpUtils.Xmp
 						foreach (KeyValuePair<string, object> item in dictionary)
 						{
 							object child = item.Value is XmpProperty ?
-								this.ToXml((XmpProperty)item.Value) :
+								this.CreateElement((XmpProperty)item.Value) :
 								item.Value;
 
 							list.Add(new XElement(
@@ -229,7 +270,7 @@ namespace XmpUtils.Xmp
 				{
 					if (property.Value is XmpProperty)
 					{
-						elem.Add(this.ToXml((XmpProperty)property.Value));
+						elem.Add(this.CreateElement((XmpProperty)property.Value));
 					}
 					else if (property.DataType == typeof(string) ||
 						property.DataType == typeof(DateTime))
@@ -241,7 +282,7 @@ namespace XmpUtils.Xmp
 						foreach (KeyValuePair<string, object> item in (IDictionary<string, object>)property.Value)
 						{
 							object child = item.Value is XmpProperty ?
-								this.ToXml((XmpProperty)item.Value) :
+								this.CreateElement((XmpProperty)item.Value) :
 								item.Value;
 
 							elem.Add(new XElement(XName.Get(item.Key, property.Namespace), child));
@@ -258,6 +299,6 @@ namespace XmpUtils.Xmp
 			return elem;
 		}
 
-		#endregion Methods
+		#endregion XmpProperty Methods
 	}
 }

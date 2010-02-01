@@ -28,7 +28,9 @@ namespace XmpDemo
 						{
 							using (TextWriter writer = File.CreateText(filename + ".xmp"))
 							{
-								new RdfUtility().ToXml(properties).Save(writer);
+								RdfUtility rdf = new RdfUtility();
+								rdf.SetProperties(properties);
+								rdf.Document.Save(writer);
 							}
 						}
 					}
