@@ -87,6 +87,7 @@ namespace XmpUtils.Xmp
 
 			if (value is IDictionary<string, object>)
 			{
+				// unwrap generic container
 				value = ((IDictionary<string, object>)value).Values;
 			}
 
@@ -102,7 +103,7 @@ namespace XmpUtils.Xmp
 				// aggregate into single sequence
 				foreach (XmpProperty property in properties)
 				{
-					yield return property;
+					yield return RdfUtility.ProcessValue(property);
 				}
 			}
 		}
