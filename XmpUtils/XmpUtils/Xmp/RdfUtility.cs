@@ -276,10 +276,10 @@ namespace XmpUtils.Xmp
 				}
 			}
 
-			return this.ProcessValue(property);
+			return RdfUtility.ProcessValue(property);
 		}
 
-		private XmpProperty ProcessValue(XmpProperty property)
+		internal static XmpProperty ProcessValue(XmpProperty property)
 		{
 			if (property.ValueType is XmpBasicType)
 			{
@@ -339,7 +339,7 @@ namespace XmpUtils.Xmp
 					case ExifType.Rational:
 					{
 						// TODO: how best to determine type of Rational<T>
-						this.ProcessRational<long>(property);
+						RdfUtility.ProcessRational<long>(property);
 						break;
 					}
 				}
@@ -348,7 +348,7 @@ namespace XmpUtils.Xmp
 			return property;
 		}
 
-		private void ProcessRational<T>(XmpProperty property)
+		private static void ProcessRational<T>(XmpProperty property)
 			where T : IConvertible
 		{
 			Rational<T> rational;
