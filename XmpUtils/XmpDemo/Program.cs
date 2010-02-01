@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 
 using XmpUtils.Xmp;
+using System.Xml.Linq;
 
 namespace XmpDemo
 {
@@ -22,15 +23,27 @@ namespace XmpDemo
 					Console.SetOut(output);
 					try
 					{
+						// extract properties out of JPEG
 						IEnumerable<XmpProperty> properties = new XmpExtractor().Extract(filename);
 
 						if (properties.Any())
 						{
+							// serialize properties to XML
 							using (TextWriter writer = File.CreateText(filename + ".xmp"))
 							{
-								RdfUtility rdf = new RdfUtility();
-								rdf.SetProperties(properties);
-								rdf.Document.Save(writer);
+								new RdfUtility(properties).Document.Save(writer);
+							}
+
+							// deserialize properties from XML
+							using (TextReader reader = File.OpenText(filename + ".xmp"))
+							{
+								properties = new RdfUtility(XDocument.Load(reader)).GetProperties(properties.Select(p => p.Schema)).ToList();
+							}
+
+							// re-serialize properties to new XML
+							using (TextWriter writer = File.CreateText(filename + ".xmp2"))
+							{
+								new RdfUtility(properties).Document.Save(writer);
 							}
 						}
 					}
