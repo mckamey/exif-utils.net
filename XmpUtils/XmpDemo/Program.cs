@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Xml.Linq;
 
 using XmpUtils.Xmp;
+using XmpUtils.Xmp.Schemas;
 
 namespace XmpDemo
 {
@@ -24,27 +25,33 @@ namespace XmpDemo
 					try
 					{
 						// extract properties out of JPEG
-						IEnumerable<XmpProperty> properties = new XmpExtractor().Extract(filename);
+						XmpPropertyCollection properties = XmpPropertyCollection.LoadFromImage(filename);
 
 						if (properties.Any())
 						{
 							// serialize properties to XML
 							using (TextWriter writer = File.CreateText(filename + ".xmp"))
 							{
-								new RdfUtility(properties).XmpDocument.Save(writer);
+								properties.SaveAsXml(writer);
 							}
+
+							List<XmpProperty> propertyList;
 
 							// deserialize properties from XML
 							using (TextReader reader = File.OpenText(filename + ".xmp"))
 							{
-								properties = new RdfUtility(XDocument.Load(reader)).GetProperties(properties.Select(p => p.Schema)).ToList();
+								IEnumerable<Enum> schemas = properties.Select(p => p.Schema);
+								propertyList = XmpPropertyCollection.LoadFromXml(reader).GetProperties(schemas).ToList();
 							}
 
 							// re-serialize properties to new XML
 							using (TextWriter writer = File.CreateText(filename + ".xmp2"))
 							{
-								new RdfUtility(properties).XmpDocument.Save(writer);
+								new XmpPropertyCollection(propertyList).SaveAsXml(writer);
 							}
+
+							// test single value extraction
+							IEnumerable<string> tags = properties[DublinCoreSchema.Subject] as IEnumerable<string>;
 						}
 					}
 					finally
