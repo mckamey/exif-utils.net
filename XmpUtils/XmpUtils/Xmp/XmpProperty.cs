@@ -78,7 +78,7 @@ namespace XmpUtils.Xmp
 		/// <remarks>
 		/// XMP is highest priority with EXIF/TIFF next, etc.
 		/// </remarks>
-		public decimal Priority
+		internal decimal Priority
 		{
 			get;
 			set;
