@@ -117,7 +117,7 @@ namespace XmpUtils.Xmp
 		/// <param name="doc"></param>
 		public RdfUtility(XDocument doc)
 		{
-			this.Document = doc;
+			this.XmpDocument = doc;
 		}
 
 		/// <summary>
@@ -131,9 +131,9 @@ namespace XmpUtils.Xmp
 
 		#endregion Init
 
-		#region Document Methods
+		#region Properties
 
-		public XDocument Document
+		public XDocument XmpDocument
 		{
 			get
 			{
@@ -147,10 +147,40 @@ namespace XmpUtils.Xmp
 				}
 				return this.document;
 			}
-			set { this.document = value; }
+			set
+			{
+				// TODO: validate this is correct document structure
+				this.document = value;
+			}
 		}
 
-		#endregion Document Methods
+		/// <summary>
+		/// Gets and sets the value for a single XMP property
+		/// </summary>
+		/// <param name="schema"></param>
+		/// <returns></returns>
+		public object this[Enum schema]
+		{
+			get
+			{
+				XmpProperty property = this.GetProperty(schema);
+				if (property == null)
+				{
+					return null;
+				}
+				return property.Value;
+			}
+			set
+			{
+				this.SetProperty(new XmpProperty
+				{
+					Schema=schema,
+					Value=value
+				});
+			}
+		}
+
+		#endregion Properties
 
 		#region XmpProperty Read Methods
 
@@ -174,7 +204,7 @@ namespace XmpUtils.Xmp
 				Schema = (Enum)schema
 			};
 
-			XElement elem = this.Document.Descendants(XName.Get(property.Name, property.Namespace)).FirstOrDefault();
+			XElement elem = this.XmpDocument.Descendants(XName.Get(property.Name, property.Namespace)).FirstOrDefault();
 			if (elem == null)
 			{
 				return null;
@@ -334,7 +364,7 @@ namespace XmpUtils.Xmp
 
 		public void SetProperties(IEnumerable<XmpProperty> properties)
 		{
-			XElement rdf = this.Document.Descendants(XName.Get("RDF", RdfNamespace)).First();
+			XElement rdf = this.GetRdfRoot();
 
 			// group into each schema namespace (as per XMP recommendation)
 			var groups =
@@ -353,32 +383,32 @@ namespace XmpUtils.Xmp
 					 orderby p.Schema, p.Priority descending
 					 select p).Distinct(RdfUtility.DistinctFilter);
 
-				XName prefix = XNamespace.Xmlns + g.Key.Prefix;
-				string ns = g.Key.Namespace;
-
-				XElement description =
-					rdf.Elements(XName.Get("Description", RdfNamespace))
-					.FirstOrDefault(d => d.Attributes(prefix).Any(a => a.Value == ns));
-
-				if (description == null)
-				{
-					description = new XElement(XName.Get("Description", RdfNamespace),
-						new XAttribute(XName.Get("about", RdfNamespace), RdfAboutValue),
-						new XAttribute(prefix, ns));
-
-					rdf.Add(description);
-				}
+				XElement description = this.GetRdfSection(rdf, g.Key.Prefix, g.Key.Namespace);
 
 				foreach (XmpProperty property in props)
 				{
-					description.Elements(XName.Get(property.Name, property.Namespace)).Remove();
-
-					XElement elem = this.CreateElement(property);
-					if (elem != null)
-					{
-						description.Add(elem);
-					}
+					this.SetProperty(property, description);
 				}
+			}
+		}
+
+		public void SetProperty(XmpProperty property)
+		{
+			XElement description = this.GetRdfSection(this.GetRdfRoot(), property.Prefix, property.Namespace);
+
+			this.SetProperty(property, description);
+		}
+
+		private void SetProperty(XmpProperty property, XElement description)
+		{
+			// clear all existing properties with same name
+			description.Elements(XName.Get(property.Name, property.Namespace)).Remove();
+
+			// convert XmpProperty to XML element
+			XElement elem = this.CreateElement(property);
+			if (elem != null)
+			{
+				description.Add(elem);
 			}
 		}
 
@@ -397,7 +427,8 @@ namespace XmpUtils.Xmp
 				case XmpQuantity.Bag:
 				case XmpQuantity.Seq:
 				{
-					XElement list = new XElement(XName.Get(property.Quantity.ToString(), RdfNamespace));
+					XElement list = new XElement(
+						XName.Get(property.Quantity.ToString(), RdfNamespace));
 					elem.Add(list);
 
 					IEnumerable array = property.Value as IEnumerable;
@@ -486,6 +517,32 @@ namespace XmpUtils.Xmp
 			}
 
 			return elem;
+		}
+
+		private XElement GetRdfSection(XElement rdf, string prefix, string ns)
+		{
+			XName attrName = XNamespace.Xmlns + prefix;
+
+			// find the first rdf:Description for the corresponding namespace
+			XElement description = rdf.Elements(XName.Get("Description", RdfNamespace))
+				.FirstOrDefault(d => d.Attributes(attrName).Any(a => a.Value == ns));
+
+			if (description == null)
+			{
+				// create a section for this namespace
+				description = new XElement(XName.Get("Description", RdfNamespace),
+					new XAttribute(XName.Get("about", RdfNamespace), RdfAboutValue),
+					new XAttribute(attrName, ns));
+
+				rdf.Add(description);
+			}
+
+			return description;
+		}
+
+		private XElement GetRdfRoot()
+		{
+			return this.XmpDocument.Descendants(XName.Get("RDF", RdfNamespace)).First();
 		}
 
 		#endregion XmpProperty Write Methods

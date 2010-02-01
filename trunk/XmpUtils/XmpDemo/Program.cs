@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Xml.Linq;
 
 using XmpUtils.Xmp;
-using System.Xml.Linq;
 
 namespace XmpDemo
 {
@@ -31,7 +31,7 @@ namespace XmpDemo
 							// serialize properties to XML
 							using (TextWriter writer = File.CreateText(filename + ".xmp"))
 							{
-								new RdfUtility(properties).Document.Save(writer);
+								new RdfUtility(properties).XmpDocument.Save(writer);
 							}
 
 							// deserialize properties from XML
@@ -43,7 +43,7 @@ namespace XmpDemo
 							// re-serialize properties to new XML
 							using (TextWriter writer = File.CreateText(filename + ".xmp2"))
 							{
-								new RdfUtility(properties).Document.Save(writer);
+								new RdfUtility(properties).XmpDocument.Save(writer);
 							}
 						}
 					}
