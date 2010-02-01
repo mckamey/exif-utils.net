@@ -108,42 +108,199 @@ namespace XmpUtils.Xmp
 		{
 			get
 			{
-				this.EnsureDocument();
+				if (this.document == null)
+				{
+					this.document = new XDocument(
+						new XElement(XName.Get("xmpmeta", XmpMetaNamespace),
+							new XAttribute(XNamespace.Xmlns + XmpMetaPrefix, XmpMetaNamespace),
+							new XElement(XName.Get("RDF", RdfNamespace),
+								new XAttribute(XNamespace.Xmlns + RdfPrefix, RdfNamespace))));
+				}
 				return this.document;
 			}
 			set { this.document = value; }
 		}
 
-		private void EnsureDocument()
-		{
-			if (this.document != null)
-			{
-				return;
-			}
-
-			this.document = new XDocument(
-				new XElement(
-					XName.Get("xmpmeta", XmpMetaNamespace),
-					new XAttribute(XNamespace.Xmlns + XmpMetaPrefix, XmpMetaNamespace),
-					new XElement(
-						XName.Get("RDF", RdfNamespace),
-						new XAttribute(XNamespace.Xmlns + RdfPrefix, RdfNamespace))));
-		}
-
-		private XElement FindRdf()
-		{
-			this.EnsureDocument();
-
-			return this.document.Descendants(XName.Get("RDF", RdfNamespace)).First();
-		}
-
 		#endregion Document Methods
 
-		#region XmpProperty Methods
+		#region XmpProperty Read Methods
+
+		public IEnumerable<XmpProperty> GetProperties(IEnumerable schemas)
+		{
+			foreach (object schema in schemas)
+			{
+				yield return this.GetProperty(schema);
+			}
+		}
+
+		public XmpProperty GetProperty(object schema)
+		{
+			XmpProperty property = new XmpProperty
+			{
+				Schema = (Enum)schema
+			};
+
+			XElement elem = this.Document.Descendants(XName.Get(property.Name, property.Namespace)).FirstOrDefault();
+			if (elem == null)
+			{
+				return null;
+			}
+
+			switch (property.Quantity)
+			{
+				case XmpQuantity.Alt:
+				{
+					elem = elem.Element(XName.Get(property.Quantity.ToString(), RdfNamespace));
+					if (elem != null)
+					{
+						if (elem.Elements().Count() == 0)
+						{
+							property.Value = elem.Value;
+						}
+						else
+						{
+							if (property.ValueType is XmpBasicType &&
+							((XmpBasicType)property.ValueType) == XmpBasicType.LangAlt)
+							{
+								// convert to dictionary
+								property.Value = elem.Elements().ToDictionary(
+									n => n.Attribute(XNamespace.Xml+"lang").Value,
+									n => (object)n.Value);
+							}
+							else
+							{
+								// TODO: find how best to process non-lang alts
+								// convert to array
+								property.Value = elem.Elements(XName.Get("li", RdfNamespace)).Select(n => n.Value).ToList();
+							}
+						}
+					}
+					break;
+				}
+				case XmpQuantity.Bag:
+				case XmpQuantity.Seq:
+				{
+					elem = elem.Element(XName.Get(property.Quantity.ToString(), RdfNamespace));
+					if (elem != null)
+					{
+						if (elem.Elements().Count() == 0)
+						{
+							property.Value = elem.Value;
+						}
+						else
+						{
+							// convert to array
+							property.Value = elem.Elements(XName.Get("li", RdfNamespace)).Select(n => n.Value).ToList();
+						}
+					}
+					break;
+				}
+				default:
+				{
+					if (elem.Elements().Count() == 0)
+					{
+						property.Value = elem.Value;
+					}
+					else
+					{
+						// convert to dictionary
+						property.Value = elem.Elements().ToDictionary(
+							n => n.Name.LocalName,
+							n => (object)n.Value);
+					}
+					break;
+				}
+			}
+
+			return this.ProcessValue(property);
+		}
+
+		private XmpProperty ProcessValue(XmpProperty property)
+		{
+			if (property.ValueType is XmpBasicType)
+			{
+				switch ((XmpBasicType)property.ValueType)
+				{
+					case XmpBasicType.Boolean:
+					{
+						bool value;
+						if (Boolean.TryParse(Convert.ToString(property.Value), out value))
+						{
+							property.Value = value;
+						}
+						break;
+					}
+					case XmpBasicType.Date:
+					{
+						DateTime value;
+						if (DateTime.TryParse(Convert.ToString(property.Value), out value))
+						{
+							property.Value = value;
+						}
+						break;
+					}
+					case XmpBasicType.Integer:
+					{
+						int value;
+						if (Int32.TryParse(Convert.ToString(property.Value), out value))
+						{
+							property.Value = value;
+						}
+						break;
+					}
+					case XmpBasicType.Real:
+					{
+						decimal value;
+						if (Decimal.TryParse(Convert.ToString(property.Value), out value))
+						{
+							property.Value = value;
+						}
+						break;
+					}
+				}
+			}
+			else if (property.ValueType is ExifType)
+			{
+				switch ((ExifType)property.ValueType)
+				{
+					case ExifType.GpsCoordinate:
+					{
+						GpsCoordinate gps;
+						if (GpsCoordinate.TryParse(Convert.ToString(property.Value), out gps))
+						{
+							property.Value = gps;
+						}
+						break;
+					}
+					case ExifType.Rational:
+					{
+						// TODO: how best to determine type of Rational<T>
+						this.ProcessRational<long>(property);
+						break;
+					}
+				}
+			}
+
+			return property;
+		}
+
+		private void ProcessRational<T>(XmpProperty property)
+			where T : IConvertible
+		{
+			Rational<T> rational;
+			if (Rational<T>.TryParse(Convert.ToString(property.Value), out rational))
+			{
+				property.Value = rational;
+			}
+		}
+
+		#endregion XmpProperty Read Methods
+
+		#region XmpProperty Write Methods
 
 		public void SetProperties(IEnumerable<XmpProperty> properties)
 		{
-			XElement rdf = this.FindRdf();
+			XElement rdf = this.Document.Descendants(XName.Get("RDF", RdfNamespace)).First();
 
 			// group into each schema namespace (as per XMP recommendation)
 			var groups =
@@ -171,8 +328,7 @@ namespace XmpUtils.Xmp
 
 				if (description == null)
 				{
-					description = new XElement(
-						XName.Get("Description", RdfNamespace),
+					description = new XElement(XName.Get("Description", RdfNamespace),
 						new XAttribute(XName.Get("about", RdfNamespace), RdfAboutValue),
 						new XAttribute(prefix, ns));
 
@@ -252,8 +408,7 @@ namespace XmpUtils.Xmp
 								this.CreateElement((XmpProperty)item.Value) :
 								item.Value;
 
-							list.Add(new XElement(
-								XName.Get("li", RdfNamespace),
+							list.Add(new XElement(XName.Get("li", RdfNamespace),
 								new XAttribute(XNamespace.Xml+"lang", item.Key),
 								child));
 						}
@@ -299,6 +454,6 @@ namespace XmpUtils.Xmp
 			return elem;
 		}
 
-		#endregion XmpProperty Methods
+		#endregion XmpProperty Write Methods
 	}
 }
