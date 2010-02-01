@@ -102,6 +102,35 @@ namespace XmpUtils.Xmp
 
 		#endregion Fields
 
+		#region Init
+
+		/// <summary>
+		/// Ctor
+		/// </summary>
+		public RdfUtility()
+		{
+		}
+
+		/// <summary>
+		/// Ctor
+		/// </summary>
+		/// <param name="doc"></param>
+		public RdfUtility(XDocument doc)
+		{
+			this.Document = doc;
+		}
+
+		/// <summary>
+		/// Ctor
+		/// </summary>
+		/// <param name="properties"></param>
+		public RdfUtility(IEnumerable<XmpProperty> properties)
+		{
+			this.SetProperties(properties);
+		}
+
+		#endregion Init
+
 		#region Document Methods
 
 		public XDocument Document
