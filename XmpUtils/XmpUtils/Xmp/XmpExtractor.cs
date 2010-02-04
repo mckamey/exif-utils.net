@@ -382,39 +382,6 @@ namespace XmpUtils.Xmp
 					value = date.ToString(XmpDateFormat);
 				}
 			}
-			else if (property.ValueType is ExifType &&
-				((ExifType)property.ValueType) == ExifType.Flash)
-			{
-				ExifTagFlash flash;
-				if (value is ushort)
-				{
-					flash = (ExifTagFlash)value;
-				}
-				else if (value is string)
-				{
-					try
-					{
-						flash = (ExifTagFlash)Enum.Parse(typeof(ExifTagFlash), Convert.ToString(value));
-					}
-					catch
-					{
-						return value;
-					}
-				}
-				else
-				{
-					return value;
-				}
-
-				value = new Dictionary<string, object>
-				{
-					{ "Fired", Convert.ToString((flash & ExifTagFlash.FlashFired) == ExifTagFlash.FlashFired) },
-					{ "Return", (int)(flash & (ExifTagFlash.ReturnNotDetected|ExifTagFlash.ReturnDetected)) >> 1 },
-					{ "Mode", (int)(flash & (ExifTagFlash.ModeOn|ExifTagFlash.ModeOff|ExifTagFlash.ModeAuto)) >> 3 },
-					{ "Function", Convert.ToString((flash & ExifTagFlash.NoFlashFunction) == ExifTagFlash.NoFlashFunction) },
-					{ "RedEyeMode", Convert.ToString((flash & ExifTagFlash.RedEyeReduction) == ExifTagFlash.RedEyeReduction) }
-				};
-			}
 			else
 			{
 				if (property.ValueType is XmpBasicType &&
@@ -450,15 +417,15 @@ namespace XmpUtils.Xmp
 				}
 
 				if (property.Quantity != XmpQuantity.Single &&
+					value != null &&
 					!(value is IEnumerable))
 				{
 					value = new object[] { value };
 				}
-
-				if (property.Quantity == XmpQuantity.Single &&
-						value is byte[] &&
-						property.ValueType is XmpBasicType &&
-						((XmpBasicType)property.ValueType) == XmpBasicType.Text)
+				else if (property.Quantity == XmpQuantity.Single &&
+					value is byte[] &&
+					property.ValueType is XmpBasicType &&
+					((XmpBasicType)property.ValueType) == XmpBasicType.Text)
 				{
 					value = new String(Encoding.UTF8.GetChars((byte[])value));
 				}
@@ -499,6 +466,39 @@ namespace XmpUtils.Xmp
 								}
 								value = array;
 							}
+							break;
+						}
+						case ExifType.Flash:
+						{
+							ExifTagFlash flash;
+							if (value is ushort)
+							{
+								flash = (ExifTagFlash)value;
+							}
+							else if (value is string)
+							{
+								try
+								{
+									flash = (ExifTagFlash)Enum.Parse(typeof(ExifTagFlash), Convert.ToString(value));
+								}
+								catch
+								{
+									break;
+								}
+							}
+							else
+							{
+								break;
+							}
+
+							value = new Dictionary<string, object>
+							{
+								{ "Fired", Convert.ToString((flash & ExifTagFlash.FlashFired) == ExifTagFlash.FlashFired) },
+								{ "Return", (int)(flash & (ExifTagFlash.ReturnNotDetected|ExifTagFlash.ReturnDetected)) >> 1 },
+								{ "Mode", (int)(flash & (ExifTagFlash.ModeOn|ExifTagFlash.ModeOff|ExifTagFlash.ModeAuto)) >> 3 },
+								{ "Function", Convert.ToString((flash & ExifTagFlash.NoFlashFunction) == ExifTagFlash.NoFlashFunction) },
+								{ "RedEyeMode", Convert.ToString((flash & ExifTagFlash.RedEyeReduction) == ExifTagFlash.RedEyeReduction) }
+							};
 							break;
 						}
 					}
