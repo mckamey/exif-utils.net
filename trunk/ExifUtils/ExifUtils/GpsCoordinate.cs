@@ -103,7 +103,7 @@ namespace ExifUtils
 		{
 			get
 			{
-				decimal val = Convert.ToDecimal(this.Degrees)+ Decimal.Divide(Convert.ToDecimal(this.Minutes) + Decimal.Divide(Convert.ToDecimal(this.Seconds), 60m), 60m);
+				decimal val = Convert.ToDecimal(this.Degrees)+ Decimal.Divide(Convert.ToDecimal(this.Minutes) + Decimal.Divide(Convert.ToDecimal(this.Seconds), SecPerMin), MinPerDeg);
 				bool negative =
 					StringComparer.OrdinalIgnoreCase.Equals(this.Direction, GpsCoordinate.West) ||
 					StringComparer.OrdinalIgnoreCase.Equals(this.Direction, GpsCoordinate.South);
@@ -134,8 +134,8 @@ namespace ExifUtils
 		public static GpsCoordinate FromDecimal(decimal val)
 		{
 			decimal deg = Decimal.Truncate(val);
-			decimal min = Decimal.Remainder(val, Decimal.One) * 60m;
-			decimal sec = Decimal.Remainder(min, Decimal.One) * 60m;
+			decimal min = Decimal.Remainder(val, Decimal.One) * MinPerDeg;
+			decimal sec = Decimal.Remainder(min, Decimal.One) * SecPerMin;
 			min = Decimal.Truncate(min);
 
 			return GpsCoordinate.FromDecimal(deg, min, sec);
@@ -343,7 +343,7 @@ namespace ExifUtils
 		{
 			if (String.IsNullOrEmpty(format))
 			{
-				format = "D";
+				format = "X";
 			}
 			else
 			{
@@ -415,7 +415,7 @@ namespace ExifUtils
 			// DD,MM.mmk
 			if (this.Minutes.Denominator != 1 || this.Seconds.Denominator != 1)
 			{
-				decimal MMmm = Convert.ToDecimal(this.Minutes) + Decimal.Divide(Convert.ToDecimal(this.Seconds), 60m);
+				decimal MMmm = Convert.ToDecimal(this.Minutes) + Decimal.Divide(Convert.ToDecimal(this.Seconds), SecPerMin);
 				gps.Append(MMmm.ToString(GpsCoordinate.DecimalFormat));
 				if (format == "D")
 				{
