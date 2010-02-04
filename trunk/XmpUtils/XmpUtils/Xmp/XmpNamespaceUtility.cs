@@ -42,8 +42,8 @@ namespace XmpUtils.Xmp
 
 		public static readonly XmpNamespaceUtility Instance = new XmpNamespaceUtility();
 
-		public readonly IDictionary<string, Type> PrefixLookup = new Dictionary<string, Type>();
-		public readonly IDictionary<string, Type> NamespaceLookup = new Dictionary<string, Type>();
+		private readonly IDictionary<string, Type> PrefixLookup = new Dictionary<string, Type>();
+		private readonly IDictionary<string, Type> NamespaceLookup = new Dictionary<string, Type>();
 
 		#endregion Constants
 
@@ -66,7 +66,6 @@ namespace XmpUtils.Xmp
 			var types =
 				from xns in AttributeUtility.FindWithAttributes<XmpNamespaceAttribute>(members)
 				from prefix in xns.Attribute.Prefixes
-				where !String.IsNullOrEmpty(prefix)
 				select new
 				{
 					Namespace = xns.Attribute.Namespace,
@@ -76,8 +75,16 @@ namespace XmpUtils.Xmp
 
 			foreach (var type in types)
 			{
+				if (!type.Type.IsEnum)
+				{
+					throw new ArgumentException("XMP schema definition types must be enum with attributes.");
+				}
+
 				this.NamespaceLookup[type.Namespace] = type.Type;
-				this.PrefixLookup[type.Prefix] = type.Type;
+				if (!String.IsNullOrEmpty(type.Prefix))
+				{
+					this.PrefixLookup[type.Prefix] = type.Type;
+				}
 			}
 		}
 

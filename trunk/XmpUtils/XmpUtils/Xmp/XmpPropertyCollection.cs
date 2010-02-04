@@ -33,6 +33,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Xml.Linq;
 
 using XmpUtils.Xmp.ValueTypes;
@@ -620,6 +621,33 @@ namespace XmpUtils.Xmp
 		}
 
 		#endregion Serialization Methods
+
+		#region Schema Registration Methods
+
+		/// <summary>
+		/// Allows registration of custom XMP schema enumerations
+		/// </summary>
+		/// <param name="assembly"></param>
+		public static void RegisterSchemas(Assembly assembly)
+		{
+			if (assembly == null)
+			{
+				throw new ArgumentNullException("assembly");
+			}
+
+			XmpNamespaceUtility.Instance.AddNamespaces(assembly.GetTypes());
+		}
+
+		/// <summary>
+		/// Allows registration of custom XMP schema enumerations
+		/// </summary>
+		/// <param name="schemas"></param>
+		public static void RegisterSchemas(params Type[] schemas)
+		{
+			XmpNamespaceUtility.Instance.AddNamespaces(schemas);
+		}
+
+		#endregion Schema Registration Methods
 
 		#region ICollection<XmpProperty> Members
 
