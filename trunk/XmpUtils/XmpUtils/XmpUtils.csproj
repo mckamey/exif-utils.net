@@ -76,7 +76,6 @@
     <Compile Include="Xmp\XmpExtractor.cs" />
     <Compile Include="Xmp\XmpNamespaceUtility.cs" />
     <Compile Include="Xmp\XmpPropertyCollection.cs" />
-    <Compile Include="Xmp\XmpValueTypeAttribute.cs" />
     <Compile Include="Xmp\Schemas\XmpIdentifierSchema.cs" />
     <Compile Include="Xmp\XmpCategory.cs" />
     <Compile Include="Xmp\XmpProperty.cs" />

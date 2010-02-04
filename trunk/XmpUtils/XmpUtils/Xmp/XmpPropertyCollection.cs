@@ -539,11 +539,6 @@ namespace XmpUtils.Xmp
 					{
 						elem.Add(this.CreateElement((XmpProperty)property.Value));
 					}
-					else if (property.DataType == typeof(string) ||
-						property.DataType == typeof(DateTime))
-					{
-						elem.Add(property.Value);
-					}
 					else if (property.Value is IDictionary<string, object>)
 					{
 						foreach (KeyValuePair<string, object> item in (IDictionary<string, object>)property.Value)
@@ -557,7 +552,7 @@ namespace XmpUtils.Xmp
 					}
 					else
 					{
-						elem.Add(new XComment("Unexpected value: "+Convert.ToString(property.Value)));
+						elem.Add(property.Value);
 					}
 					break;
 				}

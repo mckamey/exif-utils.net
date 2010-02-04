@@ -40,14 +40,14 @@ namespace XmpUtils.Xmp.Schemas
 	{
 		#region EXIF IFD
 
-		[Description("EXIF IFD Offset")]
-		ExifIFDOffset=0x8769,
+		//[Description("EXIF IFD Offset")]
+		//ExifIFDOffset=0x8769,
 
-		[Description("GPS IFD Offset")]
-		GpsIFDOffset=0x8825,
+		//[Description("GPS IFD Offset")]
+		//GpsIFDOffset=0x8825,
 
-		[Description("Interop IFD Offset")]
-		InteropIFDOffset=0xA005,
+		//[Description("Interop IFD Offset")]
+		//InteropIFDOffset=0xA005,
 
 		#endregion EXIF IFD
 
@@ -100,7 +100,6 @@ namespace XmpUtils.Xmp.Schemas
 
 		#region User Information
 
-		[XmpValueType(typeof(byte[]))]
 		MakerNote=0x927C,
 
 		[XmpBasicProperty(XmpBasicType.LangAlt, XmpQuantity.Alt)]

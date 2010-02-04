@@ -42,10 +42,8 @@ namespace XmpUtils.Xmp.ValueTypes
 
 		Colorant,
 
-		[XmpValueType(typeof(DateTime))]
 		Date,
 
-		[XmpValueType(typeof(object))]
 		Dimensions,
 
 		Font,
@@ -62,7 +60,6 @@ namespace XmpUtils.Xmp.ValueTypes
 
 		Real,
 
-		[XmpValueType(typeof(object))]
 		Struct,
 
 		Text,

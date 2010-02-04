@@ -351,173 +351,157 @@ namespace XmpUtils.Xmp
 				return value;
 			}
 
-			switch (Type.GetTypeCode(property.DataType))
+			if (property.ValueType is XmpBasicType &&
+				((XmpBasicType)property.ValueType) == XmpBasicType.Date)
 			{
-				case TypeCode.String:
+				DateTime date;
+
+				Array array = value as Array;
+				if (array != null && array.Length == 3)
 				{
-					if (property.ValueType is XmpBasicType &&
-						((XmpBasicType)property.ValueType) == XmpBasicType.LangAlt)
+					try
 					{
-						string str;
-						if (value is byte[])
-						{
-							str = new String(Encoding.UTF8.GetChars((byte[])value));
-							int end = str.IndexOf('\0');
-							if (end >= 0)
-							{
-								str = str.Substring(0, end);
-							}
-							value = str;
-						}
-						else
-						{
-							str = Convert.ToString(value);
-						}
+						var seconds =
+						60m * (60m * Convert.ToDecimal(this.ProcessRational(property, array.GetValue(0))) +
+						Convert.ToDecimal(this.ProcessRational(property, array.GetValue(1)))) +
+						Convert.ToDecimal(this.ProcessRational(property, array.GetValue(2)));
 
-						if (String.IsNullOrEmpty(str))
-						{
-							value = null;
-						}
-						else
-						{
-							value = new Dictionary<string, object>
-							{
-								{ "x-default", str }
-							};
-						}
-					}
-
-					if (property.Quantity != XmpQuantity.Single &&
-						!(value is IEnumerable))
-					{
-						value = new object[] { value };
-					}
-
-					if (property.Quantity == XmpQuantity.Single &&
-						value is byte[] &&
-						property.ValueType is XmpBasicType &&
-						((XmpBasicType)property.ValueType) == XmpBasicType.Text)
-					{
-						value = new String(Encoding.UTF8.GetChars((byte[])value));
-					}
-
-					if (property.ValueType is ExifType)
-					{
-						switch ((ExifType)property.ValueType)
-						{
-							case ExifType.GpsCoordinate:
-							{
-								Array array = value as Array;
-								if (array != null && array.Length == 3)
-								{
-									try
-									{
-										GpsCoordinate gps = new GpsCoordinate();
-										gps.Degrees = (Rational<uint>)this.ProcessRational(property, array.GetValue(0));
-										gps.Minutes = (Rational<uint>)this.ProcessRational(property, array.GetValue(1));
-										gps.Seconds = (Rational<uint>)this.ProcessRational(property, array.GetValue(2));
-										value = gps.ToString("X");
-									}
-									catch { }
-								}
-								break;
-							}
-							case ExifType.Rational:
-							{
-								Array array = value as Array;
-								if (array == null)
-								{
-									value = Convert.ToString(this.ProcessRational(property, value));
-								}
-								else
-								{
-									for (int i=0; i<array.Length; i++)
-									{
-										array.SetValue(Convert.ToString(this.ProcessRational(property, array.GetValue(i))), i);
-									}
-									value = array;
-								}
-								break;
-							}
-						}
-					}
-					break;
-				}
-				case TypeCode.DateTime:
-				{
-					DateTime date;
-
-					Array array = value as Array;
-					if (array != null && array.Length == 3)
-					{
-						try
-						{
-							var seconds =
-								60m * (60m * Convert.ToDecimal(this.ProcessRational(property, array.GetValue(0))) +
-								Convert.ToDecimal(this.ProcessRational(property, array.GetValue(1)))) +
-								Convert.ToDecimal(this.ProcessRational(property, array.GetValue(2)));
-
-							date = DateTime.MinValue.AddSeconds(Convert.ToDouble(seconds));
-							value = date.ToString(XmpDateFormat);
-						}
-						catch { }
-					}
-					else if (DateTime.TryParseExact(
-							Convert.ToString(value),
-							ExifDateFormats,
-							DateTimeFormatInfo.InvariantInfo,
-							DateTimeStyles.AssumeLocal,
-							out date))
-					{
-						// clean up to ISO-8601
+						date = DateTime.MinValue.AddSeconds(Convert.ToDouble(seconds));
 						value = date.ToString(XmpDateFormat);
 					}
-					break;
+					catch { }
 				}
-				case TypeCode.Object:
+				else if (DateTime.TryParseExact(
+						Convert.ToString(value),
+						ExifDateFormats,
+						DateTimeFormatInfo.InvariantInfo,
+						DateTimeStyles.AssumeLocal,
+						out date))
 				{
-					if (property.ValueType is ExifType &&
-						((ExifType)property.ValueType) == ExifType.Flash)
+					// clean up to ISO-8601
+					value = date.ToString(XmpDateFormat);
+				}
+			}
+			else if (property.ValueType is ExifType &&
+				((ExifType)property.ValueType) == ExifType.Flash)
+			{
+				ExifTagFlash flash;
+				if (value is ushort)
+				{
+					flash = (ExifTagFlash)value;
+				}
+				else if (value is string)
+				{
+					try
 					{
-						ExifTagFlash flash;
-						if (value is ushort)
-						{
-							flash = (ExifTagFlash)value;
-						}
-						else if (value is string)
-						{
-							try
-							{
-								flash = (ExifTagFlash)Enum.Parse(typeof(ExifTagFlash), Convert.ToString(value));
-							}
-							catch
-							{
-								break;
-							}
-						}
-						else
-						{
-							break;
-						}
+						flash = (ExifTagFlash)Enum.Parse(typeof(ExifTagFlash), Convert.ToString(value));
+					}
+					catch
+					{
+						return value;
+					}
+				}
+				else
+				{
+					return value;
+				}
 
-						value = new Dictionary<string, object>
+				value = new Dictionary<string, object>
+				{
+					{ "Fired", Convert.ToString((flash & ExifTagFlash.FlashFired) == ExifTagFlash.FlashFired) },
+					{ "Return", (int)(flash & (ExifTagFlash.ReturnNotDetected|ExifTagFlash.ReturnDetected)) >> 1 },
+					{ "Mode", (int)(flash & (ExifTagFlash.ModeOn|ExifTagFlash.ModeOff|ExifTagFlash.ModeAuto)) >> 3 },
+					{ "Function", Convert.ToString((flash & ExifTagFlash.NoFlashFunction) == ExifTagFlash.NoFlashFunction) },
+					{ "RedEyeMode", Convert.ToString((flash & ExifTagFlash.RedEyeReduction) == ExifTagFlash.RedEyeReduction) }
+				};
+			}
+			else
+			{
+				if (property.ValueType is XmpBasicType &&
+					((XmpBasicType)property.ValueType) == XmpBasicType.LangAlt)
+				{
+					string str;
+					if (value is byte[])
+					{
+						str = new String(Encoding.UTF8.GetChars((byte[])value));
+						int end = str.IndexOf('\0');
+						if (end >= 0)
 						{
-							{ "Fired", Convert.ToString((flash & ExifTagFlash.FlashFired) == ExifTagFlash.FlashFired) },
-							{ "Return", (int)(flash & (ExifTagFlash.ReturnNotDetected|ExifTagFlash.ReturnDetected)) >> 1 },
-							{ "Mode", (int)(flash & (ExifTagFlash.ModeOn|ExifTagFlash.ModeOff|ExifTagFlash.ModeAuto)) >> 3 },
-							{ "Function", Convert.ToString((flash & ExifTagFlash.NoFlashFunction) == ExifTagFlash.NoFlashFunction) },
-							{ "RedEyeMode", Convert.ToString((flash & ExifTagFlash.RedEyeReduction) == ExifTagFlash.RedEyeReduction) }
-						};
+							str = str.Substring(0, end);
+						}
+						value = str;
 					}
 					else
 					{
-						// TODO: process other object types
+						str = Convert.ToString(value);
 					}
-					break;
+
+					if (String.IsNullOrEmpty(str))
+					{
+						value = null;
+					}
+					else
+					{
+						value = new Dictionary<string, object>
+							{
+								{ "x-default", str }
+							};
+					}
 				}
-				default:
+
+				if (property.Quantity != XmpQuantity.Single &&
+					!(value is IEnumerable))
 				{
-					break;
+					value = new object[] { value };
+				}
+
+				if (property.Quantity == XmpQuantity.Single &&
+						value is byte[] &&
+						property.ValueType is XmpBasicType &&
+						((XmpBasicType)property.ValueType) == XmpBasicType.Text)
+				{
+					value = new String(Encoding.UTF8.GetChars((byte[])value));
+				}
+
+				if (property.ValueType is ExifType)
+				{
+					switch ((ExifType)property.ValueType)
+					{
+						case ExifType.GpsCoordinate:
+						{
+							Array array = value as Array;
+							if (array != null && array.Length == 3)
+							{
+								try
+								{
+									GpsCoordinate gps = new GpsCoordinate();
+									gps.Degrees = (Rational<uint>)this.ProcessRational(property, array.GetValue(0));
+									gps.Minutes = (Rational<uint>)this.ProcessRational(property, array.GetValue(1));
+									gps.Seconds = (Rational<uint>)this.ProcessRational(property, array.GetValue(2));
+									value = gps.ToString("X");
+								}
+								catch { }
+							}
+							break;
+						}
+						case ExifType.Rational:
+						{
+							Array array = value as Array;
+							if (array == null)
+							{
+								value = Convert.ToString(this.ProcessRational(property, value));
+							}
+							else
+							{
+								for (int i=0; i<array.Length; i++)
+								{
+									array.SetValue(Convert.ToString(this.ProcessRational(property, array.GetValue(i))), i);
+								}
+								value = array;
+							}
+							break;
+						}
+					}
 				}
 			}
 
