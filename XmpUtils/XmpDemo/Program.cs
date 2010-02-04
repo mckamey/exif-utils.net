@@ -51,7 +51,7 @@ namespace XmpDemo
 							}
 
 							// test single value extraction
-							IEnumerable<string> tags = properties[DublinCoreSchema.Subject] as IEnumerable<string>;
+							IEnumerable<string> tags = properties.GetValue(DublinCoreSchema.Subject, (IEnumerable<string>)null);
 						}
 					}
 					finally

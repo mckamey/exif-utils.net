@@ -88,7 +88,7 @@ namespace XmpUtils.Xmp
 			}
 		}
 
-		public object ParsePrefix(string qualifiedName)
+		public Enum ParsePrefix(string qualifiedName)
 		{
 			if (String.IsNullOrEmpty(qualifiedName))
 			{
@@ -104,22 +104,22 @@ namespace XmpUtils.Xmp
 			return this.ParsePrefix(qualifiedName.Substring(0, index), qualifiedName.Substring(index+1));
 		}
 
-		public object ParsePrefix(string prefix, string localName)
+		public Enum ParsePrefix(string prefix, string localName)
 		{
 			return this.Parse(prefix, localName, this.PrefixLookup);
 		}
 
-		public object ParseNamespace(XName name)
+		public Enum ParseNamespace(XName name)
 		{
 			return this.ParseNamespace(name.NamespaceName, name.LocalName);
 		}
 
-		public object ParseNamespace(string ns, string localName)
+		public Enum ParseNamespace(string ns, string localName)
 		{
 			return this.Parse(ns, localName, this.NamespaceLookup);
 		}
 
-		private object Parse(string scope, string localName, IDictionary<string, Type> lookup)
+		private Enum Parse(string scope, string localName, IDictionary<string, Type> lookup)
 		{
 			if (String.IsNullOrEmpty(scope))
 			{
@@ -136,7 +136,7 @@ namespace XmpUtils.Xmp
 
 			try
 			{
-				return Enum.Parse(enumType, localName, true);
+				return (Enum)Enum.Parse(enumType, localName, true);
 			}
 			catch
 			{
@@ -152,7 +152,7 @@ namespace XmpUtils.Xmp
 
 					if (xp != null && StringComparer.OrdinalIgnoreCase.Equals(xp.Name, localName))
 					{
-						return fieldInfo.GetValue(enumType);
+						return (Enum)fieldInfo.GetValue(enumType);
 					}
 				}
 				return null;

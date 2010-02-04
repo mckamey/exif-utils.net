@@ -196,9 +196,39 @@ namespace XmpUtils.Xmp
 
 		#region XmpProperty Read Methods
 
+		public T GetValue<T>(Enum schema)
+		{
+			return this.GetValue(schema, default(T));
+		}
+
+		public T GetValue<T>(Enum schema, T defaultValue)
+		{
+			T value;
+			if (!this.TryGetValue(schema, out value))
+			{
+				return defaultValue;
+			}
+			return value;
+		}
+
+		public bool TryGetValue<T>(Enum schema, out T value)
+		{
+			XmpProperty property = this.GetProperty(schema);
+			if (property == null ||
+				property.Value == null ||
+				!(property.Value is T))
+			{
+				value = default(T);
+				return false;
+			}
+
+			value = (T)property.Value;
+			return true;
+		}
+
 		public IEnumerable<XmpProperty> GetProperties(IEnumerable schemas)
 		{
-			foreach (object schema in schemas)
+			foreach (Enum schema in schemas)
 			{
 				XmpProperty property = this.GetProperty(schema);
 				if (property == null)
@@ -209,11 +239,11 @@ namespace XmpUtils.Xmp
 			}
 		}
 
-		public XmpProperty GetProperty(object schema)
+		public XmpProperty GetProperty(Enum schema)
 		{
 			XmpProperty property = new XmpProperty
 			{
-				Schema = (Enum)schema
+				Schema = schema
 			};
 
 			XElement elem = this.XmpDocument.Descendants(XName.Get(property.Name, property.Namespace)).FirstOrDefault();
