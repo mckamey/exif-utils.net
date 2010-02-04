@@ -101,15 +101,6 @@ namespace XmpUtils.Xmp
 		}
 
 		/// <summary>
-		/// Gets the corresponding .NET Type for a single value of this property
-		/// </summary>
-		public Type DataType
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Gets the description of this property
 		/// </summary>
 		public string Description
@@ -224,12 +215,6 @@ namespace XmpUtils.Xmp
 			string valueTypeName;
 			FieldInfo valueTypeInfo;
 			AttributeUtility.GetEnumInfo(this.ValueType, out valueTypeName, out valueTypeInfo);
-
-			// check for description on value type enum, then on property enum, then on type
-			this.DataType = AttributeUtility
-				.FindAttributes<XmpValueTypeAttribute>(fieldInfo, valueTypeInfo, type)
-				.Select(xta => xta.DataType)
-				.FirstOrDefault() ?? typeof(string);
 		}
 
 		#endregion Utility Methods

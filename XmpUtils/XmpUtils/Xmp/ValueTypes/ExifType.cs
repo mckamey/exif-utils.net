@@ -40,7 +40,6 @@ namespace XmpUtils.Xmp.ValueTypes
 
 		DeviceSettings,
 
-		[XmpValueType(typeof(object))]
 		Flash,
 
 		GpsCoordinate,
