@@ -34,6 +34,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
+using XmpUtils.Xmp.TypeConverters;
 using XmpUtils.Xmp.ValueTypes;
 
 namespace XmpUtils.Xmp
@@ -41,6 +42,8 @@ namespace XmpUtils.Xmp
 	/// <summary>
 	/// Represents any XMP property 
 	/// </summary>
+	[Serializable]
+	[TypeConverter(typeof(XmpConverter))]
 	public class XmpProperty
 	{
 		#region Fields
