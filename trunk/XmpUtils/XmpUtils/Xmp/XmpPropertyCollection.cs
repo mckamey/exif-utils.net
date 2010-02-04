@@ -31,11 +31,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
 
+using XmpUtils.Xmp.TypeConverters;
 using XmpUtils.Xmp.ValueTypes;
 
 namespace XmpUtils.Xmp
@@ -43,6 +45,8 @@ namespace XmpUtils.Xmp
 	/// <summary>
 	/// Collection of XMP properties which can serialize as XMP RDF
 	/// </summary>
+	[Serializable]
+	[TypeConverter(typeof(XmpCollectionConverter))]
 	public class XmpPropertyCollection :
 		ICollection<XmpProperty>,
 		ICollection

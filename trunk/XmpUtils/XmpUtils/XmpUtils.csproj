@@ -60,6 +60,8 @@
     <Compile Include="Xmp\AttributeUtility.cs" />
     <Compile Include="Xmp\Schemas\LightroomSchema.cs" />
     <Compile Include="Xmp\Schemas\PdfSchema.cs" />
+    <Compile Include="Xmp\TypeConverters\XmpCollectionConverter.cs" />
+    <Compile Include="Xmp\TypeConverters\XmpConverter.cs" />
     <Compile Include="Xmp\ValueTypes\ExifTagValues.cs" />
     <Compile Include="Xmp\ValueTypes\XmpVideoMediaPropertyAttribute.cs" />
     <Compile Include="Xmp\ValueTypes\XmpBasicJobWorkflowPropertyAttribute.cs" />
