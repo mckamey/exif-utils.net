@@ -491,11 +491,21 @@ namespace XmpUtils.Xmp
 
 					foreach (object item in array)
 					{
-						object child = item is XmpProperty ?
-							this.CreateElement((XmpProperty)item) :
-							item;
+						XElement li = new XElement(XName.Get("li", RdfNamespace));
 
-						list.Add(new XElement(XName.Get("li", RdfNamespace), child));
+						if (item is XmpProperty)
+						{
+							// TODO: evaluate this against RDF spec
+							// http://www.w3.org/TR/REC-rdf-syntax/#section-Syntax-parsetype-resource
+							li.Add(new XAttribute(XName.Get("parseType", RdfNamespace), "Resource"));
+							li.Add(this.CreateElement((XmpProperty)item));
+						}
+						else
+						{
+							li.Add(item);
+						}
+
+						list.Add(li);
 					}
 					break;
 				}
@@ -516,13 +526,22 @@ namespace XmpUtils.Xmp
 
 						foreach (KeyValuePair<string, object> item in dictionary)
 						{
-							object child = item.Value is XmpProperty ?
-								this.CreateElement((XmpProperty)item.Value) :
-								item.Value;
+							XElement li = new XElement(XName.Get("li", RdfNamespace),
+								new XAttribute(XNamespace.Xml+"lang", item.Key));
 
-							list.Add(new XElement(XName.Get("li", RdfNamespace),
-								new XAttribute(XNamespace.Xml+"lang", item.Key),
-								child));
+							if (item.Value is XmpProperty)
+							{
+								// TODO: evaluate this against RDF spec
+								// http://www.w3.org/TR/REC-rdf-syntax/#section-Syntax-parsetype-resource
+								li.Add(new XAttribute(XName.Get("parseType", RdfNamespace), "Resource"));
+								li.Add(this.CreateElement((XmpProperty)item.Value));
+							}
+							else
+							{
+								li.Add(item.Value);
+							}
+
+							list.Add(li);
 						}
 					}
 					else
@@ -537,17 +556,29 @@ namespace XmpUtils.Xmp
 				{
 					if (property.Value is XmpProperty)
 					{
+						elem.Add(new XAttribute(XName.Get("parseType", RdfNamespace), "Resource"));
 						elem.Add(this.CreateElement((XmpProperty)property.Value));
 					}
 					else if (property.Value is IDictionary<string, object>)
 					{
+						elem.Add(new XAttribute(XName.Get("parseType", RdfNamespace), "Resource"));
 						foreach (KeyValuePair<string, object> item in (IDictionary<string, object>)property.Value)
 						{
-							object child = item.Value is XmpProperty ?
-								this.CreateElement((XmpProperty)item.Value) :
-								item.Value;
+							XElement child = new XElement(XName.Get(item.Key, property.Namespace));
 
-							elem.Add(new XElement(XName.Get(item.Key, property.Namespace), child));
+							if (item.Value is XmpProperty)
+							{
+								// TODO: evaluate this against RDF spec
+								// http://www.w3.org/TR/REC-rdf-syntax/#section-Syntax-parsetype-resource
+								child.Add(new XAttribute(XName.Get("parseType", RdfNamespace), "Resource"));
+								child.Add(this.CreateElement((XmpProperty)item.Value));
+							}
+							else
+							{
+								child.Add(item.Value);
+							}
+
+							elem.Add(child);
 						}
 					}
 					else
