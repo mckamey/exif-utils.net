@@ -412,9 +412,9 @@ namespace XmpUtils.Xmp
 					else
 					{
 						value = new Dictionary<string, object>
-							{
-								{ "x-default", str }
-							};
+						{
+							{ "x-default", str }
+						};
 					}
 				}
 
@@ -430,7 +430,15 @@ namespace XmpUtils.Xmp
 					property.ValueType is XmpBasicType &&
 					((XmpBasicType)property.ValueType) == XmpBasicType.Text)
 				{
-					value = new String(Encoding.UTF8.GetChars((byte[])value));
+					if (property.Schema is ExifSchema &&
+						((ExifSchema)property.Schema) == ExifSchema.GPSVersionID)
+					{
+						value = String.Join(".", ((byte[])value).Select(b => b.ToString()).ToArray());
+					}
+					else
+					{
+						value = new String(Encoding.UTF8.GetChars((byte[])value));
+					}
 				}
 
 				if (property.ValueType is ExifType)
@@ -741,7 +749,7 @@ namespace XmpUtils.Xmp
 		private Enum ParseSchema(Type enumType, string name)
 		{
 			name = name.TrimStart('/', '{').TrimEnd('}');
-			string[] parts = name.Split(new char[]{'='}, 2, StringSplitOptions.RemoveEmptyEntries);
+			string[] parts = name.Split(new char[] { '=' }, 2, StringSplitOptions.RemoveEmptyEntries);
 
 			if (parts.Length < 2)
 			{
@@ -753,7 +761,7 @@ namespace XmpUtils.Xmp
 				case "ushort":
 				{
 					ushort value;
-					
+
 					if (!UInt16.TryParse(parts[1], out value) ||
 						!Enum.IsDefined(enumType, value))
 					{
