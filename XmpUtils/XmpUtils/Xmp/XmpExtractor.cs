@@ -1,4 +1,6 @@
-﻿#region License
+﻿//#define DIAGNOSTICS
+
+#region License
 /*---------------------------------------------------------------------------------*\
 
 	Distributed under the terms of an MIT-style license:
@@ -114,7 +116,7 @@ namespace XmpUtils.Xmp
 
 		private IEnumerable ProcessMetadata(BitmapMetadata metadata, string objName, int depth)
 		{
-#if DEBUG
+#if DIAGNOSTICS
 			Console.Write(new String('\t', depth));
 			Console.WriteLine("{0} => {1}", objName, metadata.Format);
 #endif
@@ -172,7 +174,7 @@ namespace XmpUtils.Xmp
 			{
 				object value = metadata.GetQuery(name);
 
-#if DEBUG
+#if DIAGNOSTICS
 				Console.Write(new String('\t', depth));
 				Console.WriteLine("{0} => {1}: {2}", name, value != null ? value.GetType().Name : "null", Convert.ToString(value));
 #endif
@@ -207,7 +209,7 @@ namespace XmpUtils.Xmp
 			{
 				object value = metadata.GetQuery(name);
 
-#if DEBUG
+#if DIAGNOSTICS
 				Console.Write(new String('\t', depth));
 				Console.WriteLine("{0} => {1}: {2}", name, value != null ? value.GetType().Name : "null", Convert.ToString(value));
 #endif
@@ -240,7 +242,7 @@ namespace XmpUtils.Xmp
 				// http://search.cpan.org/
 				object value = metadata.GetQuery(name);
 
-#if DEBUG
+#if DIAGNOSTICS
 				Console.Write(new String('\t', depth));
 				Console.WriteLine("{0} => {1}: {2}", name, value != null ? value.GetType().Name : "null", Convert.ToString(value));
 #endif
@@ -291,7 +293,7 @@ namespace XmpUtils.Xmp
 			{
 				object value = metadata.GetQuery(name);
 
-#if DEBUG
+#if DIAGNOSTICS
 				Console.Write(new String('\t', depth));
 				Console.WriteLine("{0} => {1}: {2}", name, value != null ? value.GetType().Name : "null", Convert.ToString(value));
 #endif
@@ -418,6 +420,7 @@ namespace XmpUtils.Xmp
 
 				if (property.Quantity != XmpQuantity.Single &&
 					value != null &&
+					value is string ||
 					!(value is IEnumerable))
 				{
 					value = new object[] { value };

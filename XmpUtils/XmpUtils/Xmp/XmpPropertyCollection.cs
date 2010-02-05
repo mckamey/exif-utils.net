@@ -488,6 +488,10 @@ namespace XmpUtils.Xmp
 					{
 						array = ((IDictionary<string, object>)array).Values;
 					}
+					else if (array is string)
+					{
+						array = new object[] { array };
+					}
 
 					foreach (object item in array)
 					{
