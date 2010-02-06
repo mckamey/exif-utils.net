@@ -612,7 +612,39 @@ namespace ExifUtils
 
 		object IConvertible.ToType(Type conversionType, IFormatProvider provider)
 		{
-			return Convert.ChangeType(this, conversionType, provider);
+			if (conversionType == null)
+			{
+				throw new ArgumentNullException("conversionType");
+			}
+
+			Type thisType = this.GetType();
+			if (thisType == conversionType)
+			{
+				// no conversion needed
+				return this;
+			}
+
+			if (!conversionType.IsGenericType ||
+				typeof(Rational<>) != conversionType.GetGenericTypeDefinition())
+			{
+				// fall back to basic conversion
+				return Convert.ChangeType(this, conversionType, provider);
+			}
+
+			// auto-convert between Rational<T> types by converting Numerator/Denominator
+			Type genericArg = conversionType.GetGenericArguments()[0];
+			object[] ctorArgs =
+			{
+				Convert.ChangeType(this.Numerator, genericArg, provider),
+				Convert.ChangeType(this.Denominator, genericArg, provider)
+			};
+
+			ConstructorInfo ctor = conversionType.GetConstructor(new Type[] { genericArg, genericArg });
+			if (ctor == null)
+			{
+				throw new InvalidCastException("Unable to find constructor for Rational<"+genericArg.Name+">.");
+			}
+			return ctor.Invoke(ctorArgs);
 		}
 
 		#endregion IConvertible Members
