@@ -389,54 +389,19 @@ namespace XmpUtils.Xmp
 						break;
 					}
 					case XmpBasicType.LangAlt:
-					{
-						string str;
-						if (value is byte[])
-						{
-							str = new String(Encoding.UTF8.GetChars((byte[])value));
-							int end = str.IndexOf('\0');
-							if (end >= 0)
-							{
-								str = str.Substring(0, end);
-							}
-							value = str;
-						}
-						else if (value is IEnumerable && !(value is string))
-						{
-							value = ((IEnumerable)value).OfType<string>();
-							break;
-						}
-						else
-						{
-							str = Convert.ToString(value);
-						}
-
-						if (String.IsNullOrEmpty(str))
-						{
-							value = null;
-						}
-						else
-						{
-							value = new Dictionary<string, object>
-							{
-								{ "x-default", str }
-							};
-						}
-						break;
-					}
 					case XmpBasicType.Text:
 					{
-						if (property.Quantity == XmpQuantity.Single &&
-							value is byte[])
+						if (value is byte[])
 						{
 							if (property.Schema is ExifSchema &&
 								((ExifSchema)property.Schema) == ExifSchema.GPSVersionID)
 							{
+								// GPSVersionID represents version as byte[]
 								value = String.Join(".", ((byte[])value).Select(b => b.ToString()).ToArray());
 							}
 							else
 							{
-								value = new String(Encoding.UTF8.GetChars((byte[])value));
+								value = this.DecodeUTF8((byte[])value);
 							}
 						}
 						break;
@@ -673,6 +638,20 @@ namespace XmpUtils.Xmp
 					Priority = priority
 				};
 			}
+		}
+
+		private string DecodeUTF8(byte[] value)
+		{
+			string str = new String(Encoding.UTF8.GetChars(value));
+
+			// safeguard against null terminated byte[]
+			int end = str.IndexOf('\0');
+			if (end >= 0)
+			{
+				str = str.Substring(0, end);
+			}
+
+			return str;
 		}
 
 		/// <summary>
