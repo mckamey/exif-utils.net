@@ -35,6 +35,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Xml;
 using System.Xml.Linq;
 
 using XmpUtils.Xmp.TypeConverters;
@@ -102,6 +103,16 @@ namespace XmpUtils.Xmp
 		private const string RdfNamespace = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
 		private const string RdfAboutValue = "";
+
+		private static readonly XmlWriterSettings XmlSettings = new XmlWriterSettings
+		{
+			ConformanceLevel = ConformanceLevel.Auto,
+			Indent = true,
+			IndentChars = "\t",
+			NewLineChars = Environment.NewLine,
+			CloseOutput = false,
+			OmitXmlDeclaration = true
+		};
 
 		private static readonly EqualityComparer<XmpProperty, Enum> DistinctFilter = new EqualityComparer<XmpProperty, Enum>(x => x.Schema);
 
@@ -729,6 +740,18 @@ namespace XmpUtils.Xmp
 		/// </summary>
 		/// <param name="writer"></param>
 		public void SaveAsXml(TextWriter writer)
+		{
+			using (XmlWriter xmlWriter = XmlWriter.Create(writer, XmpPropertyCollection.XmlSettings))
+			{
+				this.XmpDocument.Save(xmlWriter);
+			}
+		}
+
+		/// <summary>
+		/// Saves XmpProperties to XML
+		/// </summary>
+		/// <param name="writer"></param>
+		public void SaveAsXml(XmlWriter writer)
 		{
 			this.XmpDocument.Save(writer);
 		}
