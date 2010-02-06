@@ -56,15 +56,6 @@ namespace XmpDemo
 		}
 
 		/// <summary>
-		/// Gets and sets the color space
-		/// </summary>
-		public ExifTagColorSpace ColorSpace
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Gets and sets the copyright
 		/// </summary>
 		public string Copyright
@@ -86,6 +77,15 @@ namespace XmpDemo
 		/// Gets and sets the date the photo was taken
 		/// </summary>
 		public DateTime DateTaken
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets and sets the image description
+		/// </summary>
+		public string Description
 		{
 			get;
 			set;
@@ -164,27 +164,9 @@ namespace XmpDemo
 		}
 
 		/// <summary>
-		/// Gets and sets the image description
-		/// </summary>
-		public string ImageDescription
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Gets and sets the image height
 		/// </summary>
 		public int ImageHeight
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Gets and sets the image title
-		/// </summary>
-		public string ImageTitle
 		{
 			get;
 			set;
@@ -263,6 +245,15 @@ namespace XmpDemo
 		}
 
 		/// <summary>
+		/// Gets and sets the image title
+		/// </summary>
+		public string Title
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets and sets the white balance
 		/// </summary>
 		public ExifTagWhiteBalance WhiteBalance
@@ -293,95 +284,83 @@ namespace XmpDemo
 		    // http://en.wikipedia.org/wiki/APEX_system
 		    // http://en.wikipedia.org/wiki/Exposure_value
 
-		    object rawValue;
+			decimal decimalValue;
+			DateTime dateValue;
+			string stringValue;
+			GpsCoordinate gpsValue;
+			object rawValue;
 
 		    #region Aperture
 
-		    rawValue = properties[ExifSchema.FNumber];
-		    if (rawValue is IConvertible)
+			if (properties.TryGetValue(ExifSchema.FNumber, out decimalValue))
 		    {
 		        // f/x.x
-		        xmp.Aperture = Convert.ToDecimal(rawValue);
+				xmp.Aperture = decimalValue;
 		    }
-		    else
+			else if (properties.TryGetValue(ExifSchema.ApertureValue, out decimalValue))
 		    {
-		        rawValue = properties[ExifSchema.ApertureValue];
-		        if (rawValue is IConvertible)
-		        {
-		            // f/x.x
-		            xmp.Aperture = (decimal)Math.Pow(2.0, Convert.ToDouble(rawValue)/2.0);
-		        }
+	            // f/x.x
+				xmp.Aperture = Decimal.Round((decimal)Math.Pow(2.0, Convert.ToDouble(decimalValue)/2.0), 1);
 		    }
 
 		    #endregion Aperture
 
-		    xmp.Creator = Convert.ToString(properties[ExifTiffSchema.Artist]);
+			#region Creator
 
-		    #region ColorSpace
+			if (properties.TryGetValue(DublinCoreSchema.Creator, out stringValue) ||
+				properties.TryGetValue(ExifTiffSchema.Artist, out stringValue))
+			{
+				xmp.Creator = stringValue;
+			}
 
-		    rawValue = properties[ExifSchema.ColorSpace];
-		    if (rawValue is Enum)
-		    {
-		        xmp.ColorSpace = (ExifTagColorSpace)rawValue;
-		    }
+			#endregion Creator
 
-		    #endregion ColorSpace
+			#region Copyright
 
-		    xmp.Copyright = Convert.ToString(properties[ExifTiffSchema.Copyright]);
+			if (properties.TryGetValue(DublinCoreSchema.Rights, out stringValue) ||
+				properties.TryGetValue(ExifTiffSchema.Copyright, out stringValue))
+			{
+				xmp.Copyright = stringValue;
+			}
 
-		    #region DateTaken
+			#endregion Copyright
 
-		    rawValue = properties[ExifSchema.DateTimeOriginal];
-		    if (rawValue is DateTime)
-		    {
-		        xmp.DateTaken = (DateTime)rawValue;
-		    }
-		    else
-		    {
-		        rawValue = properties[ExifSchema.DateTimeDigitized];
-		        if (rawValue is DateTime)
-		        {
-		            xmp.DateTaken = (DateTime)rawValue;
-		        }
-		        else
-		        {
-					rawValue = properties[ExifTiffSchema.DateTime];
-		            if (rawValue is DateTime)
-		            {
-		                xmp.DateTaken = (DateTime)rawValue;
-		            }
-		        }
-		    }
+			#region DateTaken
 
-		    #endregion DateTaken
+			if (properties.TryGetValue(ExifSchema.DateTimeOriginal, out dateValue) ||
+				properties.TryGetValue(ExifSchema.DateTimeDigitized, out dateValue) ||
+				properties.TryGetValue(ExifTiffSchema.DateTime, out dateValue))
+			{
+				xmp.DateTaken = dateValue;
+			}
 
-		    #region ExposureBias
+			#endregion DateTaken
 
-		    rawValue = properties[ExifSchema.ExposureBiasValue];
-		    if (rawValue is Rational<int>)
-		    {
-		        xmp.ExposureBias = (Rational<int>)rawValue;
-		    }
+			#region Description
+
+			if (properties.TryGetValue(DublinCoreSchema.Description, out stringValue) ||
+				properties.TryGetValue(ExifTiffSchema.ImageDescription, out stringValue))
+			{
+				xmp.Description = stringValue;
+			}
+
+			#endregion Description
+
+			#region ExposureBias
+
+			xmp.ExposureBias = properties.GetValue(ExifSchema.ExposureBiasValue, Rational<int>.Empty);
 
 		    #endregion ExposureBias
 
 		    #region ExposureMode
 
-		    rawValue = properties[ExifSchema.ExposureMode];
-		    if (rawValue is Enum)
-		    {
-		        xmp.ExposureMode = (ExifTagExposureMode)rawValue;
-		    }
+		    xmp.ExposureMode = properties.GetValue(ExifSchema.ExposureMode, default(ExifTagExposureMode));
 
 		    #endregion ExposureMode
 
 		    #region ExposureProgram
 
-		    rawValue = properties[ExifSchema.ExposureProgram];
-		    if (rawValue is Enum)
-		    {
-		        xmp.ExposureProgram = (ExifTagExposureProgram)rawValue;
-		    }
+			xmp.ExposureProgram = properties.GetValue(ExifSchema.ExposureProgram, default(ExifTagExposureProgram));
 
 		    #endregion ExposureProgram
 
@@ -393,150 +372,131 @@ namespace XmpDemo
 
 		    #region FocalLength
 
-		    rawValue = properties[ExifSchema.FocalLength];
-		    if (rawValue is IConvertible)
+			if (properties.TryGetValue(ExifSchema.FocalLength, out decimalValue) ||
+				properties.TryGetValue(ExifSchema.FocalLengthIn35mmFilm, out decimalValue))
 		    {
-		        xmp.FocalLength = Convert.ToDecimal(rawValue);
-		    }
-		    else
-		    {
-		        rawValue = properties[ExifSchema.FocalLengthIn35mmFilm];
-		        if (rawValue is IConvertible)
-		        {
-		            xmp.FocalLength = Convert.ToDecimal(rawValue);
-		        }
+		        xmp.FocalLength = decimalValue;
 		    }
 
 		    #endregion FocalLength
 
 		    #region GpsAltitude
 
-		    rawValue = properties[ExifSchema.GPSAltitude];
-		    if (rawValue is IConvertible)
+			if (properties.TryGetValue(ExifSchema.GPSAltitude, out decimalValue))
 		    {
-		        xmp.GpsAltitude = Convert.ToDecimal(rawValue);
+				xmp.GpsAltitude = decimalValue;
 		    }
 
 		    #endregion GpsAltitude
 
 		    #region GpsLatitude
 
-		    rawValue = properties[ExifSchema.GPSLatitude];
-		    if (rawValue == null)
+			if (properties.TryGetValue(ExifSchema.GPSLatitude, out gpsValue) ||
+				properties.TryGetValue(ExifSchema.GPSDestLatitude, out gpsValue))
 		    {
-		        rawValue = properties[ExifSchema.GPSDestLatitude];
-		    }
-		    if (rawValue != null)
-		    {
-		        xmp.GpsLatitude = rawValue as GpsCoordinate;
+				xmp.GpsLatitude = gpsValue;
 		    }
 
 		    #endregion GpsLatitude
 
 		    #region GpsLongitude
 
-		    rawValue = properties[ExifSchema.GPSLongitude];
-			if (rawValue != null)
+			if (properties.TryGetValue(ExifSchema.GPSLongitude, out gpsValue) ||
+				properties.TryGetValue(ExifSchema.GPSDestLongitude, out gpsValue))
 			{
-		        rawValue = properties[ExifSchema.GPSDestLongitude];
-		    }
-			if (rawValue != null)
-			{
-				xmp.GpsLongitude = rawValue as GpsCoordinate;
-		    }
+				xmp.GpsLongitude = gpsValue;
+			}
 
 		    #endregion GpsLongitude
 
-			xmp.ImageDescription = Convert.ToString(properties[ExifTiffSchema.ImageDescription]);
+			#region ImageHeight
 
-		    #region ImageHeight
-
-			rawValue = properties[ExifTiffSchema.ImageLength];
-		    if (rawValue is IConvertible)
+			if (properties.TryGetValue(ExifTiffSchema.ImageLength, out decimalValue))
 		    {
-		        xmp.ImageHeight = Convert.ToInt32(rawValue);
+				xmp.ImageHeight = Convert.ToInt32(decimalValue);
 		    }
 
 		    #endregion ImageHeight
 
 		    #region ImageWidth
 
-			rawValue = properties[ExifTiffSchema.ImageWidth];
-		    if (rawValue is IConvertible)
-		    {
-		        xmp.ImageWidth = Convert.ToInt32(rawValue);
-		    }
+			if (properties.TryGetValue(ExifTiffSchema.ImageWidth, out decimalValue))
+			{
+				xmp.ImageWidth = Convert.ToInt32(decimalValue);
+			}
 
 		    #endregion ImageWidth
 
-		    xmp.ImageTitle = Convert.ToString(properties[ExifSchema.ImageTitle]);
+			#region ISOSpeed
 
-		    #region ISOSpeed
+			if (properties.TryGetValue(ExifSchema.ISOSpeedRatings, out decimalValue))
+			{
+				xmp.ISOSpeed = Convert.ToInt32(decimalValue);
+			}
 
-		    rawValue = properties[ExifSchema.ISOSpeedRatings];
-		    if (rawValue is Array)
-		    {
-		        Array array = (Array)rawValue;
-		        if (array.Length > 0)
-		        {
-		            rawValue = array.GetValue(0);
-		        }
-		    }
-		    if (rawValue is IConvertible)
-		    {
-		        xmp.ISOSpeed = Convert.ToInt32(rawValue);
-		    }
+			#endregion ISOSpeed
 
-		    #endregion ISOSpeed
+			#region Make
 
-		    xmp.Make = Convert.ToString(properties[ExifTiffSchema.Make]);
-			xmp.Model = Convert.ToString(properties[ExifTiffSchema.Model]);
+			if (properties.TryGetValue(ExifTiffSchema.Make, out stringValue))
+			{
+				xmp.Make = stringValue;
+			}
+
+			#endregion Make
+
+			#region Make
+
+			if (properties.TryGetValue(ExifTiffSchema.Model, out stringValue))
+			{
+				xmp.Model = stringValue;
+			}
+
+			#endregion Model
 
 		    #region MeteringMode
 
-		    rawValue = properties[ExifSchema.MeteringMode];
-		    if (rawValue is Enum)
-		    {
-		        xmp.MeteringMode = (ExifTagMeteringMode)rawValue;
-		    }
+			xmp.MeteringMode = properties.GetValue(ExifSchema.MeteringMode, default(ExifTagMeteringMode));
 
 		    #endregion MeteringMode
 
 		    #region Orientation
 
-		    rawValue = properties[ExifTiffSchema.Orientation];
-		    if (rawValue is Enum)
-		    {
-		        xmp.Orientation = (ExifTagOrientation)rawValue;
-		    }
+			xmp.Orientation = properties.GetValue(ExifTiffSchema.Orientation, default(ExifTagOrientation));
 
 		    #endregion Orientation
 
 		    #region ShutterSpeed
 
-		    rawValue = properties[ExifSchema.ExposureTime];
-		    if (rawValue is Rational<uint>)
-		    {
-		        xmp.ShutterSpeed = (Rational<uint>)rawValue;
-		    }
-		    else
-		    {
-		        rawValue = properties[ExifSchema.ShutterSpeedValue];
-		        if (rawValue is Rational<int>)
-		        {
-		            xmp.ShutterSpeed = Rational<uint>.Approximate((decimal)Math.Pow(2.0, -Convert.ToDouble(rawValue)));
-		        }
-		    }
+		    xmp.ShutterSpeed = properties.GetValue(ExifSchema.ExposureTime, Rational<uint>.Empty);
+			if (xmp.ShutterSpeed.IsEmpty)
+			{
+				Rational<int> shutterSpeed = properties.GetValue(ExifSchema.ShutterSpeedValue, Rational<int>.Empty);
+				if (!shutterSpeed.IsEmpty)
+				{
+					xmp.ShutterSpeed = Rational<uint>.Approximate((decimal)Math.Pow(2.0, -Convert.ToDouble(shutterSpeed)));
+				}
+			}
 
 		    #endregion ShutterSpeed
 
-		    #region WhiteBalance
+			#region Tags
 
-		    xmp.Tags = properties.GetValue(DublinCoreSchema.Subject, default(IEnumerable<string>));
+			xmp.Tags = properties.GetValue(DublinCoreSchema.Subject, default(IEnumerable<string>));
 
-		    #endregion WhiteBalance
+			#endregion Tags
 
-		    #region WhiteBalance
+			#region Title
+
+			if (properties.TryGetValue(DublinCoreSchema.Title, out stringValue) ||
+				properties.TryGetValue(ExifSchema.ImageTitle, out stringValue))
+			{
+				xmp.Title = stringValue;
+			}
+
+			#endregion Title
+
+			#region WhiteBalance
 
 			xmp.WhiteBalance = properties.GetValue(ExifSchema.WhiteBalance, default(ExifTagWhiteBalance));
 

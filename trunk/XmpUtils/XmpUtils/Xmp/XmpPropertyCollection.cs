@@ -232,17 +232,29 @@ namespace XmpUtils.Xmp
 				return false;
 			}
 
-			Type type = typeof(T);
+			Type targetType = typeof(T);
 
-			if (property.Value is T)
+			if (targetType != typeof(IDictionary<string, object>) &&
+				property.Value is IDictionary<string, object>)
+			{
+				KeyValuePair<string, object> pair = ((IDictionary<string, object>)property.Value).FirstOrDefault();
+				property.Value = pair.Value;
+			}
+
+			if (property.Value is T ||
+				targetType.IsAssignableFrom(property.Value.GetType()))
 			{
 				value = (T)property.Value;
 			}
-			else if (type.IsEnum)
+			else if (property.Value is IEnumerable)
+			{
+				value = ((IEnumerable)property.Value).Cast<IConvertible>().Select(v => (T)Convert.ChangeType(v, targetType)).FirstOrDefault();
+			}
+			else if (targetType.IsEnum)
 			{
 				try
 				{
-					value = (T)Enum.Parse(type, Convert.ToString(property.Value), true);
+					value = (T)Enum.Parse(targetType, Convert.ToString(property.Value), true);
 				}
 				catch
 				{
@@ -250,9 +262,14 @@ namespace XmpUtils.Xmp
 					return false;
 				}
 			}
+			else if (property.Value is IConvertible)
+			{
+				value = (T)Convert.ChangeType(property.Value, targetType);
+			}
 			else
 			{
-				value = (T)Convert.ChangeType(property.Value, type);
+				value = default(T);
+				return false;
 			}
 
 			return true;
