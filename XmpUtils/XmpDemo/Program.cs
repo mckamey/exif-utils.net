@@ -57,6 +57,7 @@ namespace XmpDemo
 				// custom value extractions
 				XmpMetadata meta = XmpMetadata.Create(properties);
 				meta.Creator = "Changed the creator via XmpProperty";
+				meta.Copyright = "Copyright changed as well.";
 				meta.Tags = new string[]
 				{
 					"Keyword-1",

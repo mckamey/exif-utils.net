@@ -215,14 +215,35 @@ namespace XmpUtils.Xmp
 		{
 			XmpProperty property = this.GetProperty(schema);
 			if (property == null ||
-				property.Value == null ||
-				!(property.Value is T))
+				property.Value == null)
 			{
 				value = default(T);
 				return false;
 			}
 
-			value = (T)property.Value;
+			Type type = typeof(T);
+
+			if (property.Value is T)
+			{
+				value = (T)property.Value;
+			}
+			else if (type.IsEnum)
+			{
+				try
+				{
+					value = (T)Enum.Parse(type, Convert.ToString(property.Value), true);
+				}
+				catch
+				{
+					value = default(T);
+					return false;
+				}
+			}
+			else
+			{
+				value = (T)Convert.ChangeType(property.Value, type);
+			}
+
 			return true;
 		}
 
@@ -469,69 +490,41 @@ namespace XmpUtils.Xmp
 			XElement elem = new XElement(
 				XName.Get(property.Name, property.Namespace));
 
+			bool isLangAlt = false;
 			switch (property.Quantity)
 			{
-				case XmpQuantity.Bag:
-				case XmpQuantity.Seq:
-				{
-					XElement list = new XElement(
-						XName.Get(property.Quantity.ToString(), RdfNamespace));
-					elem.Add(list);
-
-					IEnumerable array = property.Value as IEnumerable;
-					if (array == null)
-					{
-						list.Add(new XComment("Unexpected value: "+Convert.ToString(property.Value)));
-						break;
-					}
-					if (array is IDictionary<string, object>)
-					{
-						array = ((IDictionary<string, object>)array).Values;
-					}
-					else if (array is string)
-					{
-						array = new object[] { array };
-					}
-
-					foreach (object item in array)
-					{
-						XElement li = new XElement(XName.Get("li", RdfNamespace));
-
-						if (item is XmpProperty)
-						{
-							// TODO: evaluate this against RDF spec
-							// http://www.w3.org/TR/REC-rdf-syntax/#section-Syntax-parsetype-resource
-							li.Add(new XAttribute(XName.Get("parseType", RdfNamespace), "Resource"));
-							li.Add(this.CreateElement((XmpProperty)item));
-						}
-						else
-						{
-							li.Add(item);
-						}
-
-						list.Add(li);
-					}
-					break;
-				}
 				case XmpQuantity.Alt:
 				{
 					if (property.ValueType is XmpBasicType &&
 						((XmpBasicType)property.ValueType) == XmpBasicType.LangAlt)
 					{
-						XElement list = new XElement(XName.Get(property.Quantity.ToString(), RdfNamespace));
-						elem.Add(list);
+						isLangAlt = true;
 
 						IDictionary<string, object> dictionary = property.Value as IDictionary<string, object>;
 						if (dictionary == null)
 						{
-							list.Add(new XComment("Unexpected value: "+Convert.ToString(property.Value)));
-							break;
+							// emit as list without xml:lang
+							goto case XmpQuantity.Bag;
 						}
+
+						XElement list = new XElement(XName.Get(property.Quantity.ToString(), RdfNamespace));
 
 						foreach (KeyValuePair<string, object> item in dictionary)
 						{
-							XElement li = new XElement(XName.Get("li", RdfNamespace),
-								new XAttribute(XNamespace.Xml+"lang", item.Key));
+							if (item.Value == null || item.Value.ToString() == String.Empty)
+							{
+								continue;
+							}
+
+							XElement li = new XElement(XName.Get("li", RdfNamespace));
+							if (!String.IsNullOrEmpty(item.Key))
+							{
+								li.Add(new XAttribute(XNamespace.Xml+"lang", item.Key));
+							}
+							else if (!list.HasElements)
+							{
+								li.Add(new XAttribute(XNamespace.Xml+"lang", "x-default"));
+							}
 
 							if (item.Value is XmpProperty)
 							{
@@ -547,11 +540,67 @@ namespace XmpUtils.Xmp
 
 							list.Add(li);
 						}
+
+						if (list.HasElements)
+						{
+							elem.Add(list);
+						}
 					}
 					else
 					{
 						// TODO: find how to process non-lang alts
-						elem.Add(new XComment("Alt value: "+Convert.ToString(property.Value)));
+						// emit as list
+						goto case XmpQuantity.Bag;
+					}
+					break;
+				}
+				case XmpQuantity.Bag:
+				case XmpQuantity.Seq:
+				{
+					IEnumerable array = property.Value as IEnumerable;
+					if (array == null || array is string)
+					{
+						array = new object[] { property.Value };
+					}
+					else if (array is IDictionary<string, object>)
+					{
+						array = ((IDictionary<string, object>)array).Values;
+					}
+
+					XElement list = new XElement(
+						XName.Get(property.Quantity.ToString(), RdfNamespace));
+
+					foreach (object item in array)
+					{
+						if (item == null || item.ToString() == String.Empty)
+						{
+							continue;
+						}
+
+						XElement li = new XElement(XName.Get("li", RdfNamespace));
+						if (isLangAlt && !list.HasElements)
+						{
+							li.Add(new XAttribute(XNamespace.Xml+"lang", "x-default"));
+						}
+
+						if (item is XmpProperty)
+						{
+							// TODO: evaluate this against RDF spec
+							// http://www.w3.org/TR/REC-rdf-syntax/#section-Syntax-parsetype-resource
+							li.Add(new XAttribute(XName.Get("parseType", RdfNamespace), "Resource"));
+							li.Add(this.CreateElement((XmpProperty)item));
+						}
+						else
+						{
+							li.Add(item);
+						}
+
+						list.Add(li);
+					}
+
+					if (list.HasElements)
+					{
+						elem.Add(list);
 					}
 					break;
 				}
