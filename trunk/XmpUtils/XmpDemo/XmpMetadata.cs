@@ -419,8 +419,6 @@ namespace XmpDemo
 
 		    #endregion GpsAltitude
 
-		    string gpsDir;
-
 		    #region GpsLatitude
 
 		    rawValue = properties[ExifSchema.GPSLatitude];
@@ -534,17 +532,13 @@ namespace XmpDemo
 
 		    #region WhiteBalance
 
-		    xmp.Tags = properties.GetValue(DublinCoreSchema.Subject, (IEnumerable<string>)null);
+		    xmp.Tags = properties.GetValue(DublinCoreSchema.Subject, default(IEnumerable<string>));
 
 		    #endregion WhiteBalance
 
 		    #region WhiteBalance
 
-		    rawValue = properties[ExifSchema.WhiteBalance];
-		    if (rawValue is Enum)
-		    {
-		        xmp.WhiteBalance = (ExifTagWhiteBalance)rawValue;
-		    }
+			xmp.WhiteBalance = properties.GetValue(ExifSchema.WhiteBalance, default(ExifTagWhiteBalance));
 
 		    #endregion WhiteBalance
 
@@ -556,6 +550,8 @@ namespace XmpDemo
 			// TODO: set changed properties back onto collection
 
 			properties[DublinCoreSchema.Creator] = this.Creator;
+
+			properties[DublinCoreSchema.Rights] = this.Copyright;
 
 			properties[DublinCoreSchema.Subject] = this.Tags;
 		}
