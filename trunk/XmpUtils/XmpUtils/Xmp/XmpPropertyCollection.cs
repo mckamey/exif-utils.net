@@ -726,16 +726,26 @@ namespace XmpUtils.Xmp
 			return new XmpPropertyCollection(XDocument.Load(reader));
 		}
 
-		public static XmpPropertyCollection LoadFromImage(Stream stream)
+		public static XmpPropertyCollection LoadFromImage(Stream stream, params Enum[] schemas)
 		{
-			IEnumerable<XmpProperty> properties = new XmpExtractor().Extract(stream);
+			return XmpPropertyCollection.LoadFromImage(stream, (IEnumerable<Enum>)schemas);
+		}
+
+		public static XmpPropertyCollection LoadFromImage(Stream stream, IEnumerable<Enum> schemas)
+		{
+			IEnumerable<XmpProperty> properties = new XmpExtractor().Extract(stream, schemas);
 
 			return new XmpPropertyCollection(properties);
 		}
 
-		public static XmpPropertyCollection LoadFromImage(string filename)
+		public static XmpPropertyCollection LoadFromImage(string filename, params Enum[] schemas)
 		{
-			IEnumerable<XmpProperty> properties = new XmpExtractor().Extract(filename);
+			return XmpPropertyCollection.LoadFromImage(filename, (IEnumerable<Enum>)schemas);
+		}
+
+		public static XmpPropertyCollection LoadFromImage(string filename, IEnumerable<Enum> schemas)
+		{
+			IEnumerable<XmpProperty> properties = new XmpExtractor().Extract(filename, schemas);
 
 			return new XmpPropertyCollection(properties);
 		}
