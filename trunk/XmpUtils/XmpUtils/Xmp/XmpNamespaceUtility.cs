@@ -30,6 +30,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
@@ -119,6 +120,7 @@ namespace XmpUtils.Xmp
 			return this.Parse(ns, localName, this.NamespaceLookup);
 		}
 
+		[DebuggerStepThrough]
 		private Enum Parse(string scope, string localName, IDictionary<string, Type> lookup)
 		{
 			if (String.IsNullOrEmpty(scope))
