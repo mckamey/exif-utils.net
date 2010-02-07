@@ -75,24 +75,18 @@ namespace XmpUtils.Xmp
 		{
 			BitmapMetadata metadata = this.LoadMetadata(stream);
 
-			IEnumerable value;
-			if (schemas == null || !schemas.Any())
+			if (schemas != null && schemas.Any())
 			{
-				// none means all
-				value = this.ProcessMetadata(metadata, "/", 0);
-			}
-			else
-			{
-				value = this.ExtractSchemas(metadata, schemas);
+				return this.ExtractSchemas(metadata, schemas).ToList();
 			}
 
+			// none means all
+			IEnumerable value = this.ProcessMetadata(metadata, "/", 0);
 			return this.AggregateProperties(value).ToList();
 		}
 
 		private IEnumerable<XmpProperty> ExtractSchemas(BitmapMetadata metadata, IEnumerable<Enum> schemas)
 		{
-			List<XmpProperty> properties = new List<XmpProperty>();
-
 			foreach (Enum schema in schemas)
 			{
 				string name = this.GetQueryForSchema(schema);
@@ -121,14 +115,13 @@ namespace XmpUtils.Xmp
 					continue;
 				}
 
-				properties.Add(new XmpProperty
+
+				yield return XmpPropertyCollection.ProcessValue(new XmpProperty
 				{
 					Schema = schema,
 					Value = value
 				});
 			}
-
-			return properties;
 		}
 
 		private IEnumerable<XmpProperty> AggregateProperties(IEnumerable value)
