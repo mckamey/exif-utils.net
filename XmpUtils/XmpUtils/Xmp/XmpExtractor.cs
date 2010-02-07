@@ -63,21 +63,72 @@ namespace XmpUtils.Xmp
 
 		#region Aggregation Methods
 
-		public IEnumerable<XmpProperty> Extract(string filename)
+		public IEnumerable<XmpProperty> Extract(string filename, IEnumerable<Enum> schemas)
 		{
 			using (Stream stream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
 			{
-				return this.Extract(stream);
+				return this.Extract(stream, schemas);
 			}
 		}
 
-		public IEnumerable<XmpProperty> Extract(Stream stream)
+		public IEnumerable<XmpProperty> Extract(Stream stream, IEnumerable<Enum> schemas)
 		{
 			BitmapMetadata metadata = this.LoadMetadata(stream);
 
-			IEnumerable value = this.ProcessMetadata(metadata, "/", 0);
+			IEnumerable value;
+			if (schemas == null || !schemas.Any())
+			{
+				// none means all
+				value = this.ProcessMetadata(metadata, "/", 0);
+			}
+			else
+			{
+				value = this.ExtractSchemas(metadata, schemas);
+			}
 
 			return this.AggregateProperties(value).ToList();
+		}
+
+		private IEnumerable<XmpProperty> ExtractSchemas(BitmapMetadata metadata, IEnumerable<Enum> schemas)
+		{
+			List<XmpProperty> properties = new List<XmpProperty>();
+
+			foreach (Enum schema in schemas)
+			{
+				string name = this.GetQueryForSchema(schema);
+				if (String.IsNullOrEmpty(name))
+				{
+					continue;
+				}
+				object value = metadata.GetQuery(name);
+				name = name.Substring(name.LastIndexOf('/')+1);
+
+#if DIAGNOSTICS
+					Console.WriteLine("{0} => {1}: {2}", name, value != null ? value.GetType().Name : "null", Convert.ToString(value));
+#endif
+
+				if (value is BitmapMetadata)
+				{
+					value = this.ProcessMetadata((BitmapMetadata)value, '/'+name, 0);
+				}
+				else if (value is BitmapMetadataBlob)
+				{
+					value = ((BitmapMetadataBlob)value).GetBlobValue();
+				}
+
+				if (value == null)
+				{
+					continue;
+				}
+
+				properties.Add(new XmpProperty
+				{
+					Schema = schema,
+					Value = value
+				});
+			}
+
+			return properties;
 		}
 
 		private IEnumerable<XmpProperty> AggregateProperties(IEnumerable value)
@@ -108,6 +159,26 @@ namespace XmpUtils.Xmp
 					yield return XmpPropertyCollection.ProcessValue(property);
 				}
 			}
+		}
+
+		private string GetQueryForSchema(Enum schema)
+		{
+			// TODO: figure out what to do with multiple possible paths
+
+			if (schema is ExifSchema)
+			{
+				//return "/app1/ifd/exif/{ushort="+schema.ToString("D")+"}";
+				return "/app1/{ushort=0}/exif/{ushort="+schema.ToString("D")+"}";
+			}
+
+			if (schema is ExifTiffSchema)
+			{
+				//return "/app1/ifd/{ushort="+schema.ToString("D")+"}";
+				return "/app1/{ushort=0}/{ushort="+schema.ToString("D")+"}";
+			}
+
+			// TODO: build this out in an extensible manner so custom schemas can leverage
+			return null;
 		}
 
 		#endregion Aggregation Methods
@@ -756,11 +827,83 @@ namespace XmpUtils.Xmp
 
 			switch (parts[0])
 			{
+				case "byte":
+				{
+					byte value;
+
+					if (!Byte.TryParse(parts[1], out value) ||
+						!Enum.IsDefined(enumType, value))
+					{
+						return null;
+					}
+
+					return (Enum)Enum.ToObject(enumType, value);
+				}
+				case "sbyte":
+				{
+					sbyte value;
+
+					if (!SByte.TryParse(parts[1], out value) ||
+						!Enum.IsDefined(enumType, value))
+					{
+						return null;
+					}
+
+					return (Enum)Enum.ToObject(enumType, value);
+				}
 				case "ushort":
 				{
 					ushort value;
 
 					if (!UInt16.TryParse(parts[1], out value) ||
+						!Enum.IsDefined(enumType, value))
+					{
+						return null;
+					}
+
+					return (Enum)Enum.ToObject(enumType, value);
+				}
+				case "short":
+				{
+					short value;
+
+					if (!Int16.TryParse(parts[1], out value) ||
+						!Enum.IsDefined(enumType, value))
+					{
+						return null;
+					}
+
+					return (Enum)Enum.ToObject(enumType, value);
+				}
+				case "uint":
+				{
+					uint value;
+
+					if (!UInt32.TryParse(parts[1], out value) ||
+						!Enum.IsDefined(enumType, value))
+					{
+						return null;
+					}
+
+					return (Enum)Enum.ToObject(enumType, value);
+				}
+				case "int":
+				{
+					int value;
+
+					if (!Int32.TryParse(parts[1], out value) ||
+						!Enum.IsDefined(enumType, value))
+					{
+						return null;
+					}
+
+					return (Enum)Enum.ToObject(enumType, value);
+				}
+				case "ulong":
+				{
+					ulong value;
+
+					if (!UInt64.TryParse(parts[1], out value) ||
 						!Enum.IsDefined(enumType, value))
 					{
 						return null;
