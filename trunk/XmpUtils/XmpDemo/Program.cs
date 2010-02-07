@@ -1,5 +1,35 @@
 ﻿//#define DIAGNOSTICS
 
+#region License
+/*---------------------------------------------------------------------------------*\
+
+	Distributed under the terms of an MIT-style license:
+
+	The MIT License
+
+	Copyright (c) 2005-2010 Stephen M. McKamey
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in
+	all copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+	THE SOFTWARE.
+
+\*---------------------------------------------------------------------------------*/
+#endregion License
+
 using System;
 using System.IO;
 using System.Linq;
@@ -55,7 +85,7 @@ namespace XmpDemo
 				XmpPropertyCollection properties = XmpPropertyCollection.LoadFromXml(filename);
 
 				// custom value extractions
-				XmpMetadata meta = XmpMetadata.Create(properties);
+				ImageXmp meta = ImageXmp.Create(properties);
 				meta.Creator = "Changed the creator via XmpProperty";
 				meta.Copyright = "Copyright changed as well.";
 				meta.Tags = new string[]
@@ -64,7 +94,11 @@ namespace XmpDemo
 					"Tag-2",
 					"Subject-3"
 				};
-				meta.Apply(properties);
+
+				// apply values back into properties
+				properties[DublinCoreSchema.Creator] = meta.Creator;
+				properties[DublinCoreSchema.Rights] = meta.Copyright;
+				properties[DublinCoreSchema.Subject] = meta.Tags;
 
 				// re-serialize properties to new XML
 				using (TextWriter writer = File.CreateText(Path.GetFileNameWithoutExtension(filename) + ".xml"))

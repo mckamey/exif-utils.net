@@ -352,11 +352,11 @@ namespace XmpUtils.Xmp.ValueTypes.ExifTagValues
 		[Description("Red-Eye Reduction")]
 		RedEyeReduction = 0x0040,
 
+		[Description("Return Not Detected")]
+		ReturnNotDetected=0x0004,
+
 		[Description("Return Detected")]
 		ReturnDetected = 0x0006,
-
-		[Description("Return Not Detected")]
-		ReturnNotDetected = 0x0004,
 
 		[Description("Auto Flash")]
 		ModeAuto = 0x0018,
