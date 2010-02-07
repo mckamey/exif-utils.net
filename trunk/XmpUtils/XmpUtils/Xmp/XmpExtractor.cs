@@ -390,6 +390,7 @@ namespace XmpUtils.Xmp
 					}
 					case XmpBasicType.LangAlt:
 					case XmpBasicType.Text:
+					case XmpBasicType.ProperName:
 					{
 						if (value is byte[])
 						{
@@ -401,8 +402,27 @@ namespace XmpUtils.Xmp
 							}
 							else
 							{
-								value = this.DecodeUTF8((byte[])value);
+								value = new String(Encoding.UTF8.GetChars((byte[])value));
 							}
+
+							value = this.TrimNullTerm((string)value);
+						}
+						else if (!(value is string) && value is IEnumerable)
+						{
+							var strList = ((IEnumerable)value).OfType<string>().Select(str => this.TrimNullTerm(str)).Where(str => !String.IsNullOrEmpty(str));
+
+							if (property.Quantity == XmpQuantity.Single)
+							{
+								value = strList.FirstOrDefault();
+							}
+							else
+							{
+								value = strList;
+							}
+						}
+						else if (value is string)
+						{
+							value = this.TrimNullTerm((string)value);
 						}
 						break;
 					}
@@ -641,18 +661,15 @@ namespace XmpUtils.Xmp
 			}
 		}
 
-		private string DecodeUTF8(byte[] value)
+		private string TrimNullTerm(string value)
 		{
-			string str = new String(Encoding.UTF8.GetChars(value));
-
 			// safeguard against null terminated byte[]
-			int end = str.IndexOf('\0');
+			int end = value.IndexOf('\0');
 			if (end >= 0)
 			{
-				str = str.Substring(0, end);
+				return value.Substring(0, end);
 			}
-
-			return str;
+			return value;
 		}
 
 		/// <summary>
