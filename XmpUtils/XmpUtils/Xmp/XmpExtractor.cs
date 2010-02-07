@@ -438,9 +438,10 @@ namespace XmpUtils.Xmp
 						}
 						else
 						{
+							string[] strArray = new string[array.Length];
 							for (int i=0; i<array.Length; i++)
 							{
-								array.SetValue(Convert.ToString(this.ProcessRational(property, array.GetValue(i))), i);
+								strArray[i] = Convert.ToString(this.ProcessRational(property, array.GetValue(i)));
 							}
 							value = array;
 						}
