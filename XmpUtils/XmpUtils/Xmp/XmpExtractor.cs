@@ -76,6 +76,11 @@ namespace XmpUtils.Xmp
 		{
 			BitmapMetadata metadata = this.LoadMetadata(stream);
 
+			return this.Extract(metadata, schemas);
+		}
+
+		public IEnumerable<XmpProperty> Extract(BitmapMetadata metadata, IEnumerable<Enum> schemas)
+		{
 			if (schemas != null && schemas.Any())
 			{
 				return this.ExtractSchemas(metadata, schemas).ToList();
@@ -969,7 +974,7 @@ namespace XmpUtils.Xmp
 
 		private BitmapMetadata LoadMetadata(Stream stream)
 		{
-			BitmapDecoder decoder = BitmapDecoder.Create(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnDemand);
+			BitmapDecoder decoder = BitmapDecoder.Create(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.None);
 
 			if (decoder.Frames[0] != null)
 			{
