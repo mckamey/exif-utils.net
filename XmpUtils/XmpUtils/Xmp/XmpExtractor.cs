@@ -36,6 +36,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows.Media.Imaging;
 
@@ -89,16 +90,34 @@ namespace XmpUtils.Xmp
 		{
 			foreach (Enum schema in schemas)
 			{
-				string name = this.GetQueryForSchema(schema);
+				string name = null;
+				object value = null;
+
+				foreach (string query in this.GetQueryForSchema(schema))
+				{
+					if (String.IsNullOrEmpty(query))
+					{
+						continue;
+					}
+
+					value = metadata.GetQuery(query);
+					if (value == null)
+					{
+						continue;
+					}
+
+					name = query;
+					break;
+				}
+
 				if (String.IsNullOrEmpty(name))
 				{
 					continue;
 				}
-				object value = metadata.GetQuery(name);
 				name = name.Substring(name.LastIndexOf('/')+1);
 
 #if DIAGNOSTICS
-					Console.WriteLine("{0} => {1}: {2}", name, value != null ? value.GetType().Name : "null", Convert.ToString(value));
+				Console.WriteLine("{0} => {1}: {2}", name, value != null ? value.GetType().Name : "null", Convert.ToString(value));
 #endif
 
 				if (value is BitmapMetadata)
@@ -114,7 +133,6 @@ namespace XmpUtils.Xmp
 				{
 					continue;
 				}
-
 
 				yield return XmpPropertyCollection.ProcessValue(new XmpProperty
 				{
@@ -154,24 +172,49 @@ namespace XmpUtils.Xmp
 			}
 		}
 
-		private string GetQueryForSchema(Enum schema)
+		private IEnumerable<string> GetQueryForSchema(Enum schema)
 		{
-			// TODO: figure out what to do with multiple possible paths
-
 			if (schema is ExifSchema)
 			{
-				//return "/app1/ifd/exif/{ushort="+schema.ToString("D")+"}";
-				return "/app1/{ushort=0}/exif/{ushort="+schema.ToString("D")+"}";
+				yield return "/app1/{ushort=0}/exif/{ushort="+schema.ToString("D")+"}";
+				yield return "/app1/ifd/exif/{ushort="+schema.ToString("D")+"}";
 			}
-
-			if (schema is ExifTiffSchema)
+			else if (schema is ExifTiffSchema)
 			{
-				//return "/app1/ifd/{ushort="+schema.ToString("D")+"}";
-				return "/app1/{ushort=0}/{ushort="+schema.ToString("D")+"}";
+				yield return "/app1/{ushort=0}/{ushort="+schema.ToString("D")+"}";
+				yield return "/app1/ifd/{ushort="+schema.ToString("D")+"}";
 			}
 
-			// TODO: build this out in an extensible manner so custom schemas can leverage
-			return null;
+			string name;
+			FieldInfo fieldInfo;
+			Type type = AttributeUtility.GetEnumInfo(schema, out name, out fieldInfo);
+
+			// check for namespace on property enum, then on type
+			XmpNamespaceAttribute xns = AttributeUtility
+				.FindAttributes<XmpNamespaceAttribute>(fieldInfo, type)
+				.FirstOrDefault() ?? XmpNamespaceAttribute.Empty;
+
+			// check for property info on property enum only
+			XmpPropertyAttribute xp = AttributeUtility
+				.FindAttributes<XmpPropertyAttribute>(fieldInfo)
+				.FirstOrDefault();
+
+			if (xp != null && !String.IsNullOrEmpty(xp.Name))
+			{
+				name = xp.Name;
+			}
+
+			if (xns == null || !xns.Prefixes.Any())
+			{
+				yield return "/xmp/"+name;
+			}
+			else
+			{
+				foreach (string prefix in xns.Prefixes)
+				{
+					yield return "/xmp/"+prefix+':'+name;
+				}
+			}
 		}
 
 		#endregion Aggregation Methods
