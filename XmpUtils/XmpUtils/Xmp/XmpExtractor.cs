@@ -284,7 +284,16 @@ namespace XmpUtils.Xmp
 
 			foreach (string name in this.GetNamesSafely(metadata))
 			{
-				object value = metadata.GetQuery(name);
+				object value;
+				try
+				{
+					value = metadata.GetQuery(name);
+				}
+				catch
+				{
+					// TODO: is there any way to avoid ArgumentNullException in GetQuery?
+					continue;
+				}
 
 #if DIAGNOSTICS
 				Console.Write(new String('\t', depth));

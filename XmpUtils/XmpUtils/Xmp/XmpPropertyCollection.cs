@@ -32,6 +32,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -246,7 +247,7 @@ namespace XmpUtils.Xmp
 			{
 				value = (T)property.Value;
 			}
-			else if (property.Value is IEnumerable)
+			else if (property.Value is IEnumerable && !(property.Value is string))
 			{
 				value = ((IEnumerable)property.Value).Cast<IConvertible>().Select(v => (T)Convert.ChangeType(v, targetType)).FirstOrDefault();
 			}
@@ -261,6 +262,18 @@ namespace XmpUtils.Xmp
 					value = default(T);
 					return false;
 				}
+			}
+			else if (targetType == typeof(DateTime) && property.Value is string)
+			{
+				DateTime date = default(DateTime);
+				if (!DateTime.TryParseExact((string)property.Value, "yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal|DateTimeStyles.AllowInnerWhite, out date) &&
+					!DateTime.TryParse((string)property.Value, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal|DateTimeStyles.AllowInnerWhite, out date))
+				{
+					value = default(T);
+					return false;
+				}
+
+				value = (T)Convert.ChangeType(date, targetType);
 			}
 			else if (property.Value is IConvertible)
 			{
