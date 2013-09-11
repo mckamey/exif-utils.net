@@ -204,7 +204,7 @@ namespace ExifUtils.Exif.IO
 				{
 					Rational<int> item = (Rational<int>)Convert.ChangeType(array.GetValue(i), typeof(Rational<int>));
 					BitConverter.GetBytes(item.Numerator).CopyTo(data, i*ExifDecoder.RationalSize);
-					BitConverter.GetBytes(item.Numerator).CopyTo(data, i*ExifDecoder.RationalSize+ExifDecoder.Int32Size);
+					BitConverter.GetBytes(item.Denominator).CopyTo(data, i*ExifDecoder.RationalSize+ExifDecoder.Int32Size);
 				}
 
 				return data;
@@ -216,7 +216,7 @@ namespace ExifUtils.Exif.IO
 
 				Rational<int> item = (Rational<int>)Convert.ChangeType(value, typeof(Rational<int>));
 				BitConverter.GetBytes(item.Numerator).CopyTo(data, 0);
-				BitConverter.GetBytes(item.Numerator).CopyTo(data, ExifDecoder.UInt32Size);
+				BitConverter.GetBytes(item.Denominator).CopyTo(data, ExifDecoder.UInt32Size);
 
 				return data;
 			}
@@ -246,7 +246,7 @@ namespace ExifUtils.Exif.IO
 				{
 					Rational<uint> item = (Rational<uint>)Convert.ChangeType(array.GetValue(i), typeof(Rational<uint>));
 					BitConverter.GetBytes(item.Numerator).CopyTo(data, i*ExifDecoder.URationalSize);
-					BitConverter.GetBytes(item.Numerator).CopyTo(data, i*ExifDecoder.URationalSize+ExifDecoder.UInt32Size);
+					BitConverter.GetBytes(item.Denominator).CopyTo(data, i*ExifDecoder.URationalSize+ExifDecoder.UInt32Size);
 				}
 
 				return data;
@@ -258,7 +258,7 @@ namespace ExifUtils.Exif.IO
 
 				Rational<uint> item = (Rational<uint>)Convert.ChangeType(value, typeof(Rational<uint>));
 				BitConverter.GetBytes(item.Numerator).CopyTo(data, 0);
-				BitConverter.GetBytes(item.Numerator).CopyTo(data, ExifDecoder.UInt32Size);
+				BitConverter.GetBytes(item.Denominator).CopyTo(data, ExifDecoder.UInt32Size);
 
 				return data;
 			}
