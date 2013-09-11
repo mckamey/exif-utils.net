@@ -34,9 +34,9 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("ExifUtils")]
 [assembly: AssemblyDescription("EXIF Utility Library")]
-[assembly: AssemblyProduct("JsonFx.NET")]
+[assembly: AssemblyProduct("ExifUtils")]
 [assembly: AssemblyCopyright("Copyright © 2005-2009 Stephen M. McKamey. All rights reserved.")]
-[assembly: AssemblyCompany("http://jsonfx.net")]
+[assembly: AssemblyCompany("https://code.google.com/p/exif-utils/")]
 #if DEBUG
 [assembly: AssemblyConfiguration("Debug")]
 #else
