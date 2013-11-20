@@ -587,11 +587,11 @@ namespace ExifUtils.Exif.TagValues
 
 	public enum ExifTagGpsAltitudeRef : byte
 	{
-		[Description("Sea Level")]
-		SeaLevel=0,
+		[Description("Above Sea Level")]
+		AboveSeaLevel = 0,
 
-		[Description("Sea Level Reference")]
-		SeaLevelReference = 1
+		[Description("Below Sea Level")]
+		BelowSeaLevel = 1
 	}
 
 	public enum ExifTagGpsDifferential : ushort

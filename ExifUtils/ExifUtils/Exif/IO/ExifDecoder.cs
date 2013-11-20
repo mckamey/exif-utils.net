@@ -267,7 +267,7 @@ namespace ExifUtils.Exif.IO
 
 			if (value is String)
 			{
-				value = ((String)value).Trim();
+				value = ((String)value).TrimEnd('\0').Trim();
 			}
 
 			if (targetType == null || value == null)
