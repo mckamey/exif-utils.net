@@ -152,6 +152,24 @@ namespace ExifUtils
 			return gps;
 		}
 
+		public static GpsCoordinate FromURational(Rational<uint> deg, Rational<uint> min, Rational<uint> sec)
+		{
+			GpsCoordinate gps = new GpsCoordinate();
+
+			gps.Degrees = deg;
+			gps.Minutes = min;
+			gps.Seconds = sec;
+
+			return gps;
+		}
+
+		public Rational<uint>[] ToURational()
+		{
+			return new Rational<uint>[] {
+				this.Degrees, this.Minutes, this.Seconds
+			};
+		}
+
 		public static GpsCoordinate Parse(string value)
 		{
 			GpsCoordinate gps;

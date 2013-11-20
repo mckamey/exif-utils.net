@@ -176,10 +176,13 @@ namespace ExifUtils.Exif
 		[Description("Image Description")]
 		ImageDescription = 0x010E,
 
+		[ExifDataType(ExifType.Ascii)]
 		Make = 0x010F,
 
+		[ExifDataType(ExifType.Ascii)]
 		Model = 0x0110,
 
+		[ExifDataType(ExifType.Ascii)]
 		Software = 0x0131,
 
 		[ExifDataType(ExifType.Ascii)]
@@ -414,15 +417,19 @@ namespace ExifUtils.Exif
 		[Description("GPS Version ID")]
 		GpsVersionID = 0x0000,
 
+		[ExifDataType(ExifType.Ascii)]
 		[Description("GPS Latitude Ref")]
 		GpsLatitudeRef = 0x0001,
 
+		[ExifDataType(ExifType.URational)]
 		[Description("GPS Latitude")]
 		GpsLatitude = 0x0002,
 
+		[ExifDataType(ExifType.Ascii)]
 		[Description("GPS Longitude Ref")]
 		GpsLongitudeRef = 0x0003,
 
+		[ExifDataType(ExifType.URational)]
 		[Description("GPS Longitude")]
 		GpsLongitude = 0x0004,
 
@@ -430,6 +437,7 @@ namespace ExifUtils.Exif
 		[Description("GPS Altitude Ref")]
 		GpsAltitudeRef = 0x0005,
 
+		[ExifDataType(ExifType.URational)]
 		[Description("GPS Altitude")]
 		GpsAltitude = 0x0006,
 
